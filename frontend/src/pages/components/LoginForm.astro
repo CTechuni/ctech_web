@@ -1,0 +1,331 @@
+---
+// Astro component script (if needed)
+---
+
+<form class="login-form" id="loginForm">
+    <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="tu@email.com"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="••••••"
+        >
+    </div>
+
+    <div class="form-options">
+        <label class="checkbox-container">
+            <input type="checkbox" name="remember">
+            <span class="checkmark"></span>
+            Recordarme
+        </label>
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <button type="submit" class="login-btn">
+        Iniciar Sesión
+    </button>
+
+    <div class="divider">
+        <span>o</span>
+    </div>
+
+    <div class="social-login">
+        <button type="button" class="social-btn google-btn">
+            <span class="material-icons">account_circle</span>
+            Continuar con Google
+        </button>
+        <button type="button" class="social-btn github-btn">
+            <span class="material-icons">code</span>
+            Continuar con GitHub
+        </button>
+    </div>
+
+    <div class="signup-link">
+        <p>¿No tienes cuenta? <a href="#" onclick="window.closeModal('loginModal'); window.openModal('signupModal')">Regístrate aquí</a></p>
+    </div>
+</form>
+
+
+<style>
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--color-primary-dark);
+        font-size: 0.9rem;
+        margin: 0 1rem 0 1rem;
+    }
+
+    .form-group input {
+        padding: 0.6rem 1rem;
+        border: 1px solid #dbdee1;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #06060640;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .forgot-password {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    .login-btn {
+        padding: 0.6rem 1.5rem;
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .login-btn:hover {
+        background-color: var(--color-primary);
+    }
+
+    .login-btn:active {
+        background-color: var(--color-blue-grey);
+    }
+
+    .login-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .divider {
+        text-align: center;
+        position: relative;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #e9ecef;
+        z-index: 1;
+    }
+
+    .divider span {
+        background-color: var(--color-white);
+        padding: 0 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .social-login {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        background-color: var(--color-white);
+        color: #333;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+        border-color: #98989849;
+        background-color: var(--color-white);
+    }
+
+    .social-btn:active {
+        background-color: #e4e4e4;
+        color: var(--color-primary-dark);
+        border-color: #e4e4e4;
+    }
+
+    .social-btn .material-icons {
+        font-size: 1.2rem;
+    }
+
+    .signup-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--color-primary-dark);
+    }
+
+    .signup-link a {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+</style>
+
+<script type="module">
+    import { authManager } from '../../utils/auth.js';
+
+    // Cerrar modal (complemento de openModal)
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+    }
+
+    // Función para abrir modal (se define globalmente)
+    window.openModal = function (modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+    };
+
+    // Manejo del formulario de login
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const email = String(formData.get('email') || '').trim();
+            const password = String(formData.get('password') || '');
+            // Checkbox devuelve "on" o null; usar has() para booleano seguro
+            const remember = formData.has('remember') || !!formData.get('remember');
+
+            // Estado del botón
+            const submitBtn = this.querySelector('.login-btn');
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) {
+                submitBtn.textContent = 'Iniciando sesión...';
+                submitBtn.disabled = true;
+            }
+
+            try {
+                if (!authManager || typeof authManager.login !== 'function') {
+                    throw new Error('El gestor de autenticación no está disponible.');
+                }
+
+                const result = await authManager.login(email, password, remember);
+
+                console.log('Login exitoso:', result);
+
+                if (result?.user?.name) {
+                    alert(`¡Bienvenido, ${result.user.name}!`);
+                } else {
+                    alert('¡Inicio de sesión exitoso!');
+                }
+
+                // Cerrar modal y actualizar UI
+                closeModal('loginModal');
+                updateAuthUI(result.user);
+            } catch (error) {
+                console.error('Error de login:', error);
+                alert('Error: ' + (error?.message || error));
+            } finally {
+                if (submitBtn) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    }
+
+    // Función para actualizar la UI después del login
+    function updateAuthUI(user) {
+        // Implementar según la UI de la app.
+        // Ejemplo mínimo:
+        console.log('Actualizando UI para usuario:', user);
+        // const authButtons = document.querySelector('.auth-buttons');
+        // if (authButtons && user) {
+        //     authButtons.innerHTML = `<div class="user-menu"><span>Hola, ${user.name}</span><button onclick="logout()">Cerrar Sesión</button></div>`;
+        // }
+    }
+
+    // Función para logout
+    window.logout = async function () {
+        try {
+            if (!authManager || typeof authManager.logout !== 'function') {
+                throw new Error('El gestor de autenticación no está disponible.');
+            }
+            await authManager.logout();
+            alert('Sesión cerrada');
+            // Restaurar UI o recargar
+            window.location.reload();
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            alert('Error al cerrar sesión: ' + (error?.message || error));
+        }
+    };
+</script>

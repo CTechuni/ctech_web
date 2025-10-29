@@ -1,0 +1,141 @@
+---
+import Modal from './Modal.astro';
+import LoginForm from './LoginForm.astro';
+import SignupForm from './SignupForm.astro';
+---
+
+<section class="search-section">
+    <div class="search-container">
+        <div class="auth-buttons-top">
+            <button onclick="openModal('loginModal')">Acceder</button>
+            <button onclick="openModal('signupModal')">Únete</button>
+        </div>
+    </div>
+</section>
+
+<!-- Modal de Login -->
+<Modal id="loginModal" title="Iniciar Sesión">
+    <LoginForm />
+</Modal>
+
+<!-- Modal de Registro -->
+<Modal id="signupModal" title="Únete a CTech">
+    <SignupForm />
+</Modal>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-style: italic;
+    }
+
+    .search-section {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: auto;
+        background-color: transparent;
+        border: none;
+        padding: 0.5rem 2.5rem;
+        z-index: 1000;
+        margin-top: 73px;
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .auth-buttons-top {
+        display: flex;
+        gap: 0.8rem;
+    }
+
+    .auth-buttons-top button {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--color-light-grey);
+        border-radius: 25px;
+        background-color: var(--color-white);
+        color: var(--color-primary-dark);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .auth-buttons-top button:last-child {
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border-color: var(--color-azure-radiant);
+    }
+
+    .auth-buttons-top button:hover {
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border-color: var(--color-azure-radiant);
+    }
+
+    .auth-buttons-top button:first-child:hover {
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+    }
+
+    .auth-buttons {
+        display: none;
+    }
+
+    @media (max-width: 1200px) {
+        .search-section {
+            padding: 0.3rem 1rem;
+            margin-top: 70px;
+            z-index: 1000;
+        }
+
+        .auth-buttons-top {
+            padding: 0.5rem 0.1rem;
+            font-size: 0.85rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .search-section {
+            position: relative;
+            margin-top: 60px;
+            padding: 0.6rem;
+        }
+        
+        .auth-buttons-top {
+            gap: 0.3rem;
+        }
+            
+        .auth-buttons-top button {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<script is:inline>
+    // Función global para abrir modal
+    window.openModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+    };
+
+    // Función global para cerrar modal
+    window.closeModal = function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+    };
+</script>

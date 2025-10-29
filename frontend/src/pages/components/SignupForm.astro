@@ -1,0 +1,366 @@
+---
+// Astro component script (if needed)
+---
+
+<form class="signup-form" id="signupForm">
+    <div class="form-group">
+        <label for="community">Comunidad CTech</label>
+        <select id="community" name="community" required>
+            <option value="">Selecciona una comunidad</option>
+            <!-- TODO: Las comunidades se cargarán dinámicamente desde el backend -->
+            <option value="Tech-community">Tech community Web</option>
+            <option value="AWSUG-Medellin">AW UG Medellin</option>
+            <option value="Pioneras">Pioneras</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="inviteCode">Código de invitación</label>
+        <input 
+            type="text" 
+            id="inviteCode" 
+            name="inviteCode" 
+            required 
+            placeholder="Ingresa tu código de invitación"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="fullName">Nombre completo</label>
+        <input 
+            type="text" 
+            id="fullName" 
+            name="fullName" 
+            required 
+            placeholder="Tu nombre completo"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="tu@email.com"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="••••••"
+            minlength="8"
+        >
+    </div>
+
+    <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña</label>
+        <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            required 
+            placeholder="••••••"
+            minlength="8"
+        >
+    </div>
+
+    <div class="form-options">
+        <label class="checkbox-container">
+            <input type="checkbox" name="terms" required>
+            <span class="checkmark"></span>
+            Acepto los <a href="#" class="terms-link">términos y condiciones</a>
+        </label>
+    </div>
+
+    <button type="submit" class="signup-btn">
+        Crear Cuenta
+    </button>
+
+    <div class="divider">
+        <span>o</span>
+    </div>
+
+    <div class="social-signup">
+        <button type="button" class="social-btn google-btn">
+            <span class="material-icons">account_circle</span>
+            Registrarse con Google
+        </button>
+        <button type="button" class="social-btn github-btn">
+            <span class="material-icons">code</span>
+            Registrarse con GitHub
+        </button>
+    </div>
+
+    <div class="login-link">
+        <p>¿Ya tienes cuenta? <a href="#" onclick="window.closeModal('signupModal'); window.openModal('loginModal')">Inicia sesión aquí</a></p>
+    </div>
+</form>
+
+<style>
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--color-primary-dark);
+        font-size: 0.9rem;
+        margin: 0 1rem 0 1rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--color-medium-grey);
+        border-radius: 25px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+        background-color: var(--color-white);
+    }
+
+    .form-group select {
+        cursor: pointer;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--color-azure-radiant);
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 0.9rem;
+        margin: 0.5rem 0;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .terms-link {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+    }
+
+    .terms-link:hover {
+        text-decoration: underline;
+    }
+
+    .signup-btn {
+        padding: 0.6rem 1.5rem;
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 0.5rem;
+    }
+
+    .signup-btn:hover {
+        background-color: var(--color-azure-radiant);
+    }
+
+    .signup-btn:active {
+        background-color: var(--color-blue-grey);
+    }
+
+    .signup-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .divider {
+        text-align: center;
+        position: relative;
+        color: #666;
+        font-size: 0.9rem;
+        margin: 1rem 0;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #e9ecef;
+        z-index: 1;
+    }
+
+    .divider span {
+        background-color: var(--color-white);
+        padding: 0 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .social-signup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        background-color: var(--color-white);
+        color: #333;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+        border-color: #98989849;
+        background-color: var(--color-white);
+    }
+
+    .social-btn:active {
+        background-color: #e4e4e4;
+        color: var(--color-primary-dark);
+        border-color: #e4e4e4;
+    }
+
+    .social-btn .material-icons {
+        font-size: 1.2rem;
+    }
+
+    .login-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--color-primary-dark);
+        margin-top: 1rem;
+    }
+
+    .login-link a {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+
+</style>
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+    // Intentar importar authManager de forma dinámica (evita errores si el bundler lo trata distinto)
+    async function getAuthManager() {
+        try {
+            const mod = await import('../../utils/auth.js');
+            return mod.authManager ?? mod.default ?? null;
+        } catch (err) {
+            console.warn('No se pudo importar authManager:', err);
+            return null;
+        }
+    }
+
+    const form = document.getElementById('signupForm');
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('.signup-btn');
+        const originalText = submitBtn?.textContent ?? '';
+
+        try {
+            const formData = new FormData(form);
+            const community = String(formData.get('community') ?? '').trim();
+            const inviteCode = String(formData.get('inviteCode') ?? '').trim();
+            const fullName = String(formData.get('fullName') ?? '').trim();
+            const email = String(formData.get('email') ?? '').trim();
+            const password = String(formData.get('password') ?? '');
+            const confirmPassword = String(formData.get('confirmPassword') ?? '');
+            const termsAccepted = formData.get('terms') !== null;
+
+            // Validaciones básicas
+            if (!community) { alert('Selecciona una comunidad'); return; }
+            if (!inviteCode) { alert('Ingresa el código de invitación'); return; }
+            if (!fullName) { alert('Ingresa tu nombre completo'); return; }
+            if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Ingresa un correo válido'); return; }
+            if (password !== confirmPassword) { alert('Las contraseñas no coinciden'); return; }
+            if (password.length < 8) { alert('La contraseña debe tener al menos 8 caracteres'); return; }
+            if (!termsAccepted) { alert('Debes aceptar los términos y condiciones'); return; }
+
+            // Indicador de carga
+            if (submitBtn) {
+                submitBtn.textContent = 'Creando cuenta...';
+                submitBtn.disabled = true;
+            }
+
+            const authManager = await getAuthManager();
+            if (!authManager || typeof authManager.register !== 'function') {
+                throw new Error('Servicio de autenticación no disponible');
+            }
+
+            const userData = { community, inviteCode, fullName, email, password, terms: true };
+            const result = await authManager.register(userData);
+
+            console.log('Registro exitoso:', result);
+            alert('¡Cuenta creada exitosamente! Por favor, inicia sesión.');
+
+            // Manejo de modales (si existen las funciones)
+            window.closeModal?.('signupModal');
+            window.openModal?.('loginModal');
+
+        } catch (error) {
+            console.error('Error de registro:', error);
+            alert('Error: ' + (error?.message ?? String(error)));
+        } finally {
+            if (submitBtn) {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+    });
+
+    // Placeholder para cargar comunidades dinámicamente en el futuro
+    async function loadCommunities() {
+        // TODO: implementar cuando exista el backend
+    }
+    // loadCommunities();
+});
+</script>

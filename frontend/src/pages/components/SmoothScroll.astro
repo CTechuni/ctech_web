@@ -1,0 +1,39 @@
+---
+// Astro component script (if needed)
+---
+
+<script>
+    // Smooth scroll para navegación interna
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener todos los enlaces que apuntan a secciones internas
+        const links = document.querySelectorAll('a[href^="#"]');
+        
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = (e.currentTarget as HTMLAnchorElement).getAttribute('href')!.substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    // Calcular la posición considerando el navbar fijo
+                    const navbarHeight = 80; // Altura del navbar fijo
+                    const elementPosition = targetElement.offsetTop - navbarHeight;
+                    
+                    // Scroll suave hacia el elemento
+                    window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Asegurar que el scroll suave funcione en todos los navegadores */
+    html {
+        scroll-behavior: smooth;
+    }
+</style>

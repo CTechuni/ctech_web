@@ -1,0 +1,58 @@
+---
+import MainLayout from "./Layout/MainLayout.astro";
+import Auth from "./components/ButtonsAuth.astro";
+import Hero from "./components/Hero.astro";
+import Cards from "./components/Cards.astro";
+import ContentSection from "./components/ContentSection.astro";
+import Contenido from "./components/Contenido.astro";
+import Equipo from "./components/Equipo.astro";
+import Footer from "./components/Footer.astro";
+import Comunidades from "./components/Comunidades.astro"
+
+const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
+---
+
+<MainLayout title={title}>
+    <!-- Search and Auth Section -->
+    <Auth>
+
+    </Auth>
+
+    <!-- Hero Section with Cards -->
+    <Hero>
+        <Cards />
+    </Hero>
+    
+    <!-- Content Sections for Navigation -->
+    <ContentSection id="contenido" title="Contenido" >
+        <p>Aprender nunca fue tan fácil. Encuentra artículos, guías y materiales que te acercan al conocimiento que necesitas para crecer.</p>
+        <Contenido>
+            
+        </Contenido>
+    </ContentSection>
+    
+    <ContentSection id="foro" title="Foro">
+        <p>Participa en discusiones y resuelve dudas en nuestro foro comunitario.</p>
+    </ContentSection>
+
+    <ContentSection id="equipo" title="Conoce a nuestro equipo">
+        <p>Conoce al equipo detrás de CTech y nuestra misión.</p>
+        <Equipo>
+            
+        </Equipo>
+    </ContentSection>
+
+    <ContentSection id="comunidades" title="Comunidades">
+        <p>Únete a nuestras comunidades tecnológicas y conecta con otros desarrolladores.</p>
+        <Comunidades>
+            
+        </Comunidades>
+    </ContentSection>
+
+    <Footer>
+        
+    </Footer>
+    
+</MainLayout>
+  
+<!-- Los estilos están ahora en los componentes individuales -->

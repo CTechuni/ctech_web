@@ -1,0 +1,144 @@
+---
+// Astro component script (if needed)
+---
+
+<div class="cards-container">
+    <div class="card">
+        <h3>Abierto</h3>
+        <p>Visitante</p>
+        <ul>
+            <li>Explora clases intro y material público</li>
+            <li>Descubre eventos de comunidades</li>
+            <li>Sin registro obligatorio</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h3>Premium</h3>
+        <p>Miembro de comunidad</p>
+        <ul>
+            <li>Todo el contenido (Básico → Avanzado)</li>
+            <li>Sesiones de mentoring</li>
+            <li>Registro a eventos exclusivos</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: 5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background-color: var(--color-white);
+        color: #333;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.226);
+        flex: 2;
+        max-width: 500px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(38, 52, 116, 0.877);
+    }
+
+    .card h3 {
+        font-size: 1.7rem;
+        margin-bottom: 0.5rem;
+        color: var(--color-sencondary-azure);
+        font-weight: bold;
+    }
+
+    .card p {
+        font-size: 1rem;
+        margin: 0;
+        margin-bottom: 0.5rem;
+        color: var(--color-secondary);
+        font-style: italic;
+        font-size: 0.95rem;
+    }
+
+    .card ul {
+        list-style: none;
+        text-align: left;
+    }
+
+    .card li {
+        padding: 0.3rem 0;
+        color: #555;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .card li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--color-primary);
+        font-weight: bold;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            flex: 2;
+        }
+    }
+
+    @media (max-width: 768px) {
+    .cards-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .card {
+        flex: 100%;
+        max-width: 90%;
+    }
+}
+    @media (max-width: 480px) {
+        .cards-container {
+            max-width: 800px;
+            gap: 1.5rem;
+        }
+
+        .card {
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin: 0.5rem;
+        }
+
+        .card ul {
+            list-style: none;
+            text-align: left;
+            padding: 1rem;
+            margin: 0;
+        }
+
+        .card p,
+        .card li {
+            font-size: 0.85rem;
+        }
+    }
+</style>
