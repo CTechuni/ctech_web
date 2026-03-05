@@ -20,4 +20,4 @@ class EventResponse(EventBase):
     created_by: Optional[int] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
