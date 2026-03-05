@@ -1,14 +1,9 @@
 from sqlalchemy.orm import Session
-from . import repository, schemas
-
+from . import repository
 
 def list_specialties(db: Session):
-    return repository.get_all_specialties(db)
+    return repository.get_all(db)
 
-
-def create_specialty(db: Session, specialty: schemas.SpecialtyCreate):
-    return repository.create_specialty(db, specialty)
-
-
-def delete_specialty(db: Session, specialty_id: int):
-    return repository.delete_specialty(db, specialty_id)
+def add_specialty(db: Session, specialty_data):
+    # Aquí podrías validar que el nombre no esté vacío antes de guardar
+    return repository.create(db, specialty_data.name)

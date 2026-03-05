@@ -1,15 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional
-
+from pydantic import BaseModel, Field
 
 class TechnologyBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-
+    name: str = Field(..., min_length=1, max_length=100)
 
 class TechnologyCreate(TechnologyBase):
     pass
-
 
 class TechnologyResponse(TechnologyBase):
     id: int

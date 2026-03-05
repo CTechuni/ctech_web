@@ -1,23 +1,20 @@
 from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
-from datetime import date, time
 
 class EventBase(BaseModel):
     title: str
-    description_event: Optional[str] = None
-    date_events: Optional[date] = None
-    time_events: Optional[time] = None
-    place: str
-    url_form: str
-    image: str
-    status: str = "activo"
+    description: Optional[str] = None
+    event_date: datetime
+    location: Optional[str] = None
 
 class EventCreate(EventBase):
     pass
 
 class EventResponse(EventBase):
-    id_event: int
-    created_by: Optional[int] = None
+    id: int
+    image_url: Optional[str] = None
+    created_at: datetime
 
     class Config:
         from_attributes = True

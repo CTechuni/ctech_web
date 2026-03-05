@@ -1,16 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text, Date, Time, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, func
 from app.core.database import Base
 
 class Event(Base):
     __tablename__ = "events"
 
-    id_event = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    description_event = Column(Text)
-    date_events = Column(Date)
-    time_events = Column(Time)
-    place = Column(String(155), nullable=False)
-    url_form = Column(String(255), nullable=False)
-    image = Column(String(255), nullable=False) # Aquí se guarda la URL de Cloudinary
-    created_by = Column(Integer, ForeignKey("users.id"))
-    status = Column(String(50), nullable=False, default="activo")
+    description = Column(Text)
+    event_date = Column(DateTime, nullable=False)
+    location = Column(String(255))
+    image_url = Column(Text) # Para el link de Cloudinary
+    created_at = Column(DateTime, server_default=func.now())

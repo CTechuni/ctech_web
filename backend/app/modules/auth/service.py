@@ -5,11 +5,14 @@ from sqlalchemy.orm import Session
 from . import models
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = "CTECH_SECRET_KEY_2026" # Cambiar por una segura
+SECRET_KEY = "CTECH_SECRET_KEY_2026" 
 ALGORITHM = "HS256"
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -18,7 +21,7 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def block_token(db: Session, token: str):
-    """Registra el token en la tabla de bloqueo según el SQL"""
-    db_token = models.TokenBlocklist(token=token, blacklisted_at=datetime.utcnow())
+    # Usamos tu modelo TokenBlocklist
+    db_token = models.TokenBlocklist(token=token)
     db.add(db_token)
     db.commit()

@@ -1,27 +1,14 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+from . import models
 
+def get_all(db: Session):
+    """Obtiene todas las especialidades ordenadas alfabéticamente."""
+    return db.query(models.Specialty).order_by(models.Specialty.name.asc()).all()
 
-def get_all_specialties(db: Session):
-    return db.query(models.Specialty).all()
-
-
-def get_specialty_by_id(db: Session, specialty_id: int):
-    return db.query(models.Specialty).filter(models.Specialty.id == specialty_id).first()
-
-
-def create_specialty(db: Session, specialty: schemas.SpecialtyCreate):
-    db_obj = models.Specialty(**specialty.dict())
-    db.add(db_obj)
+def create(db: Session, name: str):
+    """Registra una nueva especialidad en la base de datos."""
+    db_specialty = models.Specialty(name=name)
+    db.add(db_specialty)
     db.commit()
-    db.refresh(db_obj)
-    return db_obj
-
-
-def delete_specialty(db: Session, specialty_id: int):
-    db_obj = get_specialty_by_id(db, specialty_id)
-    if not db_obj:
-        return None
-    db.delete(db_obj)
-    db.commit()
-    return db_obj
+    db.refresh(db_specialty)
+    return db_specialty

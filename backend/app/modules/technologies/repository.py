@@ -1,27 +1,15 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+from . import models
 
+def get_all(db: Session):
+    return db.query(models.Technology).order_by(models.Technology.name.asc()).all()
 
-def get_all_technologies(db: Session):
-    return db.query(models.Technology).all()
+def get_by_name(db: Session, name: str):
+    return db.query(models.Technology).filter(models.Technology.name.ilike(name)).first()
 
-
-def get_technology_by_id(db: Session, tech_id: int):
-    return db.query(models.Technology).filter(models.Technology.id == tech_id).first()
-
-
-def create_technology(db: Session, tech: schemas.TechnologyCreate):
-    db_obj = models.Technology(**tech.dict())
-    db.add(db_obj)
+def create(db: Session, name: str):
+    db_tech = models.Technology(name=name)
+    db.add(db_tech)
     db.commit()
-    db.refresh(db_obj)
-    return db_obj
-
-
-def delete_technology(db: Session, tech_id: int):
-    db_obj = get_technology_by_id(db, tech_id)
-    if not db_obj:
-        return None
-    db.delete(db_obj)
-    db.commit()
-    return db_obj
+    db.refresh(db_tech)
+    return db_tech

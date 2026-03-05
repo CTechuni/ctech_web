@@ -1,18 +1,12 @@
 from sqlalchemy.orm import Session
-from fastapi import UploadFile
-from . import repository, schemas
+from . import repository
 
 def list_events(db: Session):
-    return repository.get_all_events(db)
+    return repository.get_all(db)
 
-def create_event(db: Session, event: schemas.EventCreate, user_id: int):
-    return repository.create_event(db, event, user_id)
+def create_event(db: Session, data):
+    return repository.create(db, data)
 
-def upload_image(file: UploadFile):
-    # Lógica para procesar la imagen (Cloudinary)
-    # Por ahora devolvemos la info para el Swagger
-    return {
-        "filename": file.filename,
-        "message": "Upload Event Image: Exitosa",
-        "url": f"https://res.cloudinary.com/ctech/image/upload/{file.filename}"
-    }
+def process_image_upload(db: Session, event_id: int, file_url: str):
+    # Aquí iría la lógica de validación de formato antes de guardar
+    return repository.update_image(db, event_id, file_url)

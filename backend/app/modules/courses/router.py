@@ -30,3 +30,4 @@ def update_course(id: int, data: schemas.CourseUpdate, db: Session = Depends(get
 @router.delete("/{id}")
 def delete_course(id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
     return service.delete_course(db, id)
+
