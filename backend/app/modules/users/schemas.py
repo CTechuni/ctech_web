@@ -11,4 +11,4 @@ class UserOut(UserBase):
     role: str | None = None
 
     class Config:
-        from_attributes = True
+        orm_mode = True

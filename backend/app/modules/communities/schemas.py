@@ -15,4 +15,4 @@ class CommunityResponse(CommunityBase):
     id_community: int
 
     class Config:
-        from_attributes = True
+        orm_mode = True
