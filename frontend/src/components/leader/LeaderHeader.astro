@@ -1,82 +1,158 @@
 ---
-// LeaderHeader.astro
+// LeaderHeader.astro - Pixel Perfect v2
 interface Props {
-    title: string;
+    title?: string;
     subtitle?: string;
 }
 
-const { title, subtitle } = Astro.props;
+const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 ---
 
 <header class="leader-header">
-    <div class="header-info">
-        <h1>{title}</h1>
+    <!-- Left: Title block -->
+    <div class="header-title-block">
+        <h1 class="header-title">{title}</h1>
+        <span class="header-subtitle">{subtitle}</span>
     </div>
 
+    <!-- Right: Actions -->
     <div class="header-actions">
-        <div class="notification-box">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge">3</span>
+        <!-- Notification Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" aria-label="Notificaciones">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="notif-badge">3</span>
+            </button>
         </div>
-        <div class="user-avatar-mini">LM</div>
+
+        <!-- User Avatar + Name -->
+        <div class="user-chip">
+            <div class="user-avatar">LM</div>
+            <span class="user-name">Laura</span>
+        </div>
     </div>
 </header>
 
 <style>
     .leader-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        background-color: white;
-        padding: 1rem 2rem;
-        margin: -2rem -3rem 2rem -3rem; /* Offset the main padding */
-        border-bottom: 1px solid var(--color-light-grey);
+        justify-content: space-between;
+        height: 70px;
+        padding: 0 28px;
+        background: #ffffff;
+        border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
-    .header-info h1 {
-        font-size: 1.25rem;
-        font-weight: 700;
+    /* ── Left ──────────────────────────── */
+    .header-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .header-title {
         margin: 0;
-        color: var(--color-primary-dark);
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
     }
 
+    .header-subtitle {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    /* ── Right ─────────────────────────── */
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 1.5rem;
+        gap: 16px;
     }
 
-    .notification-box {
+    /* Bell notification */
+    .notif-wrapper {
         position: relative;
-        font-size: 1.2rem;
-        color: var(--color-blue-grey);
+    }
+
+    .notif-btn {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        border-radius: 8px;
+        transition: background 0.15s;
+        position: relative;
     }
 
-    .notification-badge {
+    .notif-btn:hover { background: #f1f5f9; }
+
+    .notif-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .notif-badge {
         position: absolute;
-        top: -5px;
-        right: -5px;
-        background-color: var(--color-azure-radiant);
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        background: #007bff;
         color: white;
-        font-size: 0.65rem;
-        padding: 0.1rem 0.35rem;
-        border-radius: 50%;
+        font-size: 0.6rem;
         font-weight: 700;
-        border: 2px solid white;
-    }
-
-    .user-avatar-mini {
-        width: 35px;
-        height: 35px;
-        background-color: var(--color-primary);
-        color: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        border: 2px solid white;
+    }
+
+    /* User chip */
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 4px 8px 4px 4px;
+        border-radius: 40px;
+        transition: background 0.15s;
+    }
+    .user-chip:hover { background: #f1f5f9; }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: #007bff;
+        border-radius: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
         font-weight: 600;
-        font-size: 0.8rem;
+        color: #334155;
     }
 </style>
 
@@ -87,13 +163,10 @@ const { title, subtitle } = Astro.props;
     const user = auth.getUser();
     if (user) {
         document.getElementById('userName').textContent = user.name_user || user.name;
-        // Mock community name if not present
         if (user.community_name) {
             document.getElementById('communityName').textContent = user.community_name;
         }
     }
     */
-    // Datos estáticos temporales para simulacro visual
     console.info('[BYPASS VISUAL] LeaderHeader: usando datos estáticos de Laura Méndez.');
 </script>
-

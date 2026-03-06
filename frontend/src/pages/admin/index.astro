@@ -7,75 +7,65 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
 <div class="dashboard-wrap">
     <!-- TOP STAT CARDS -->
-<div class="metrics-grid-minimal">
-    <div class="metric-card-minimal">
-        <div class="metric-icon-minimal users-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
-        </div>
-        <div class="metric-info-minimal">
-            <span class="metric-label">Total Usuarios</span>
-            <div class="metric-value-row">
-                <h3 id="totalUsers">519</h3>
-                <span class="trend-up">+12%</span>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="icon-box pastel-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="hero-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                </svg>
             </div>
+            <div class="metric-value" id="totalUsers">519</div>
+            <p class="metric-label">Total Usuarios</p>
         </div>
-    </div>
 
-    <div class="metric-card-minimal">
-        <div class="metric-icon-minimal communities-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0a5.995 5.995 0 0 0-4.058-3.042M6 18.719a5.971 5.971 0 0 1 .941-3.197m0 0a5.995 5.995 0 0 1 4.058-3.042m0 0a5.991 5.991 0 0 1 2.102-.376m0 0a5.991 5.991 0 0 0-2.102-.376M12 9c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3Zm7.5 7.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0ZM6 16.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
-        </div>
-        <div class="metric-info-minimal">
-            <span class="metric-label">Comunidades</span>
-            <div class="metric-value-row">
-                <h3 id="totalCommunities">6</h3>
-                <span class="trend-up">+1</span>
+        <div class="metric-card">
+            <div class="icon-box pastel-green">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+</svg>
             </div>
+            <div class="metric-value" id="totalCommunities">6</div>
+            <p class="metric-label">Comunidades</p>
         </div>
-    </div>
 
-    <div class="metric-card-minimal">
-        <div class="metric-icon-minimal courses-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" /></svg>
-        </div>
-        <div class="metric-info-minimal">
-            <span class="metric-label">Cursos Activos</span>
-            <div class="metric-value-row">
-                <h3 id="totalCourses">6</h3>
-                <span class="trend-up">+3</span>
+        <div class="metric-card">
+            <div class="icon-box pastel-purple">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="hero-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
+                </svg>
             </div>
+            <div class="metric-value" id="totalCourses">6</div>
+            <p class="metric-label">Cursos Activos</p>
         </div>
-    </div>
 
-    <div class="metric-card-minimal">
-        <div class="metric-icon-minimal events-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-        </div>
-        <div class="metric-info-minimal">
-            <span class="metric-label">Eventos del Mes</span>
-            <div class="metric-value-row">
-                <h3 id="totalEvents">6</h3>
-                <span class="trend-up">+5</span>
+        <div class="metric-card">
+            <div class="icon-box pastel-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
             </div>
+            <div class="metric-value" id="totalEvents">6</div>
+            <p class="metric-label">Eventos del Mes</p>
         </div>
     </div>
-</div>
 
     <!-- MAIN CHARTS ROW -->
     <div class="charts-grid mt-4">
         <!-- USER GROWTH CHART -->
-        <div class="chart-card large-chart">
-            <div class="chart-header">
+        <div class="chart-card large-chart no-padding">
+            <div class="card-header-padded">
                 <div class="ch-text">
-                    <h4>Crecimiento de Usuarios</h4>
+                    <h4>Crecimiento Global de Usuarios</h4>
                     <span class="subtitle">Últimos 7 meses</span>
                 </div>
                 <div class="ch-trend positive">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" /></svg> +8.2%
                 </div>
             </div>
-            <div class="chart-container">
-                <canvas id="userGrowthChart"></canvas>
+            <div class="relative-chart-container">
+                <div class="chart-container">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -110,61 +100,80 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 <canvas id="commMembersChart"></canvas>
             </div>
         </div>
+    </div>
 
-        <!-- UPCOMING EVENTS LIST -->
+    <!-- NEW SECTION FOR EVENTS -->
+    <div class="mt-4">
         <div class="chart-card medium-chart events-panel">
-            <div class="chart-header">
-                <div class="ch-text">
-                    <h4>Próximos Eventos</h4>
-                </div>
-            </div>
-            <div class="upcoming-events-list">
-                <div class="event-item">
-                    <div class="event-date">
-                        <span class="day">4</span>
-                        <span class="month">MAR</span>
+            <div class="p-4">
+                <div class="fw-bold text-dark mb-3" style="font-size: 1.1rem;">Próximos Eventos</div>
+
+                <!-- Evento 1: Workshop Astro -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body d-flex align-items-center p-3 w-100">
+                        <div class="flex-shrink-0 bg-primary-subtle rounded-circle d-flex flex-column align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.1rem; line-height: 1.1;">12</span>
+                            <span class="text-uppercase text-muted" style="font-size: 0.7rem; line-height: 1.1;">MAR</span>
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-dark mb-1" style="font-size: 1rem;">Workshop: Astro v5 y React</div>
+                            <div class="small text-muted opacity-75">Auditorio Principal • 06:00 PM</div>
+                        </div>
+                        <div class="ms-auto ps-3 flex-shrink-0">
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: #fff0f0; color: #e05252; padding: 5px 14px;">Presencial</span>
+                        </div>
                     </div>
-                    <div class="event-info">
-                        <strong>Meetup DevFront #12</strong>
-                        <span>DevFront Colombia - 7:00 PM</span>
-                    </div>
-                    <span class="event-type online">online</span>
                 </div>
 
-                <div class="event-item">
-                    <div class="event-date">
-                        <span class="day">9</span>
-                        <span class="month">MAR</span>
+                <!-- Evento 2: Mentoring -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body d-flex align-items-center p-3 w-100">
+                        <div class="flex-shrink-0 bg-primary-subtle rounded-circle d-flex flex-column align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.1rem; line-height: 1.1;">15</span>
+                            <span class="text-uppercase text-muted" style="font-size: 0.7rem; line-height: 1.1;">MAR</span>
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-dark mb-1" style="font-size: 1rem;">Mentoring: Primer Empleo IT</div>
+                            <div class="small text-muted opacity-75">Google Meet • 05:30 PM</div>
+                        </div>
+                        <div class="ms-auto ps-3 flex-shrink-0">
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: #e7f1ff; color: #3b82f6; padding: 5px 14px;">Online</span>
+                        </div>
                     </div>
-                    <div class="event-info">
-                        <strong>Hackathon DataScience</strong>
-                        <span>DataScience Hub - 9:00 AM</span>
-                    </div>
-                    <span class="event-type presencial">presencial</span>
                 </div>
 
-                <div class="event-item">
-                    <div class="event-date">
-                        <span class="day">13</span>
-                        <span class="month">MAR</span>
+                <!-- Evento 3: Hackathon -->
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body d-flex align-items-center p-3 w-100">
+                        <div class="flex-shrink-0 bg-primary-subtle rounded-circle d-flex flex-column align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.1rem; line-height: 1.1;">22</span>
+                            <span class="text-uppercase text-muted" style="font-size: 0.7rem; line-height: 1.1;">MAR</span>
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-dark mb-1" style="font-size: 1rem;">Hackathon CTech 2026</div>
+                            <div class="small text-muted opacity-75">Hub de Innovación • 08:00 AM</div>
+                        </div>
+                        <div class="ms-auto ps-3 flex-shrink-0">
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: #fff0f0; color: #e05252; padding: 5px 14px;">Presencial</span>
+                        </div>
                     </div>
-                    <div class="event-info">
-                        <strong>Workshop Docker</strong>
-                        <span>DevOps Cloud - 6:00 PM</span>
-                    </div>
-                    <span class="event-type online">online</span>
                 </div>
 
-                <div class="event-item">
-                    <div class="event-date">
-                        <span class="day">17</span>
-                        <span class="month">MAR</span>
+                <!-- Evento 4: Charla Soft Skills -->
+                <div class="card border-0 shadow-sm mb-0">
+                    <div class="card-body d-flex align-items-center p-3 w-100">
+                        <div class="flex-shrink-0 bg-primary-subtle rounded-circle d-flex flex-column align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.1rem; line-height: 1.1;">28</span>
+                            <span class="text-uppercase text-muted" style="font-size: 0.7rem; line-height: 1.1;">MAR</span>
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-dark mb-1" style="font-size: 1rem;">Charla: Soft Skills para Devs</div>
+                            <div class="small text-muted opacity-75">Zoom • 07:00 PM</div>
+                        </div>
+                        <div class="ms-auto ps-3 flex-shrink-0">
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: #e7f1ff; color: #3b82f6; padding: 5px 14px;">Online</span>
+                        </div>
                     </div>
-                    <div class="event-info">
-                        <strong>UX Research Talk</strong>
-                        <span>UX/UI Design - 5:30 PM</span>
-                    </div>
-                    <span class="event-type online">online</span>
                 </div>
             </div>
         </div>
@@ -172,47 +181,120 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 </div>
 
 <style>
-    .dashboard-wrap { display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 2rem; }
-
-    /* METRICS MINIMAL */
-    .metrics-grid-minimal { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
-    .metric-card-minimal { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s; }
-    .metric-card-minimal:hover { transform: translateY(-2px); border-color: #E2E8F0; }
+    .dashboard-wrap { display: block; padding-bottom: 2rem; }
     
-    .metric-icon-minimal { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #F8FAFC; color: #64748B; }
-    .metric-icon-minimal svg { width: 22px; height: 22px; }
-    
-    .metric-info-minimal { flex: 1; }
-    .metric-label { font-size: 0.75rem; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; display: block; }
-    .metric-value-row { display: flex; align-items: baseline; gap: 0.75rem; }
-    .metric-value-row h3 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #0F172A; }
-    .trend-up { font-size: 0.75rem; font-weight: 700; color: #10B981; }
+    .dashboard-wrap > div { margin-bottom: 1.5rem; }
 
-    /* Colors */
-    .users-icon { background: #EFF6FF; color: #3B82F6; }
-    .communities-icon { background: #F0FDF4; color: #22C55E; }
-    .courses-icon { background: #F5F3FF; color: #8B5CF6; }
-    .events-icon { background: #FFF7ED; color: #F59E0B; }
+    /* METRICS GRID */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .pastel-blue { background: #e0f2fe; color: #0ea5e9; }
+    .pastel-green { background: #dcfce7; color: #10b981; }
+    .pastel-purple { background: #f3e8ff; color: #a855f7; }
+    .pastel-orange { background: #ffedd5; color: #f97316; }
+
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .metric-label {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
 
     /* CHARTS MINIMAL */
     .charts-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.25rem; margin-top: 1rem; }
     .chart-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
+    .chart-card.no-padding { padding: 0; overflow: hidden; }
+    
     .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    
+    .card-header-padded {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 24px 24px 0 24px;
+        margin-bottom: 1rem;
+    }
+
     .ch-text h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #0F172A; }
     .ch-text .subtitle { font-size: 0.8rem; color: #94A3B8; }
     
-    .chart-container { min-height: 240px; position: relative; }
+    .ch-trend.positive {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .relative-chart-container {
+        position: relative;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chart-container { height: 200px; position: relative; }
+    .large-chart .chart-container { height: 200px; }
+    .pie-container { height: 180px; }
     
     /* UPCOMING EVENTS */
-    .upcoming-events-list { display: flex; flex-direction: column; gap: 1rem; }
-    .event-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid #F8FAFC; }
-    .event-item:last-child { border-bottom: none; }
-    .event-date { width: 42px; height: 42px; background: #F1F5F9; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .event-date .day { font-size: 0.9rem; font-weight: 800; color: #0F172A; line-height: 1; }
-    .event-date .month { font-size: 0.6rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
-    .event-info { flex: 1; }
-    .event-info strong { display: block; font-size: 0.9rem; color: #0F172A; margin-bottom: 2px; }
-    .event-info span { font-size: 0.75rem; color: #64748B; }
+    .events-panel {
+        padding: 0 !important;
+    }
+    .events-panel > div {
+        padding: 1.5rem;
+    }
+    .events-panel .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), 0 -2px 6px rgba(0, 0, 0, 0.05) !important;
+        transition: box-shadow 0.2s ease;
+    }
+    .events-panel .card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 -3px 8px rgba(0, 0, 0, 0.07) !important;
+    }
+    .events-panel .card-body {
+        padding: 0.75rem 1rem !important;
+    }
     
     @media (max-width: 1024px) {
         .metrics-grid-minimal { grid-template-columns: repeat(2, 1fr); }
@@ -256,15 +338,51 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                     tension: 0.4,
                     borderWidth: 2,
                     pointRadius: 0,
-                    pointHoverRadius: 4
+                    pointHoverRadius: 4,
+                    clip: false
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` Miembros: ${context.parsed.y}`;
+                            },
+                            afterLabel: function(context) {
+                                const dataset = context.dataset.data;
+                                const index = context.dataIndex;
+                                if (index > 0) {
+                                    const prevValue = dataset[index - 1] as number;
+                                    const currValue = context.parsed.y;
+                                    const diff = currValue - prevValue;
+                                    const percentage = ((diff / prevValue) * 100).toFixed(1);
+                                    const sign = diff >= 0 ? '+' : '';
+                                    return ` Crecimiento: ${sign}${percentage}%`;
+                                }
+                                return ' Crecimiento: --';
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: { bottom: 0 }
+                },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                    x: { 
+                        grid: { 
+                            display: true,
+                            color: '#f1f5f9'
+                        }, 
+                        ticks: { color: '#94a3b8', font: { size: 11 } } 
+                    },
                     y: { 
                         beginAtZero: true, 
                         grid: { color: '#f1f5f9' },
@@ -292,6 +410,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
+                layout: { padding: { bottom: 0 } },
                 cutout: '80%'
             }
         });

@@ -245,10 +245,13 @@ export class AuthManager {
         const response = await fetch(url, { ...options, headers });
 
         if (response.status === 401) {
+            /* ⚠️ BYPASS TEMPORAL - Redirect deshabilitado para simulacro visual.
             const { role, id } = authManager.getCurrentContext();
             authManager.clearAuthData(role, id);
             window.location.href = '/';
-            return;
+            */
+            console.warn('[BYPASS VISUAL] 401 recibido en AuthManager.fetch - redirect deshabilitado.');
+            return null;
         }
 
         if (!response.ok) {

@@ -3,384 +3,752 @@
 import LeaderLayout from '../../layouts/LeaderLayout.astro';
 ---
 
-<LeaderLayout title="Dashboard de Líder">
-    <!-- Summary Cards -->
-    <div class="dashboard-grid">
-        <div class="glass-card stat-card">
-            <div class="stat-icon-wrapper pastel-blue">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">4</span>
-                <p class="stat-label">Comunidades</p>
-            </div>
-        </div>
-        <div class="glass-card stat-card">
-            <div class="stat-icon-wrapper pastel-green">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">2</span>
-                <p class="stat-label">Eventos Activos</p>
-            </div>
-        </div>
-        <div class="glass-card stat-card">
-            <div class="stat-icon-wrapper pastel-purple">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">1</span>
-                <p class="stat-label">Curso Nuevo</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="main-dashboard-content">
-        <!-- Growth Chart Mockup -->
-        <div class="glass-card chart-container">
-            <div class="chart-header">
-                <h3>Crecimiento de Miembros</h3>
-                <span class="growth-badge">+49%</span>
-            </div>
-            <div class="chart-mock">
-                <!-- SVG Trend Line Mockup -->
-                <svg viewBox="0 0 400 100" class="trend-line">
-                    <path d="M0,80 Q50,70 100,50 T200,60 T300,30 T400,10" fill="none" stroke="var(--color-primary)" stroke-width="3" />
-                    <circle cx="100" cy="50" r="4" fill="var(--color-primary)" />
-                    <circle cx="300" cy="30" r="4" fill="var(--color-primary)" />
-                </svg>
-            </div>
-        </div>
-
-        <!-- Members Table -->
-        <div class="glass-card table-container">
-            <h3>Miembros Recientes</h3>
-            <table class="members-table">
-                <thead>
-                    <tr>
-                        <th>MIEMBRO</th>
-                        <th>ROL</th>
-                        <th>ESTADO</th>
-                        <th class="text-right">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="table-user">
-                                <div class="avatar-sm bg-orange">JP</div>
-                                <span>Juan Pérez</span>
-                            </div>
-                        </td>
-                        <td>Colaborador</td>
-                        <td><span class="status-dot online"></span> Activo</td>
-                        <td class="text-right">
-                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="table-user">
-                                <div class="avatar-sm bg-indigo">MG</div>
-                                <span>Maria Gomez</span>
-                            </div>
-                        </td>
-                        <td>Moderador</td>
-                        <td><span class="status-dot offline"></span> Inactivo</td>
-                        <td class="text-right">
-                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Bottom Section: Settings & Floating Notifications -->
-    <div class="bottom-dashboard-grid">
-        <!-- Settings Blocks -->
-        <div class="glass-card settings-section">
-            <h3>Configuración</h3>
-            <div class="settings-group">
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <span class="setting-title">Notificaciones</span>
-                        <span class="setting-desc">Recibir alertas de nuevos miembros</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                    </label>
+<LeaderLayout title="Dashboard de Líder" subtitle="Gestión de Comunidad">
+    <div class="dashboard-container">
+        <!-- 1. Metrics Grid (4 columns) -->
+        <div class="metrics-grid-leader">
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
                 </div>
-                <div class="setting-item">
-                    <div class="setting-text">
-                        <span class="setting-title">Apariencia</span>
-                        <span class="setting-desc">Modo oscuro automático</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                    </label>
+                <div class="metric-info">
+                    <span class="metric-value">4</span>
+                    <p class="metric-label">Miembros activos</p>
+                </div>
+            </div>
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+</svg>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-value">2</span>
+                    <p class="metric-label">Cursos activos</p>
+                </div>
+            </div>
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                    </svg>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-value">2</span>
+                    <p class="metric-label">Eventos programados</p>
+                </div>
+            </div>
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-orange">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+</svg>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-value">1</span>
+                    <p class="metric-label">Mentores</p>
                 </div>
             </div>
         </div>
 
-        <!-- Floating Notifications (Glassmorphism) -->
-        <div class="glass-notification-panel">
-            <div class="notif-header">
-                <h3>Alertas Recientes</h3>
+        <!-- 2. Growth Section (Full width) -->
+        <div class="leader-card growth-section no-padding">
+            <div class="card-header-padded">
+                <div class="ch-text">
+                    <h4>Crecimiento de la comunidad</h4>
+                    <span class="subtitle">Miembros en los últimos 6 meses</span>
+                </div>
+                <div class="ch-trend positive">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" /></svg> +49%
+                </div>
             </div>
-            <div class="notif-list">
-                <div class="notif-item">Nueva solicitud de registro en 'React CTech'</div>
-                <div class="notif-item">El evento 'Workshop Next.js' comienza en 2h</div>
-                <div class="notif-item">Corte de servidores programado para mañana</div>
+            <div class="relative-chart-container">
+                <canvas id="chart-crecimiento" class="chart-container"></canvas>
+            </div>
+        </div>
+
+
+        <!-- 3. Members Table Section -->
+        <div class="leader-card members-section">
+            <div class="table-header">
+                <h3>Miembros de la comunidad</h3>
+                <div class="search-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <input type="text" placeholder="Buscar miembro..." id="member-search" />
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle leader-table">
+                    <thead>
+                        <tr>
+                            <th class="px-4">MIEMBRO</th>
+                            <th class="px-4 text-center">ROL</th>
+                            <th class="px-4 text-center">ESTADO</th>
+                            <th class="px-4 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="px-4">
+                                <div class="user-cell">
+                                    <div class="avatar bg-soft-blue">JM</div>
+                                    <div class="user-meta">
+                                        <span class="user-name">Julián Morales</span>
+                                        <span class="user-email">julian.morales@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 text-center"><span class="badge rounded-pill role-badge mentor">Mentor</span></td>
+                            <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
+                            <td class="px-4">
+                                <div class="actions">
+                                    <button class="btn-quit-mentor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hero-icon-sm">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                                        </svg>
+                                        Quitar Mentor
+                                    </button>
+                                    <button class="btn-delete">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon-sm">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4">
+                                <div class="user-cell">
+                                    <div class="avatar bg-soft-blue">JP</div>
+                                    <div class="user-meta">
+                                        <span class="user-name">Juan Pérez</span>
+                                        <span class="user-email">juan.perez@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 text-center"><span class="badge rounded-pill role-badge member">Usuario</span></td>
+                            <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
+                            <td class="px-4">
+                                <div class="actions">
+                                    <button class="btn-delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon-sm">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4">
+                                <div class="user-cell">
+                                    <div class="avatar bg-soft-blue">MG</div>
+                                    <div class="user-meta">
+                                        <span class="user-name">Maria Gomez</span>
+                                        <span class="user-email">m.gomez@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 text-center"><span class="badge rounded-pill role-badge member">Usuario</span></td>
+                            <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
+                            <td class="px-4">
+                                <div class="actions">
+                                    <button class="btn-delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon-sm">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4">
+                                <div class="user-cell">
+                                    <div class="avatar bg-soft-blue">RL</div>
+                                    <div class="user-meta">
+                                        <span class="user-name">Ricardo Luna</span>
+                                        <span class="user-email">r.luna@example.com</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 text-center"><span class="badge rounded-pill role-badge leader">Líder</span></td>
+                            <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
+                            <td class="px-4">
+                                <div class="actions">
+                                    <button class="btn-delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon-sm">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <style>
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
+        .dashboard-container {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 1.5rem; /* gap-6 equivalent (~24px) */
+        }
+
+        /* 1. Metrics Grid */
+        .metrics-grid-leader {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
         }
 
-        .stat-icon-wrapper {
-            width: 50px;
-            height: 50px;
+        .metric-card-leader {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
         }
 
-        .pastel-blue { background-color: #E0F2FE; color: #0EA5E9; }
-        .pastel-green { background-color: #DCFCE7; color: #10B981; }
-        .pastel-purple { background-color: #F3E8FF; color: #A855F7; }
+        .hero-icon {
+            width: 22px;
+            height: 22px;
+        }
 
-        .stat-value {
-            display: block;
-            font-size: 2rem;
+        .pastel-blue { background: #e0f2fe; color: #0ea5e9; }
+        .pastel-green { background: #dcfce7; color: #10b981; }
+        .pastel-purple { background: #f3e8ff; color: #a855f7; }
+        .pastel-orange { background: #ffedd5; color: #f97316; }
+
+        .metric-value {
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--color-primary-dark);
+            color: #0f172a;
             line-height: 1;
         }
 
-        .stat-label {
-            margin: 0.2rem 0 0;
-            color: var(--color-blue-grey);
+        .metric-label {
+            margin: 0;
+            color: #64748b;
             font-size: 0.9rem;
             font-weight: 500;
         }
 
-        .main-dashboard-content {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+        .leader-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 2. Growth Section */
+
+        .growth-section.no-padding {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .card-header-padded {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 24px 24px 0 24px;
+            margin-bottom: 1rem;
+        }
+
+        .relative-chart-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .ch-text h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #0F172A; }
+        .ch-text .subtitle { font-size: 0.8rem; color: #94A3B8; }
+        
+        .ch-trend.positive {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .chart-container {
-            height: 100%;
+            min-height: 240px;
+            position: relative;
+            width: 100%;
+            height: 220px;
+            padding-bottom: 20px;
         }
 
-        .chart-header {
+        /* 3. Members Table Section (Image 2 Fidelity) */
+        .members-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #e8ecf0;
+        }
+
+        .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            padding: 24px;
         }
 
-        .chart-header h3 { margin: 0; font-size: 1.1rem; color: var(--color-primary-dark); }
-
-        .growth-badge {
-            background-color: #DCFCE7;
-            color: #166534;
-            padding: 0.2rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .table-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #0f172a;
             font-weight: 700;
         }
 
-        .chart-mock {
-            height: 150px;
-            display: flex;
-            align-items: flex-end;
-            padding: 1rem 0;
+        .search-box {
+            position: relative;
+            width: 250px;
         }
 
-        .trend-line { width: 100%; height: 100%; }
+        .search-box .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            width: 18px;
+            height: 18px;
+        }
 
-        .table-container h3 { margin: 0 0 1.5rem 0; font-size: 1.1rem; color: var(--color-primary-dark); }
-
-        .members-table {
+        .search-box input {
             width: 100%;
-            border-collapse: collapse;
+            padding: 8px 12px 8px 42px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.2s;
         }
 
-        .members-table th {
-            text-align: left;
-            font-size: 0.75rem;
-            font-variant: small-caps;
-            color: var(--color-blue-grey);
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--color-light-grey);
+        .search-box input:focus {
+            border-color: #3b82f6;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .members-table td {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--color-light-grey);
-            font-size: 0.9rem;
-            color: var(--color-primary-dark);
+        .leader-table {
+            margin-bottom: 0;
         }
 
-        .table-user {
+        .leader-table thead {
+            background-color: transparent;
+        }
+
+        .leader-table thead th {
+            padding: 16px 20px;
+            color: #475569;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            font-weight: 600;
+            border-bottom: 1px solid #f1f5f9;
+            border-top: none;
+        }
+
+        .leader-table tbody td {
+            padding: 20px 20px;
+            border-bottom: 1px solid #f8fafc;
+        }
+
+        .user-cell {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 12px;
         }
 
-        .avatar-sm {
-            width: 32px;
-            height: 32px;
+        .avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .bg-soft-blue { background: #3b82f6; }
+
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .user-email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* --- Badge Fidelity --- */
+        .role-badge {
+            padding: 4px 12px;
             font-size: 0.75rem;
             font-weight: 600;
-            color: white;
         }
 
-        .bg-orange { background-color: #F97316; }
-        .bg-indigo { background-color: #6366F1; }
-
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 0.4rem;
+        .role-badge.member {
+            background-color: #f1f5f9 !important;
+            color: #475569 !important;
         }
 
-        .online { background-color: #22C55E; }
-        .offline { background-color: #94A3B8; }
+        .role-badge.mentor {
+            background-color: #e0f2fe !important;
+            color: #0369a1 !important;
+        }
 
-        .delete-btn {
+        .role-badge.leader {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background-color: #dcfce7 !important;
+            color: #166534 !important;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+        
+        .leader-table tbody td {
+            padding: 20px 20px;
+            border-bottom: 1px solid #f8fafc;
+            overflow: visible;
+        }
+
+        .btn-quit-mentor {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            color: #9a3412;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: visible;
+        }
+
+        .btn-quit-mentor:hover {
+            background-color: #fef3c7;
+            transform: translateY(-1px);
+        }
+
+        .btn-delete {
             background: none;
             border: none;
-            color: var(--color-blue-grey);
+            color: #94a3b8;
             cursor: pointer;
+            padding: 4px;
             transition: color 0.2s;
-        }
-
-        .delete-btn:hover { color: #EF4444; }
-        .text-right { text-align: right; }
-
-        .bottom-dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .settings-section h3 { margin: 0 0 1.5rem 0; font-size: 1.1rem; color: var(--color-primary-dark); }
-
-        .setting-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--color-light-grey);
+            justify-content: center;
+            overflow: visible;
         }
 
-        .setting-item:last-child { border-bottom: none; }
-
-        .setting-title { display: block; font-weight: 600; font-size: 0.95rem; }
-        .setting-desc { font-size: 0.8rem; color: var(--color-blue-grey); }
-
-        /* Switch UI */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
+        .hero-icon-sm {
+            width: 18px;
+            height: 18px;
         }
 
-        .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #E2E8F0;
-            transition: .4s;
+        .btn-delete:hover {
+            color: #ef4444;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px; width: 18px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* SweetAlert2 Pill Customization */
+        .rounded-16 {
+            border-radius: 16px !important;
         }
 
-        input:checked + .slider { background-color: var(--color-azure-radiant); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .slider.round { border-radius: 34px; }
-        .slider.round:before { border-radius: 50%; }
-
-        /* Glassmorphism Panel */
-        .glass-notification-panel {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 16px;
-            padding: 1.5rem;
+        .pill-button {
+            border-radius: 9999px !important;
+            padding: 10px 24px !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
         }
 
-        .glass-notification-panel h3 { margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--color-primary-dark); }
 
-        .notif-list { display: flex; flex-direction: column; }
+        .text-end { text-align: right; }
 
-        .notif-item {
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.85rem;
-            color: var(--color-primary-dark);
+        .row-fade-out {
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        .notif-item:last-child { border-bottom: none; }
+        .bg-purple { background: #a855f7; }
 
-        @media (max-width: 1200px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .main-dashboard-content { grid-template-columns: 1fr; }
-            .bottom-dashboard-grid { grid-template-columns: 1fr; }
+
+            .metrics-grid-leader {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .search-box {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .metrics-grid-leader {
+                grid-template-columns: 1fr;
+            }
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .search-box {
+                width: 100%;
+            }
         }
     </style>
 </LeaderLayout>
 
-<script>
-    /* ⚠️ BYPASS TEMPORAL - SOLO SIMULACRO VISUAL. Reactivar antes de producción.
-    import { authManager, requireRole } from '../../utils/auth.js';
-    // Proteger la vista
-    if (!requireRole('leader')) {
-        // Redirige automáticamente se encarga requireRole
-    }
+<script is:inline>
+    window.addEventListener('load', function() {
+        // @ts-ignore
+        const ChartLib = window.Chart;
+        if (!ChartLib) return;
 
-    const auth = authManager;
-    const user = auth.getUser();
-    */
-    console.info('[BYPASS VISUAL] leader/index.astro: guard de auth deshabilitado temporalmente.');
+        const ctx = document.getElementById('chart-crecimiento');
+        if (!ctx) return;
+
+        new ChartLib(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar'],
+                datasets: [{
+                    label: 'Miembros',
+                    data: [30, 40, 35, 50, 49, 60],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: '#3b82f6',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2,
+                    clip: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 15,
+                        right: 25,
+                        top: 15,
+                        bottom: 10
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#ffffff',
+                        titleColor: '#1e293b',
+                        bodyColor: '#475569',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: true,
+                        boxPadding: 4,
+                        usePointStyle: true,
+                        callbacks: {
+                            label: function(context) {
+                                return ` Miembros: ${context.parsed.y}`;
+                            },
+                            afterLabel: function(context) {
+                                const dataset = context.dataset.data;
+                                const index = context.dataIndex;
+                                if (index > 0) {
+                                    const prevValue = dataset[index - 1];
+                                    const currValue = context.parsed.y;
+                                    const diff = currValue - prevValue;
+                                    const percentage = ((diff / prevValue) * 100).toFixed(1);
+                                    const sign = diff >= 0 ? '+' : '';
+                                    return ` Crecimiento: ${sign}${percentage}%`;
+                                }
+                                return ' Crecimiento: --';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: true,
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 11, family: 'Inter' },
+                            padding: 5
+                        },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        display: true,
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            color: '#94a3b8',
+                            font: { size: 11, family: 'Inter' },
+                            padding: 10
+                        },
+                        border: { display: false }
+                    }
+                }
+            }
+        });
+
+
+        // --- Interaction Logic: Members Table ---
+        const searchInput = document.querySelector('.search-box input');
+        const tableRows = document.querySelectorAll('.leader-table tbody tr');
+
+        // 1. Functional Search (Multi-filter: Name or Role)
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                
+                tableRows.forEach(row => {
+                    const name = row.querySelector('.user-name').textContent.toLowerCase();
+                    const role = row.querySelector('.role-badge').textContent.toLowerCase();
+                    
+                    if (name.includes(term) || role.includes(term)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // 2. Button Actions: Delete Row
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                row.classList.add('row-fade-out');
+                setTimeout(() => {
+                    row.remove();
+                }, 400);
+            });
+        });
+
+        // 3. Button Actions: Quit Mentor (with SweetAlert2)
+        document.querySelectorAll('.btn-quit-mentor').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const mentorName = row.querySelector('.user-name').textContent;
+                
+                Swal.fire({
+                    title: '¿Confirmar cambio?',
+                    text: `¿Estás seguro de designar al mentor ${mentorName}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#9a3412',
+                    cancelButtonColor: '#94a3b8',
+                    confirmButtonText: 'Sí, designar',
+                    cancelButtonText: 'Cancelar',
+                    background: '#ffffff',
+                    customClass: {
+                        popup: 'rounded-16',
+                        confirmButton: 'pill-button',
+                        cancelButton: 'pill-button'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const badge = row.querySelector('.badge');
+                        
+                        // Change Mentor to Usuario (Image 2 style)
+                        badge.textContent = 'Usuario';
+                        badge.className = 'badge rounded-pill role-badge member';
+                        
+                        // Hide button
+                        this.classList.add('row-fade-out');
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 400);
+
+                        Swal.fire({
+                            title: '¡Hecho!',
+                            text: 'El rol ha sido actualizado.',
+                            icon: 'success',
+                            confirmButtonColor: '#3b82f6',
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                    }
+                });
+            });
+        });
+    });
+    console.info('[Leader Dashboard] Gráfico y lógica de interacción inicializados.');
 </script>
 

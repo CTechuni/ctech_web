@@ -5,137 +5,164 @@ interface Props {
     subtitle?: string;
 }
 
-const { title, subtitle } = Astro.props;
+const { title, subtitle = 'Gestión Global' } = Astro.props;
 ---
 
 <header class="admin-header">
-    <div class="header-breadcrumb">
+    <!-- Left: Title block -->
+    <div class="header-title-block">
         <h1 class="header-title">{title}</h1>
-        {subtitle && <p class="header-subtitle">{subtitle}</p>}
+        <span class="header-subtitle">{subtitle}</span>
     </div>
 
+    <!-- Right: Actions -->
     <div class="header-actions">
-        <button class="action-btn-circle">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z" clip-rule="evenodd" /></svg>
-            <span class="notification-dot"></span>
-        </button>
-        <div class="header-user-profile">
-            <div class="avatar-circle" id="headerAvatarContainer">
+        <!-- Notification Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" aria-label="Notificaciones">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="notif-badge">5</span>
+            </button>
+        </div>
+
+        <!-- User Chip -->
+        <div class="user-chip">
+            <div class="user-avatar" id="headerAvatarContainer">
                 <span id="headerInitial">CR</span>
             </div>
-            <span class="header-user-name" id="userNameHeader">Carlos</span>
+            <span class="user-name" id="userNameHeader">Carlos</span>
         </div>
     </div>
 </header>
 
 <style>
     .admin-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #E2E8F0;
+        justify-content: space-between;
+        height: 70px;
+        padding: 0 32px;
+        background: #ffffff;
+        border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 0;
     }
 
-    .header-breadcrumb {
+    /* ── Left ──────────────────────────── */
+    .header-title-block {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 1px;
     }
 
     .header-title {
-        font-size: 1.1rem;
-        font-weight: 700;
         margin: 0;
-        color: #0F172A;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
     }
 
     .header-subtitle {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #94A3B8;
-        margin: 0;
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 400;
     }
 
+    /* ── Right ─────────────────────────── */
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 16px;
     }
 
-    .action-btn-circle {
+    /* Bell notification */
+    .notif-wrapper {
         position: relative;
+    }
+
+    .notif-btn {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        border-radius: 8px;
+        transition: background 0.15s;
+        position: relative;
+    }
+
+    .notif-btn:hover { background: #f1f5f9; }
+
+    .notif-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .notif-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        background: #3b82f6;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+    }
+
+    /* User chip */
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 4px 8px 4px 4px;
+        border-radius: 40px;
+        transition: background 0.15s;
+    }
+    .user-chip:hover { background: #f1f5f9; }
+
+    .user-avatar {
         width: 32px;
         height: 32px;
-        border-radius: 8px;
-        background: white;
-        border: 1px solid #E2E8F0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748B;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .action-btn-circle svg {
-        width: 18px;
-        height: 18px;
-    }
-
-    .action-btn-circle:hover {
-        background: #F8FAFC;
-        color: #0073ff;
-    }
-
-    .notification-dot {
-        position: absolute;
-        top: 10px;
-        right: 12px;
-        width: 8px;
-        height: 8px;
-        background: #EF4444;
-        border: 2px solid white;
-        border-radius: 50%;
-    }
-
-    .header-user-profile {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-        padding: 0.25rem 0.5rem;
-        border-radius: 8px;
-        transition: background 0.2s;
-    }
-    .header-user-profile:hover {
-        background: #F1F5F9;
-    }
-
-    .avatar-circle {
-        width: 28px;
-        height: 28px;
         background: #3b82f6;
         border-radius: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.75rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 0.75rem;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
         overflow: hidden;
     }
-    .avatar-img {
+
+    .user-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .header-user-name {
+    .user-name {
         font-size: 0.85rem;
-        font-weight: 500;
-        color: #475569;
+        font-weight: 600;
+        color: #334155;
     }
 </style>
 
@@ -159,4 +186,3 @@ const { title, subtitle } = Astro.props;
     */
     console.info('[BYPASS VISUAL] AdminHeader: usando datos estáticos Carlos Ramírez.');
 </script>
-

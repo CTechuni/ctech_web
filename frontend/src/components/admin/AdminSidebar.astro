@@ -1,56 +1,76 @@
 ---
 // AdminSidebar.astro
 const menuItems = [
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clip-rule="evenodd" /></svg>`, label: 'Dashboard', path: '/admin' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" /></svg>`, label: 'Comunidades', path: '/admin/communities' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122z" /></svg>`, label: 'Líderes', path: '/admin/leaders' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M11.7 2.805a.75.75 0 01.6 0A13.507 13.507 0 0122.2 12a.75.75 0 01-.6.75 13.507 13.507 0 01-19.2 0 .75.75 0 01-.6-.75 13.507 13.507 0 019.9-9.195z" /><path d="M12 6.75a5.25 5.25 0 100 10.5 5.25 5.25 0 000-10.5z" /></svg>`, label: 'Mentores', path: '/admin/mentors' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122z" /></svg>`, label: 'Usuarios', path: '/admin/users' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd" /></svg>`, label: 'Eventos', path: '/admin/events' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" /><path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3a.75.75 0 0 1 1.5 0v1.5h.75a3 3 0 0 1 3 3v12.75a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM3.75 7.5V10.5h16.5V7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5ZM20.25 12H3.75v8.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V12Z" clip-rule="evenodd" /></svg>`, label: 'Calendario', path: '/admin/events/calendar' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.235 8.235 0 016 18.75c1.992 0 3.823.704 5.25 1.883 1.427-1.179 3.258-1.883 5.25-1.883a8.235 8.235 0 013.25.669.75.75 0 001-.707V4.262a.75.75 0 00-.51-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v13.067c-1.427-1.179-3.258-1.883-5.25-1.883-1.01 0-1.967.185-2.85.522V5.01a8.215 8.215 0 012.85-.51c1.47 0 2.847.39 4.032 1.071.07.039.141.077.213.111l.155.07V4.533z" /></svg>`, label: 'Cursos', path: '/admin/courses' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" /></svg>`, label: 'Perfil', path: '/admin/profile' },
-    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.11-.45.021l-.933-.717a1.875 1.875 0 0 0-2.524.232L3.33 6.415a1.875 1.875 0 0 0 .232 2.524l.933.717c.115.088.13.227.05.393a7.447 7.447 0 0 0-.57.986c-.088.182-.228.277-.348.297l-1.072.18c-.904.151-1.567.933-1.567 1.85v1.078c0 .917.663 1.699 1.567 1.85l1.072.18c.12.02.26.115.348.297.18.34.373.67.57.986.08.166.065.305-.05.393l-.933.717a1.875 1.875 0 0 0-.232 2.524l1.078 1.078a1.875 1.875 0 0 0 2.524-.232l.933-.717c.115-.088.254-.083.393-.05.34.18.67.373.986.57.182.088.277.228.297.348l.18 1.072c.151.904.933 1.567 1.85 1.567h1.078c.917 0 1.699-.663 1.85-1.567l.18-1.072c.02-.12.115-.26.297-.348a7.485 7.485 0 0 0 .986-.57c.166-.115.305-.115.421-.05l.933.717a1.875 1.875 0 0 0 2.524-.232l1.078-1.078a1.875 1.875 0 0 0-.232-2.524l-.933-.717c-.08-.061-.09-.2-.05-.393a7.44 7.44 0 0 0 .57-.986c.088-.182.228-.277.348-.297l1.072-.18c.904-.151 1.567-.933 1.567-1.85v-1.078c0-.917-.663-1.699-1.567-1.85l-1.072-.18c-.12-.02-.26-.115-.348-.297a7.49 7.49 0 0 0-.57-.986c-.088-.166-.088-.305.05-.393l.933-.717a1.875 1.875 0 0 0 .232-2.524l-1.078-1.078a1.875 1.875 0 0 0-2.524.232l-.933.717c-.115.088-.227.08-.393.05a7.493 7.493 0 0 0-.986-.57c-.182-.088-.277-.228-.297-.348l-.18-1.072c-.151-.904-.933-1.567-1.85-1.567h-1.078ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" /></svg>`, label: 'Ajustes', path: '/admin/settings' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+</svg>`, label: 'Dashboard', path: '/admin' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+</svg>`, label: 'Comunidades', path: '/admin/communities' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>`, label: 'Líderes', path: '/admin/leaders' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>`, label: 'Mentores', path: '/admin/mentors' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+</svg>`, label: 'Usuarios', path: '/admin/users' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" /></svg>`, label: 'Eventos', path: '/admin/events' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>`, label: 'Calendario', path: '/admin/events/calendar' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+</svg>`, label: 'Cursos', path: '/admin/courses' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`, label: 'Perfil', path: '/admin/profile' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>`, label: 'Ajustes', path: '/admin/settings' },
 ];
 
 ---
 
 <aside class="admin-sidebar">
+    <!-- Logo -->
     <div class="sidebar-brand">
-        <a href="/admin" class="brand-link" aria-label="CTech Admin">
-            <img src="/LogoCTech.svg" alt="CTech" class="brand-logo" />
-        </a>
-        <p class="brand-subtitle">gestión administrativa</p>
-    </div>
-
-    <div class="user-profile-widget">
-        <div class="profile-card">
-            <div class="profile-avatar" id="sideAvatarContainer">
-                <span id="userInitial">CR</span>
-            </div>
-            <div class="profile-info">
-                <span class="profile-name" id="userNameSide">Carlos Ramírez</span>
-                <span class="profile-location">Global</span>
-            </div>
-            <span class="role-tag">Administrador</span>
-            <button class="expand-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5z" clip-rule="evenodd" /></svg>
-            </button>
+        <div class="brand-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+                <path fill-rule="evenodd" d="M9.315 7.584C12.195 3.883 16.695 1.5 21.75 1.5a.75.75 0 01.75.75c0 5.056-2.383 9.555-6.084 12.436A6.75 6.75 0 019.75 22.5a.75.75 0 01-.75-.75v-4.131A15.838 15.838 0 016.382 15H2.25a.75.75 0 01-.75-.75 6.75 6.75 0 017.815-6.666zM15 6.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" clip-rule="evenodd"/>
+                <path d="M5.26 17.242a.75.75 0 10-.897-1.203 5.243 5.243 0 00-2.05 5.022.75.75 0 00.625.627 5.243 5.243 0 005.022-2.051.75.75 0 10-1.202-.897 3.744 3.744 0 01-3.008 1.51c0-1.23.592-2.323 1.51-3.008z"/>
+            </svg>
         </div>
+        <span class="brand-name">CTech</span>
+        <button class="collapse-btn" id="collapseBtn" title="Colapsar sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd"/>
+            </svg>
+        </button>
     </div>
 
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <div class="profile-avatar" id="sideAvatarContainer">
+            <span id="userInitial">CR</span>
+        </div>
+        <div class="profile-info">
+            <span class="profile-name" id="userNameSide">Carlos Ramírez</span>
+            <span class="profile-community">Global</span>
+        </div>
+        <div class="profile-badge">Admin</div>
+    </div>
+
+    <!-- Navigation -->
     <nav class="sidebar-nav">
         {menuItems.map(item => (
             <a href={item.path} class="nav-item" data-path={item.path}>
-                <Fragment set:html={item.icon} />
-                <span>{item.label}</span>
+                <span class="nav-icon"><Fragment set:html={item.icon} /></span>
+                <span class="nav-label">{item.label}</span>
             </a>
         ))}
     </nav>
 
+    <!-- Footer -->
     <div class="sidebar-footer">
         <button id="logoutBtn" class="logout-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z" clip-rule="evenodd"/>
+            </svg>
             <span>Salir</span>
         </button>
     </div>
@@ -58,72 +78,89 @@ const menuItems = [
 
 <style>
     .admin-sidebar {
-        width: var(--sidebar-width);
+        width: 260px;
         height: 100vh;
         position: fixed;
         left: 0;
         top: 0;
-        background: #0F172A;
+        background: #0d1117;
         display: flex;
         flex-direction: column;
-        padding: 0;
         z-index: 1000;
-        color: white;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
     }
 
+    /* ── Brand ─────────────────────────────────── */
     .sidebar-brand {
-        padding: 1.25rem 1rem 0.75rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .brand-link {
-        display: block;
-        margin-bottom: 0.5rem;
-    }
-
-    .brand-logo {
-        height: 32px;
-        width: auto;
-        display: block;
-    }
-
-    .brand-subtitle {
-        margin: 0;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* USER PROFILE WIDGET */
-    .user-profile-widget {
-        padding: 1rem 1rem;
-    }
-
-    .profile-card {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
-        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px 16px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
         position: relative;
+    }
+
+    .brand-icon {
+        width: 34px;
+        height: 34px;
+        background: #007bff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .brand-name {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: white;
+        letter-spacing: -0.02em;
+        flex: 1;
+    }
+
+    .collapse-btn {
+        width: 22px;
+        height: 22px;
+        background: rgba(255,255,255,0.08);
+        border: none;
+        border-radius: 50%;
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+    .collapse-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+
+    /* ── Profile Card ──────────────────────────── */
+    .profile-card {
+        margin: 14px 12px;
+        background: #007bff;
+        border-radius: 12px;
+        padding: 12px 14px;
         display: grid;
-        grid-template-columns: 32px 1fr;
-        gap: 0.75rem;
+        grid-template-columns: 40px 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 10px;
         align-items: center;
     }
 
     .profile-avatar {
-        width: 32px;
-        height: 32px;
-        background: #3b82f6;
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.25);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 1.1rem;
-        border: 2px solid rgba(255,255,255,0.1);
+        font-size: 0.85rem;
+        color: white;
+        grid-row: 1 / 3;
+        letter-spacing: 0.5px;
         overflow: hidden;
     }
     .profile-avatar img {
@@ -135,124 +172,118 @@ const menuItems = [
     .profile-info {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 1px;
     }
 
     .profile-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .profile-location {
-        display: none;
-    }
-
-    .role-tag {
-        grid-column: 1 / -1;
-        margin-top: 0.25rem;
-        background: rgba(59, 130, 246, 0.1);
-        color: #60a5fa;
-        font-size: 0.65rem;
-        font-weight: 600;
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
-        width: fit-content;
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
-    }
-
-    .expand-btn {
-        position: absolute;
-        right: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
-        background: #0073ff;
-        border: none;
-        border-radius: 50%;
+        font-size: 0.88rem;
+        font-weight: 700;
         color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.7rem;
-        cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0, 115, 255, 0.3);
+        line-height: 1.2;
     }
 
+    .profile-community {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.75);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .profile-badge {
+        grid-column: 2;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        width: fit-content;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+
+    /* ── Navigation ────────────────────────────── */
     .sidebar-nav {
         flex: 1;
-        padding: 0.5rem 0.75rem;
+        padding: 6px 10px;
         display: flex;
         flex-direction: column;
-        gap: 0.1rem;
-        overflow-y: auto; /* Allow scroll only if absolutely necessary, but hidden scrollbar below */
-        scrollbar-width: none; /* Firefox */
+        gap: 2px;
+        overflow-y: auto;
+        scrollbar-width: none;
     }
-    .sidebar-nav::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+    .sidebar-nav::-webkit-scrollbar { display: none; }
 
     .nav-item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.5rem 0.75rem;
-        color: rgba(255, 255, 255, 0.4);
+        gap: 10px;
+        padding: 9px 12px;
+        color: #8b9ab4;
         text-decoration: none;
         border-radius: 8px;
-        font-size: 0.82rem;
+        font-size: 0.855rem;
         font-weight: 500;
-        transition: all 0.2s ease;
+        transition: all 0.18s ease;
+        cursor: pointer;
     }
 
-    .nav-item :global(svg) {
-        width: 14px !important;
-        height: 14px !important;
-        min-width: 14px;
-        min-height: 14px;
+    .nav-icon {
+        width: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
     }
 
+    .nav-icon :global(svg) {
+        width: 17px;
+        height: 17px;
+    }
+
     .nav-item:hover {
-        color: white;
-        background: rgba(255,255,255,0.03);
+        color: #e2e8f0;
+        background: rgba(255,255,255,0.06);
     }
 
     .nav-item.active {
-        background: rgba(59, 130, 246, 0.1);
-        color: #60a5fa;
+        background: #007bff;
+        color: white;
         font-weight: 600;
     }
 
+    .nav-item.active .nav-icon :global(svg) {
+        color: white;
+    }
+
+    /* ── Footer / Logout ───────────────────────── */
     .sidebar-footer {
-        padding: 1rem 0.75rem;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        padding: 12px 10px 20px;
+        border-top: 1px solid rgba(255,255,255,0.06);
     }
 
     .logout-btn {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 10px;
         width: 100%;
-        padding: 0.5rem 0.75rem;
+        padding: 9px 12px;
         background: transparent;
         border: none;
-        color: rgba(255, 255, 255, 0.4);
+        color: #8b9ab4;
         cursor: pointer;
         border-radius: 8px;
-        font-size: 0.85rem;
+        font-size: 0.855rem;
         font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .logout-btn svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
+        transition: all 0.18s;
+        font-family: inherit;
     }
 
     .logout-btn:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
+        background: rgba(255,255,255,0.06);
+        color: #f87171;
     }
 </style>
 
@@ -261,7 +292,6 @@ const menuItems = [
     import { AuthManager, authManager } from "../../utils/auth.js";
     const auth = authManager;
 
-    // Fill user info
     const user = auth.getUser();
     if (user) {
         if (document.getElementById('userNameSide')) document.getElementById('userNameSide').textContent = user.name_user || 'Admin';
@@ -300,4 +330,3 @@ const menuItems = [
         }
     });
 </script>
-

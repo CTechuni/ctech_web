@@ -1,41 +1,71 @@
 ---
-// LeaderSidebar.astro
+// LeaderSidebar.astro - Pixel Perfect v2
 const menuItems = [
-    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/leader' },
-    { icon: 'fas fa-users-cog', label: 'Mi Comunidad', path: '/leader/community' },
-    { icon: 'fas fa-user-friends', label: 'Miembros', path: '/leader/members' },
-    { icon: 'fas fa-calendar-day', label: 'Eventos', path: '/leader/events' },
-    { icon: 'fas fa-user-circle', label: 'Perfil', path: '/leader/profile' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+</svg>`, label: 'Mi Comunidad', path: '/leader' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zm.75 1.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm2.25-1.5a.75.75 0 100-1.5.75.75 0 000 1.5zm.75 1.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zm.75 1.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm2.25-1.5a.75.75 0 100-1.5.75.75 0 000 1.5zm.75 1.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm1.5.75a.75.75 0 100-1.5.75.75 0 000 1.5zM6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zM3.75 7.5v1.5h16.5V7.5a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5zM20.25 10.5H3.75v8.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V10.5z"/></svg>`, label: 'Eventos', path: '/leader/events' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd"/></svg>`, label: 'Calendario', path: '/leader/calendar' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+</svg>`, label: 'Mentores', path: '/leader/mentors' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+</svg>`, label: 'Usuarios', path: '/leader/members' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>`, label: 'Perfil', path: '/leader/profile' },
+    { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+</svg>`, label: 'Ajustes', path: '/leader/settings' },
 ];
 ---
 
 <aside class="leader-sidebar">
-    <div class="sidebar-logo">
-        <img src="/logo-ctech.png" alt="CTech" />
-        <span>Leader Hub</span>
+    <!-- Logo -->
+    <div class="sidebar-brand">
+        <div class="brand-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+                <path fill-rule="evenodd" d="M9.315 7.584C12.195 3.883 16.695 1.5 21.75 1.5a.75.75 0 01.75.75c0 5.056-2.383 9.555-6.084 12.436A6.75 6.75 0 019.75 22.5a.75.75 0 01-.75-.75v-4.131A15.838 15.838 0 016.382 15H2.25a.75.75 0 01-.75-.75 6.75 6.75 0 017.815-6.666zM15 6.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" clip-rule="evenodd"/>
+                <path d="M5.26 17.242a.75.75 0 10-.897-1.203 5.243 5.243 0 00-2.05 5.022.75.75 0 00.625.627 5.243 5.243 0 005.022-2.051.75.75 0 10-1.202-.897 3.744 3.744 0 01-3.008 1.51c0-1.23.592-2.323 1.51-3.008z"/>
+            </svg>
+        </div>
+        <span class="brand-name">CTech</span>
+        <button class="collapse-btn" id="collapseBtn" title="Colapsar sidebar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd"/>
+            </svg>
+        </button>
     </div>
 
+    <!-- Profile Card -->
     <div class="profile-card">
-        <div class="avatar-circle">LM</div>
+        <div class="profile-avatar">LM</div>
         <div class="profile-info">
             <span class="profile-name">Laura Méndez</span>
-            <span class="profile-badge">Líder</span>
+            <span class="profile-community">DevFront Colombia</span>
         </div>
+        <div class="profile-badge">Líder</div>
     </div>
 
+    <!-- Navigation -->
     <nav class="sidebar-nav">
         {menuItems.map(item => (
-            <a href={item.path} class="nav-item">
-                <i class={item.icon}></i>
-                <span>{item.label}</span>
+            <a href={item.path} class="nav-item" data-path={item.path}>
+                <span class="nav-icon"><Fragment set:html={item.icon} /></span>
+                <span class="nav-label">{item.label}</span>
             </a>
         ))}
     </nav>
 
+    <!-- Footer -->
     <div class="sidebar-footer">
-        <button id="logoutBtn" class="nav-item logout">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Cerrar Sesión</span>
+        <button id="logoutBtn" class="logout-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm10.72 4.72a.75.75 0 011.06 0l3 3a.75.75 0 010 1.06l-3 3a.75.75 0 11-1.06-1.06l1.72-1.72H9a.75.75 0 010-1.5h10.94l-1.72-1.72a.75.75 0 010-1.06z" clip-rule="evenodd"/>
+            </svg>
+            <span>Salir</span>
         </button>
     </div>
 </aside>
@@ -47,117 +77,201 @@ const menuItems = [
         position: fixed;
         left: 0;
         top: 0;
-        background-color: var(--color-primary-dark);
+        background: #0d1117;
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.2rem;
         z-index: 1000;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 
-    .sidebar-logo {
+    /* ── Brand ─────────────────────────────────── */
+    .sidebar-brand {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
-        margin-bottom: 2.5rem;
-        padding-left: 0.5rem;
+        gap: 10px;
+        padding: 20px 16px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        position: relative;
     }
 
-    .sidebar-logo img { width: 32px; }
-    .sidebar-logo span { 
-        font-weight: 700; 
+    .brand-icon {
+        width: 34px;
+        height: 34px;
+        background: #007bff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .brand-name {
         font-size: 1.1rem;
+        font-weight: 800;
         color: white;
+        letter-spacing: -0.02em;
+        flex: 1;
     }
 
-    /* Profile Card Implementation */
-    .profile-card {
-        background-color: var(--color-primary);
-        border-radius: 12px;
-        padding: 1rem;
+    .collapse-btn {
+        width: 22px;
+        height: 22px;
+        background: rgba(255,255,255,0.08);
+        border: none;
+        border-radius: 50%;
+        color: rgba(255,255,255,0.5);
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+    .collapse-btn:hover { background: rgba(255,255,255,0.15); color: white; }
+
+    /* ── Profile Card ──────────────────────────── */
+    .profile-card {
+        margin: 14px 12px;
+        background: #007bff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        grid-template-rows: auto auto;
+        column-gap: 10px;
+        align-items: center;
     }
 
-    .avatar-circle {
+    .profile-avatar {
         width: 40px;
         height: 40px;
-        background-color: #E0F2FE; /* Light blue */
-        color: var(--color-primary);
+        background: rgba(255,255,255,0.25);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.9rem;
-        flex-shrink: 0;
+        font-size: 0.85rem;
+        color: white;
+        grid-row: 1 / 3;
+        letter-spacing: 0.5px;
     }
 
     .profile-info {
         display: flex;
         flex-direction: column;
-        gap: 0.2rem;
+        gap: 1px;
     }
 
     .profile-name {
+        font-size: 0.88rem;
+        font-weight: 700;
         color: white;
-        font-weight: 600;
-        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+
+    .profile-community {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.75);
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .profile-badge {
-        background-color: var(--color-azure-radiant);
+        grid-column: 2;
+        background: rgba(255,255,255,0.2);
         color: white;
-        font-size: 0.7rem;
-        padding: 0.1rem 0.5rem;
-        border-radius: 4px;
+        font-size: 0.65rem;
         font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
         width: fit-content;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-top: 4px;
     }
 
-    .sidebar-nav { flex: 1; }
+    /* ── Navigation ────────────────────────────── */
+    .sidebar-nav {
+        flex: 1;
+        padding: 6px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
 
     .nav-item {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
-        padding: 0.8rem 1rem;
-        color: var(--color-blue-grey);
+        gap: 10px;
+        padding: 9px 12px;
+        color: #8b9ab4;
         text-decoration: none;
         border-radius: 8px;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s ease;
+        font-size: 0.855rem;
         font-weight: 500;
-        font-size: 0.95rem;
+        transition: all 0.18s ease;
+        cursor: pointer;
+    }
+
+    .nav-icon {
+        width: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .nav-icon :global(svg) {
+        width: 17px;
+        height: 17px;
     }
 
     .nav-item:hover {
-        color: white;
-        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        background: rgba(255,255,255,0.06);
     }
 
     .nav-item.active {
-        background-color: var(--color-azure-radiant);
+        background: var(--color-azure-radiant);
+        color: white;
+        font-weight: 600;
+    }
+
+    .nav-item.active .nav-icon :global(svg) {
         color: white;
     }
 
-    .nav-item i { width: 20px; text-align: center; }
+    /* ── Footer / Logout ───────────────────────── */
+    .sidebar-footer {
+        padding: 12px 10px 20px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
 
-    .logout {
+    .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         width: 100%;
+        padding: 9px 12px;
         background: transparent;
         border: none;
+        color: #8b9ab4;
         cursor: pointer;
-        color: var(--color-blue-grey) !important;
-        justify-content: flex-start;
+        border-radius: 8px;
+        font-size: 0.855rem;
+        font-weight: 500;
+        transition: all 0.18s;
+        font-family: inherit;
     }
-    
-    .logout:hover {
-        color: #ef4444 !important;
-        background: rgba(239, 68, 68, 0.1);
+
+    .logout-btn:hover {
+        background: rgba(255,255,255,0.06);
+        color: #f87171;
     }
 </style>
 
@@ -178,23 +292,11 @@ const menuItems = [
         window.location.href = '/';
     });
 
-    // Mark active link and persist ID
+    // Mark active link
     const currentPath = window.location.pathname;
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('id');
-
     document.querySelectorAll('.nav-item').forEach(link => {
-        // Persistir ID en los enlaces si existe
-        if (userId && link.tagName === 'A') {
-            const href = link.getAttribute('href');
-            if (href && !href.startsWith('http') && !href.includes('id=')) {
-                link.setAttribute('href', `${href}${href.includes('?') ? '&' : '?'}id=${userId}`);
-            }
-        }
-
-        if (link.getAttribute('href')?.split('?')[0] === currentPath) {
-            link.classList.add('active');
-        }
+        const href = link.getAttribute('href')?.split('?')[0];
+        const isActive = href === currentPath || (href !== '/leader' && currentPath.startsWith(href));
+        if (isActive) link.classList.add('active');
     });
 </script>
-
