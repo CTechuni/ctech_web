@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import AdminUsersSection from '../../components/admin/AdminUsersSection.astro';
+import AdminLeadersSection from '../../components/admin/AdminLeadersSection.astro';
 
 const title = 'Líderes';
 const subtitle = 'Gestión de líderes de comunidad';
@@ -8,14 +8,7 @@ const subtitle = 'Gestión de líderes de comunidad';
 
 <AdminLayout title={title} subtitle={subtitle}>
   <section class="admin-page-section">
-    <header class="admin-page-header">
-      <p class="page-kicker">Panel Admin</p>
-      <h2 class="page-title">Directorio de Líderes</h2>
-      <p class="page-subtitle">Gestiona a los líderes encargados de las comunidades locales</p>
-    </header>
-
-    <!-- Usamos AdminUsersSection y añadiremos un script para filtrar por líder por defecto -->
-    <AdminUsersSection />
+    <AdminLeadersSection />
   </section>
 
   <style>
@@ -54,15 +47,4 @@ const subtitle = 'Gestión de líderes de comunidad';
     }
   </style>
 
-  <script>
-    // Forzar el filtro de "Líderes" al cargar la página
-    window.addEventListener('DOMContentLoaded', () => {
-      const roleFilter = document.getElementById('roleFilter') as HTMLSelectElement;
-      if (roleFilter) {
-        roleFilter.value = 'leader';
-        // Disparamos el evento change para que AdminUsersSection reaccione
-        roleFilter.dispatchEvent(new Event('change'));
-      }
-    });
-  </script>
 </AdminLayout>

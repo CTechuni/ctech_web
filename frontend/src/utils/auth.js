@@ -242,28 +242,28 @@ export class AuthManager {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const response = await fetch(url, { ...options, headers });
+        try {
+            const response = await fetch(url, { ...options, headers });
 
-        if (response.status === 401) {
-            /* ⚠️ BYPASS TEMPORAL - Redirect deshabilitado para simulacro visual.
-            const { role, id } = authManager.getCurrentContext();
-            authManager.clearAuthData(role, id);
-            window.location.href = '/';
-            */
-            console.warn('[BYPASS VISUAL] 401 recibido en AuthManager.fetch - redirect deshabilitado.');
-            return null;
+            if (response.status === 401) {
+                console.warn('[BYPASS VISUAL] 401 recibido en AuthManager.fetch - redirect deshabilitado.');
+                return null;
+            }
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.detail || `Error ${response.status}`);
+            }
+
+            // Respuestas 204 No Content no tienen body
+            const contentType = response.headers.get('content-type') || '';
+            if (response.status === 204 || !contentType.includes('application/json')) return null;
+
+            return response.json();
+        } catch (error) {
+            console.error(`DEBUG: AuthManager.fetch FAILED for ${url}:`, error);
+            throw error;
         }
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.detail || `Error ${response.status}`);
-        }
-
-        // Respuestas 204 No Content no tienen body
-        const contentType = response.headers.get('content-type') || '';
-        if (response.status === 204 || !contentType.includes('application/json')) return null;
-
-        return response.json();
     }
 }
 

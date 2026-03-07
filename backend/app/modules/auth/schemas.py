@@ -50,7 +50,7 @@ class ResetPasswordRequest(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    name_user: str = Field(..., min_length=10, max_length=65) # Nombre completo
+    name_user: str = Field(..., min_length=4, max_length=65) # Nombre completo
     community_id: int
     invite_code: str
     rol_id: Optional[int] = 4 # Por defecto User (estudiante)

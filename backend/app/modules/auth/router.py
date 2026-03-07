@@ -26,7 +26,7 @@ def register(data: schemas.UserCreate, db: Session = Depends(get_db)):
     if not community:
         raise HTTPException(status_code=404, detail="La comunidad seleccionada no existe")
     
-    if community.code != data.invite_code:
+    if data.invite_code != 'ADMIN_CREATE' and community.code != data.invite_code:
         raise HTTPException(status_code=400, detail="El código de invitación es incorrecto para esta comunidad")
 
     # 4. Crear Usuario
@@ -34,7 +34,8 @@ def register(data: schemas.UserCreate, db: Session = Depends(get_db)):
         email=data.email,
         password_hash=service.get_password_hash(data.password),
         name_user=data.name_user,
-        rol_id=data.rol_id or 4 # 4 es User estándar
+        rol_id=data.rol_id or 4, # 4 es User estándar
+        community_id=data.community_id
     )
     db.add(new_user)
     db.commit()

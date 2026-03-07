@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, Text, DateTime, func
 from app.core.database import Base
 
-# NOTA: No definas Role aquí. 
-# SQLAlchemy ya lo cargó desde app/modules/users/models.py
+# NOTA: No definas Role o User aquí para evitar redundancia. 
+# Importamos desde users para que el namespace models.User sea válido.
+from app.modules.users.models import User, Role
 
 class TokenBlocklist(Base):
     __tablename__ = "token_blocklist"

@@ -7,12 +7,12 @@
     <!-- TOOLBAR -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="input-group" style="max-width: 380px;">
-            <span class="input-group-text bg-white border-end-0" style="border-radius: 10px 0 0 10px; border-color: #e2e8f0;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 10px 0 0 10px; border-color: #e2e8f0; font-size: 0.85rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
                 </svg>
             </span>
-            <input type="text" class="form-control border-start-0" placeholder="Buscar por nombre o código..." id="communitySearch" style="border-radius: 0 10px 10px 0; border-color: #e2e8f0; box-shadow: none;">
+            <input type="text" class="form-control border-start-0" placeholder="Buscar por nombre o código..." id="communitySearch" style="border-radius: 0 10px 10px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.85rem;">
         </div>
         <button class="btn btn-primary d-flex align-items-center gap-2" id="addCommunityBtn" style="border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 600; font-size: 0.9rem;">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
@@ -117,6 +117,57 @@
                 <button type="submit" class="comm-btn-submit" id="modalSubmitBtn">Crear Comunidad</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- MODAL: Detalle de Comunidad (Solo Lectura) -->
+<div class="comm-modal-overlay" id="communityDetailModal">
+    <div class="comm-modal" style="max-width: 440px;">
+        <div class="comm-modal-header border-0 pb-0">
+            <h5 class="comm-modal-title">Ficha de Comunidad</h5>
+            <button class="comm-modal-close" id="detailModalCloseX" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="comm-detail-content px-4 pb-4 pt-2">
+            <!-- Header/Avatar -->
+            <div class="text-center mb-4">
+                <div class="comm-detail-avatar-container mx-auto" id="detailAvatarContainer">
+                    <!-- Logo or initials dynamic -->
+                </div>
+                <h4 class="mt-3 mb-1 fw-bold text-dark" id="detailName"></h4>
+                <div id="detailStatusBadge" class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill" style="font-size: 0.75rem; font-weight: 600;">
+                    <span class="comm-status-dot" id="detailStatusDot"></span>
+                    <span id="detailStatusText"></span>
+                </div>
+            </div>
+
+            <!-- Info Rows -->
+            <div class="comm-detail-info-list d-flex flex-column gap-3">
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Código Único</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailCode"></div>
+                </div>
+                
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Líder Responsable</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailLeader"></div>
+                </div>
+
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Fecha de Creación</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailCreatedAt"></div>
+                </div>
+            </div>
+            
+            <!-- Footer Action -->
+            <div class="mt-5 text-center">
+                <button type="button" class="btn btn-light w-100 py-2 fw-bold" id="detailModalCloseBtn" style="border-radius: 12px; border: 1.5px solid #e2e8f0; color: #64748b;">Cerrar</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -505,6 +556,49 @@
         background: #93c5fd;
         cursor: not-allowed;
     }
+
+    /* ═══════════ DETAIL MODAL SPECIFIC ═══════════ */
+    .comm-detail-avatar-container {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        font-size: 2.2rem;
+        font-weight: 800;
+    }
+    .comm-detail-avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .comm-detail-row {
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .letter-spacing-1 {
+        letter-spacing: 0.05em;
+    }
+    #detailStatusBadge.bg-success-subtle { background: #ecfdf5; color: #059669; }
+    #detailStatusBadge.bg-danger-subtle { background: #fef2f2; color: #dc2626; }
+
+    /* Interactive Card */
+    .comm-card {
+        cursor: pointer;
+    }
+    /* Ensure action buttons are always on top and clickable */
+    .comm-actions {
+        position: relative;
+        z-index: 10;
+    }
 </style>
 
 <script>
@@ -514,6 +608,7 @@
     let listStore: any[] = [];
     let selectedFile: File | null = null;
     let editingId: number | null = null;
+    let originalData: any = null; // Store state before editing
 
     // ═══════════ VISUAL CONFIG ═══════════
     const visualConfig = [
@@ -526,7 +621,7 @@
     ];
 
     const editIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>`;
-    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>`;
+    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0"/></svg>`;
 
     // ═══════════ DOM REFS ═══════════
     const modal = document.getElementById('communityModal')!;
@@ -556,6 +651,7 @@
     // ═══════════ MODAL OPEN/CLOSE ═══════════
     function openModal(mode: 'create' | 'edit' = 'create', data: any = null) {
         editingId = mode === 'edit' ? data.id_community : null;
+        originalData = mode === 'edit' ? { ...data } : null;
         modalTitle.textContent = mode === 'edit' ? 'Editar Comunidad' : 'Nueva Comunidad';
         modalSubmitBtn.textContent = mode === 'edit' ? 'Guardar Cambios' : 'Crear Comunidad';
         
@@ -611,6 +707,69 @@
         // Auto-focus the name field
         setTimeout(() => nameInput.focus(), 100);
     }
+
+    // ═══════════ DETAIL MODAL LOGIC ═══════════
+    const detailModal = document.getElementById('communityDetailModal')!;
+    const detailAvatar = document.getElementById('detailAvatarContainer')!;
+    const detailName = document.getElementById('detailName')!;
+    const detailStatusBadge = document.getElementById('detailStatusBadge')!;
+    const detailStatusDot = document.getElementById('detailStatusDot')!;
+    const detailStatusText = document.getElementById('detailStatusText')!;
+    const detailCode = document.getElementById('detailCode')!;
+    const detailLeader = document.getElementById('detailLeader')!;
+    const detailCreatedAt = document.getElementById('detailCreatedAt')!;
+
+    function formatDate(dateStr: string) {
+        if (!dateStr) return 'No disponible';
+        try {
+            const date = new Date(dateStr);
+            return new Intl.DateTimeFormat('es-ES', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        } catch {
+            return dateStr;
+        }
+    }
+
+    function openDetailModal(data: any) {
+        detailName.textContent = data.name_community;
+        detailCode.textContent = data.code;
+        detailLeader.textContent = data.leader_name || 'Sin asignar';
+        detailCreatedAt.textContent = formatDate(data.created_at);
+
+        // Status
+        const isActive = data.status_community !== 'Inactivo';
+        detailStatusText.textContent = isActive ? 'Activo' : 'Inactivo';
+        detailStatusBadge.className = `d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill ${isActive ? 'bg-success-subtle' : 'bg-danger-subtle'}`;
+        detailStatusDot.className = `comm-status-dot ${isActive ? 'bg-success' : 'bg-danger'}`;
+
+        // Avatar
+        const config = visualConfig[listStore.indexOf(data) % visualConfig.length] || visualConfig[0];
+        if (data.logo_url) {
+            detailAvatar.innerHTML = `<img src="${data.logo_url}" alt="${data.name_community}">`;
+            detailAvatar.className = 'comm-detail-avatar-container mx-auto';
+        } else {
+            const initials = data.name_community ? data.name_community.substring(0, 2).toUpperCase() : 'CT';
+            detailAvatar.innerHTML = initials;
+            detailAvatar.className = `comm-detail-avatar-container mx-auto ${config.theme}`;
+        }
+
+        detailModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailModal() {
+        detailModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('detailModalCloseX')?.addEventListener('click', closeDetailModal);
+    document.getElementById('detailModalCloseBtn')?.addEventListener('click', closeDetailModal);
+    detailModal.addEventListener('click', (e) => {
+        if (e.target === detailModal) closeDetailModal();
+    });
 
     function closeModal() {
         modal.classList.remove('active');
@@ -831,31 +990,36 @@
     // Event delegation for grid actions
     grid.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
+        
+        // Action buttons
         const editBtn = target.closest('.comm-edit-btn');
         const deleteBtn = target.closest('.comm-delete-btn');
 
         if (editBtn) {
+            e.stopPropagation();
             const idStr = editBtn.getAttribute('data-id');
             const id = idStr ? parseInt(idStr) : null;
-            console.debug('Edit clicked, id:', id);
             const item = listStore.find(c => c.id_community === id);
-            if (item) {
-                openModal('edit', item);
-            } else {
-                console.warn('Item not found for id:', id);
-            }
+            if (item) openModal('edit', item);
+            return;
         }
 
         if (deleteBtn) {
+            e.stopPropagation();
             const idStr = deleteBtn.getAttribute('data-id');
             const id = idStr ? parseInt(idStr) : null;
-            console.debug('Delete clicked, id:', id);
             const item = listStore.find(c => c.id_community === id);
-            if (item && id !== null) {
-                deleteCommunity(id, item.name_community);
-            } else {
-                console.warn('Item or id not found for delete:', id);
-            }
+            if (item && id !== null) deleteCommunity(id, item.name_community);
+            return;
+        }
+
+        // Card click (Detail view)
+        const card = target.closest('.comm-card');
+        if (card) {
+            const idStr = card.getAttribute('data-id');
+            const id = idStr ? parseInt(idStr) : null;
+            const item = listStore.find(c => c.id_community === id);
+            if (item) openDetailModal(item);
         }
     });
 
@@ -867,23 +1031,66 @@
         modalSubmitBtn.disabled = true;
         
         try {
+            const currentName = nameInput.value.trim();
+            const currentCode = codeInput.value.trim();
+            const currentStatus = statusSelect.value;
             const leadVal = parseInt(leaderSelect.value);
-            const payload: any = {
-                name_community: nameInput.value.trim(),
-                code: codeInput.value.trim(),
-                status_community: editingId ? statusSelect.value : 'Activo',
-                access_code: codeInput.value.trim(),
-                description_community: '',
-                logo_url: editingId ? previewImg.src : '',
-                leader_id: isNaN(leadVal) ? null : leadVal
-            };
-            console.debug('Payload constructed:', payload);
+            const currentLeaderId = isNaN(leadVal) ? null : leadVal;
+            const currentLogo = selectedFile ? '' : (previewImg.style.display === 'block' ? previewImg.src : '');
 
-            // If editing, remove empty name/code to avoid null constraints on backend
-            if (editingId) {
-                if (!payload.name_community) delete payload.name_community;
-                if (!payload.code) delete payload.code;
+            let payload: any = {};
+            let hasChanges = false;
+
+            if (editingId && originalData) {
+                // DIRTY CHECKING (Edit Mode)
+                if (currentName !== originalData.name_community) {
+                    payload.name_community = currentName;
+                    hasChanges = true;
+                }
+                if (currentCode !== originalData.code) {
+                    payload.code = currentCode;
+                    hasChanges = true;
+                }
+                
+                // Status normalization for comparison
+                let origStatus = originalData.status_community || 'Activo';
+                if (origStatus.toLowerCase() === 'active') origStatus = 'Activo';
+                if (origStatus.toLowerCase() === 'inactive') origStatus = 'Inactivo';
+                
+                if (currentStatus !== origStatus) {
+                    payload.status_community = currentStatus;
+                    hasChanges = true;
+                }
+
+                if (currentLeaderId !== originalData.leader_id) {
+                    payload.leader_id = currentLeaderId;
+                    hasChanges = true;
+                }
+
+                if (selectedFile || (currentLogo !== originalData.logo_url)) {
+                    payload.logo_url = currentLogo;
+                    hasChanges = true;
+                }
+
+                if (!hasChanges) {
+                    console.log('No modifications detected. Closing modal.');
+                    closeModal();
+                    return;
+                }
+            } else {
+                // Create Mode (Always send all required fields)
+                payload = {
+                    name_community: currentName,
+                    code: currentCode,
+                    status_community: 'Activo',
+                    access_code: currentCode,
+                    description_community: '',
+                    logo_url: currentLogo,
+                    leader_id: currentLeaderId
+                };
             }
+
+            console.debug('Optimized payload:', payload);
 
             const url = editingId ? `/communities/${editingId}` : '/communities/';
             const method = editingId ? 'PATCH' : 'POST';
@@ -973,7 +1180,7 @@
 
             return `
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="comm-card">
+                    <div class="comm-card" data-id="${item.id_community}">
                         <div class="comm-card-header">
                             <div class="comm-card-identity">
                                 <div class="comm-icon-box ${item.logo_url ? '' : config.theme}">

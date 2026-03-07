@@ -1,0 +1,1048 @@
+---
+/* AdminLeadersSection.astro */
+---
+
+<div class="admin-leaders-section">
+    <!-- Toolbar Unificada: Búsqueda y Acción -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div class="input-group" style="max-width: 380px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 10px 0 0 10px; border-color: #e2e8f0; font-size: 0.85rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar por nombre, correo o comunidad..." id="leaderSearch" style="border-radius: 0 10px 10px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.85rem;">
+        </div>
+        <div class="d-none d-sm-block text-muted small fw-medium" id="leadersCount">
+            0 líderes registrados
+        </div>
+        <button class="btn btn-primary d-flex align-items-center gap-2" id="addLeaderBtn" style="border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 600; font-size: 0.9rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
+                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+            </svg>
+            Registrar Líder
+        </button>
+    </div>
+
+    <!-- Leaders Grid -->
+    <div class="leaders-grid" id="leadersGrid">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <span>Organizando red de líderes...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Registro / Edición de Líder -->
+<div class="comm-modal-overlay" id="leaderModal">
+    <div class="comm-modal">
+        <!-- Header -->
+        <div class="comm-modal-header">
+            <div>
+                <h5 class="comm-modal-title" id="modalTitle">Registrar Nuevo Líder</h5>
+                <p class="text-muted small mb-0">Completa los datos para crear una cuenta de acceso.</p>
+            </div>
+            <button class="comm-modal-close" id="closeModalX" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Body -->
+        <form id="leaderForm" novalidate>
+            <div class="comm-form-group">
+                <label class="comm-label" for="leaderName">Nombre Completo <span class="comm-required">*</span></label>
+                <input type="text" id="leaderName" class="comm-input" placeholder="Ej: Juan Pérez">
+                <div class="comm-field-error" id="nameError"></div>
+            </div>
+
+            <div class="comm-form-group">
+                <label class="comm-label" for="leaderEmail">Correo Electrónico <span class="comm-required">*</span></label>
+                <input type="email" id="leaderEmail" class="comm-input" placeholder="usuario@dominio.com">
+                <div class="comm-field-error" id="emailError"></div>
+            </div>
+
+            <div id="passwordFields">
+                <div class="comm-form-group">
+                    <label class="comm-label" for="leaderPassword">Contraseña <span class="comm-required">*</span></label>
+                    <div class="password-wrapper">
+                        <input type="password" id="leaderPassword" class="comm-input" placeholder="••••••••">
+                        <button type="button" class="toggle-password" data-target="leaderPassword">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </button>
+                    </div>
+                    <div class="comm-field-error" id="passwordError"></div>
+                </div>
+
+                <div class="comm-form-group">
+                    <label class="comm-label" for="leaderConfirmPassword">Confirmar Contraseña <span class="comm-required">*</span></label>
+                    <div class="password-wrapper">
+                        <input type="password" id="leaderConfirmPassword" class="comm-input" placeholder="••••••••">
+                        <button type="button" class="toggle-password" data-target="leaderConfirmPassword">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </button>
+                    </div>
+                    <div class="comm-field-error" id="confirmError"></div>
+                </div>
+            </div>
+
+            <div class="comm-form-group" id="communitySelectGroup" style="margin-bottom: 0;">
+                <label class="comm-label" for="leaderCommunity">Vincular Comunidad <span class="comm-required">*</span></label>
+                <select id="leaderCommunity" class="comm-input comm-select">
+                    <option value="">Seleccionar comunidad</option>
+                    <!-- Dinámico -->
+                </select>
+                <div class="comm-field-error" id="communityError"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="comm-modal-footer">
+                <button type="button" class="comm-btn-cancel" id="cancelBtn">Cancelar</button>
+                <button type="submit" class="comm-btn-submit" id="submitBtn">Crear Cuenta</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .admin-leaders-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding-top: 0.25rem;
+    }
+
+    .section-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-text h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1E293B;
+        margin: 0;
+    }
+
+    .header-text p {
+        font-size: 0.9rem;
+        color: #94A3B8;
+        margin: 0.2rem 0 0 0;
+        font-weight: 500;
+    }
+
+
+    /* Toolbars Unificadas */
+    .d-flex { display: flex; }
+    .justify-content-between { justify-content: space-between; }
+    .align-items-center { align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-3 { gap: 1rem; }
+    .mb-4 { margin-bottom: 1.5rem; }
+
+    .mb-4 { margin-bottom: 1.5rem; }
+
+    /* Custom form-control focus to match Communities module */
+    .form-control:focus {
+        border-color: #cbd5e1 !important;
+        box-shadow: none !important;
+    }
+
+    /* Grid */
+    .leaders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Leader Card */
+    :global(.leader-card) {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    :global(.leader-card:hover) {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    }
+
+    :global(.leader-card-top) {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    :global(.leader-identity) {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    :global(.leader-avatar) {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #3b82f6;
+    }
+
+    :global(.leader-info h4) {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    :global(.leader-info .leader-email) {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    :global(.leader-card-actions) {
+        display: flex;
+        gap: 0.5rem;
+    }
+    :global(.leader-action-btn) {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: #f8fafc;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    :global(.leader-edit-btn:hover) { background: #eff6ff; color: #3b82f6; }
+    :global(.leader-delete-btn:hover) { background: #fef2f2; color: #ef4444; }
+    :global(.leader-action-btn svg) {
+        width: 18px;
+        height: 18px;
+    }
+
+    :global(.leader-communities) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    :global(.community-chip) {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    /* ═══════════ MODAL ═══════════ */
+    .comm-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .comm-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .comm-modal {
+        background: #ffffff;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        transform: translateY(20px) scale(0.97);
+        transition: transform 0.25s ease;
+    }
+    .comm-modal-overlay.active .comm-modal {
+        transform: translateY(0) scale(1);
+    }
+
+    /* Header */
+    .comm-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: white;
+    }
+    .comm-modal-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .comm-modal-close {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s, background 0.15s;
+    }
+    .comm-modal-close:hover {
+        color: #475569;
+        background: #f1f5f9;
+    }
+
+    /* Form */
+    #leaderForm {
+        padding: 1.5rem;
+    }
+    .comm-form-group {
+        margin-bottom: 1.25rem;
+    }
+    .comm-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.4rem;
+    }
+    .comm-required { color: #ef4444; }
+
+    .comm-input {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        background: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .comm-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    .comm-field-error {
+        font-size: 0.78rem;
+        color: #ef4444;
+        margin-top: 0.3rem;
+        min-height: 0;
+    }
+
+    .comm-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Footer */
+    .comm-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f1f5f9;
+        margin-top: 0.5rem;
+    }
+    .comm-btn-cancel {
+        background: transparent;
+        border: 1.5px solid #e2e8f0;
+        color: #64748b;
+        padding: 0.55rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .comm-btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    .comm-btn-submit {
+        background: #3b82f6;
+        border: none;
+        color: white;
+        padding: 0.55rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .comm-btn-submit:hover {
+        background: #2563eb;
+    }
+    .comm-btn-submit:disabled {
+        background: #93c5fd;
+        cursor: not-allowed;
+    }
+
+    /* Password Toggle Styling */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 3rem !important;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    .toggle-password:hover {
+        color: #64748b;
+    }
+    .eye-icon {
+        pointer-events: none;
+    }
+
+    /* Loading state */
+    .loading-state {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4rem;
+        color: #94A3B8;
+        gap: 1rem;
+    }
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid #f1f5f9;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════ TOAST ═══════════ */
+    .leader-toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        background: #0f172a;
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 14px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+    }
+    .leader-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .leader-toast.success .toast-icon { color: #34d399; }
+    .leader-toast.error   .toast-icon { color: #f87171; }
+</style>
+
+<script>
+    import { AuthManager } from '../../utils/auth.js';
+
+    // ═══════════ STATE ═══════════
+    let leaders: any[] = [];
+    let communities: any[] = [];
+    let editingId: number | null = null;
+    let originalLeaderData: any = null; // snapshot when edit modal opens
+    let isLoading = true;
+
+    // ═══════════ TOAST UTILITY ═══════════
+    function showToast(message: string, type: 'success' | 'error' = 'success') {
+        const existing = document.querySelector('.leader-toast');
+        if (existing) existing.remove();
+
+        const icon = type === 'success'
+            ? `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18" class="toast-icon"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18" class="toast-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>`;
+
+        const toast = document.createElement('div');
+        toast.className = `leader-toast ${type}`;
+        toast.innerHTML = `${icon}<span>${message}</span>`;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => toast.classList.add('show'));
+        });
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 350);
+        }, 3500);
+    }
+
+    // Icons
+    const editIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>`;
+    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0"/></svg>`;
+
+    // ═══════════ DOM REFS ═══════════
+    const grid = document.getElementById('leadersGrid')!;
+    const modal = document.getElementById('leaderModal')!;
+    const form = document.getElementById('leaderForm') as HTMLFormElement;
+    const modalTitle = document.getElementById('modalTitle')!;
+    const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+    const searchInput = document.getElementById('leaderSearch') as HTMLInputElement;
+    const leadersCountText = document.getElementById('leadersCount')!;
+    const communitySelect = document.getElementById('leaderCommunity') as HTMLSelectElement;
+
+    // Form fields
+    const nameInput = document.getElementById('leaderName') as HTMLInputElement;
+    const emailInput = document.getElementById('leaderEmail') as HTMLInputElement;
+    const passInput = document.getElementById('leaderPassword') as HTMLInputElement;
+    const confirmInput = document.getElementById('leaderConfirmPassword') as HTMLInputElement;
+    const passwordFields = document.getElementById('passwordFields')!;
+
+    // Error spans
+    const nameError = document.getElementById('nameError')!;
+    const emailError = document.getElementById('emailError')!;
+    const passError = document.getElementById('passwordError')!;
+    const confirmError = document.getElementById('confirmError')!;
+    const communityError = document.getElementById('communityError')!;
+
+    // ═══════════ INITIALIZATION ═══════════
+    async function init() {
+        isLoading = true;
+        render(); // Show spinner immediately
+        await Promise.all([fetchLeaders(), fetchCommunities()]);
+        isLoading = false;
+        render();
+    }
+
+    async function fetchLeaders() {
+        isLoading = true;
+        render();
+        try {
+            const data = await AuthManager.fetch('/users/leaders');
+            leaders = Array.isArray(data) ? data : [];
+        } catch (err) {
+            console.error('Error fetching leaders:', err);
+        } finally {
+            isLoading = false;
+            render();
+        }
+    }
+
+    async function fetchCommunities() {
+        try {
+            const data = await AuthManager.fetch('/communities/');
+            
+            // Check for 401 (AuthManager return null on 401)
+            if (data === null) {
+                communityError.textContent = 'Tu sesión ha expirado. Por favor, recarga la página o inicia sesión de nuevo.';
+                communities = [];
+            } else {
+                communities = Array.isArray(data) ? data : [];
+                communityError.textContent = '';
+            }
+            
+            renderCommunitySelect();
+        } catch (err) {
+            console.error('Error fetching communities:', err);
+            communityError.textContent = 'Error de conexión al cargar comunidades.';
+        }
+    }
+
+    function renderCommunitySelect(selectedId: number | null = null, showAll = false) {
+        let options = '<option value="">Seleccionar comunidad</option>';
+        
+        // If we have an error message already, don't just show "No hay comunidades"
+        if (communityError.textContent && communities.length === 0) {
+            options = '<option value="" disabled>Error de autenticación</option>';
+            communitySelect.innerHTML = options;
+            return;
+        }
+
+        // Count available communities - using more robust check for "no leader"
+        // leader_id is None in Python -> null in JSON.
+        const available = communities.filter(c => {
+            const noLeader = c.leader_id === null || c.leader_id === undefined;
+            const isCurrent = selectedId && Number(c.id_community) === Number(selectedId);
+            return noLeader || isCurrent || showAll;
+        });
+
+        console.log(`DEBUG: renderCommunitySelect - rendering ${available.length} options (selectedId: ${selectedId}, showAll: ${showAll})`);
+        
+        if (available.length === 0 && !showAll) {
+            options = '<option value="" disabled>No hay comunidades disponibles para asignar</option>';
+            console.log('DEBUG: Mostrando mensaje de no disponibilidad');
+        } else {
+            available.forEach(c => {
+                const isSelected = selectedId && Number(c.id_community) === Number(selectedId) ? 'selected' : '';
+                const leaderTag = (c.leader_id && Number(c.id_community) !== Number(selectedId)) ? ' (Ocupada)' : '';
+                options += `<option value="${c.id_community}" ${isSelected}>${c.name_community}${leaderTag}</option>`;
+            });
+        }
+        
+        communitySelect.innerHTML = options;
+    }
+
+    // ═══════════ VALIDATIONS ═══════════
+    function validateForm(showErrors = true): boolean {
+        let isValid = true;
+        const isEdit = editingId !== null;
+
+        if (showErrors) {
+            [nameError, emailError, passError, confirmError, communityError].forEach(e => e.textContent = '');
+        }
+
+        // 1. Name — required on create; validated only if filled on edit
+        const nameVal = nameInput.value.trim();
+        if (!isEdit && nameVal.length < 4) {
+            if (showErrors) nameError.textContent = 'El nombre debe tener al menos 4 caracteres.';
+            isValid = false;
+        } else if (isEdit && nameVal.length > 0 && nameVal.length < 4) {
+            if (showErrors) nameError.textContent = 'El nombre debe tener al menos 4 caracteres.';
+            isValid = false;
+        } else if (nameVal.length > 0 && !/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nameVal)) {
+            if (showErrors) nameError.textContent = 'Solo se permiten letras y espacios.';
+            isValid = false;
+        }
+
+        // 2. Email — required on create; validated only if filled on edit
+        const emailVal = emailInput.value.trim();
+        if (!isEdit && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+            if (showErrors) emailError.textContent = 'Formato de correo inválido.';
+            isValid = false;
+        } else if (isEdit && emailVal.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+            if (showErrors) emailError.textContent = 'Formato de correo inválido.';
+            isValid = false;
+        }
+
+        // 3. Password — required only on create, ignored on edit
+        if (!isEdit) {
+            const passVal = passInput.value;
+            const confirmVal = confirmInput.value;
+
+            if (passVal.length < 5 || passVal.length > 13) {
+                if (showErrors) passError.textContent = 'Debe tener entre 5 y 13 caracteres.';
+                isValid = false;
+            } else {
+                const hasUpper = /[A-Z]/.test(passVal);
+                const hasLower = /[a-z]/.test(passVal);
+                const hasNumber = /[0-9]/.test(passVal);
+                const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(passVal);
+                if (!hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+                    if (showErrors) passError.textContent = 'Requiere: mayúscula, minúscula, número y signo especial.';
+                    isValid = false;
+                }
+            }
+            if (passVal !== confirmVal) {
+                if (showErrors) confirmError.textContent = 'Las contraseñas no coinciden.';
+                isValid = false;
+            }
+        }
+
+        // 4. Community — required on create; optional on edit
+        if (!isEdit && !communitySelect.value) {
+            if (showErrors) communityError.textContent = 'Debes vincular una comunidad.';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // Compute diff between original snapshot and current form values
+    function buildChangedPayload(): Record<string, any> {
+        const payload: Record<string, any> = {};
+        if (!originalLeaderData) return payload;
+
+        const nameVal = nameInput.value.trim();
+        if (nameVal && nameVal !== (originalLeaderData.name_user || '').trim()) {
+            payload.name_user = nameVal;
+        }
+
+        const emailVal = emailInput.value.trim();
+        if (emailVal && emailVal !== (originalLeaderData.email || '').trim()) {
+            payload.email = emailVal;
+        }
+
+        const commVal = communitySelect.value ? parseInt(communitySelect.value) : null;
+        const origComm = originalLeaderData.community_id ? parseInt(String(originalLeaderData.community_id)) : null;
+        if (commVal !== origComm && commVal !== null) {
+            payload.community_id = commVal;
+        }
+
+        return payload;
+    }
+
+    // Real-time button state
+    function updateSubmitButtonStyle() {
+        const isEdit = editingId !== null;
+        let enabled = false;
+
+        if (isEdit) {
+            // Edit: valid filled fields AND at least one change
+            const changed = buildChangedPayload();
+            enabled = validateForm(false) && Object.keys(changed).length > 0;
+        } else {
+            enabled = validateForm(false);
+        }
+
+        submitBtn.disabled = !enabled;
+        submitBtn.style.opacity = enabled ? '1' : '0.6';
+        submitBtn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+    }
+
+
+    // ═══════════ ACTIONS ═══════════
+    function openModal(mode: 'create' | 'edit' = 'create', data: any = null) {
+        editingId = mode === 'edit' ? data.id : null;
+        modalTitle.textContent = mode === 'edit' ? 'Editar Líder' : 'Registrar Nuevo Líder';
+        submitBtn.textContent = mode === 'edit' ? 'Guardar Cambios' : 'Crear Cuenta';
+        
+        // Reset
+        form.reset();
+        [nameError, emailError, passError, confirmError, communityError].forEach(e => e.textContent = '');
+        
+        if (mode === 'edit') {
+            originalLeaderData = { ...data }; // snapshot for diff
+            nameInput.value = data.name_user || '';
+            emailInput.value = data.email || '';
+            passwordFields.style.display = 'none';
+            passInput.required = false;
+            confirmInput.required = false;
+
+            // Hide asterisks in edit mode (fields are optional)
+            form.querySelectorAll('.comm-required').forEach((el: Element) => {
+                (el as HTMLElement).style.display = 'none';
+            });
+            
+            const currentCommId = data.community_id; 
+            renderCommunitySelect(currentCommId);
+            communitySelect.value = currentCommId ? String(currentCommId) : '';
+        } else {
+            passwordFields.style.display = 'block';
+            passInput.required = true;
+            confirmInput.required = true;
+
+            // Restore asterisks in create mode (fields are required)
+            form.querySelectorAll('.comm-required').forEach((el: Element) => {
+                (el as HTMLElement).style.display = '';
+            });
+            
+            // Force show all if something is typed in the general search bar
+            const showAll = searchInput.value.trim().length > 0;
+            renderCommunitySelect(null, showAll);
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        updateSubmitButtonStyle(); // Initial check
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        editingId = null;
+    }
+
+    async function deleteLeader(id: number, name: string) {
+        if (!confirm(`¿Estás seguro de eliminar a ${name}? Esta acción es irreversible.`)) return;
+        
+        try {
+            const ok = await AuthManager.fetch(`/users/${id}`, { method: 'DELETE' });
+            if (ok) {
+                leaders = leaders.filter(l => l.id !== id);
+                render();
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Error al eliminar líder.');
+        }
+    }
+
+    // ═══════════ EVENTS ═══════════
+    document.getElementById('addLeaderBtn')?.addEventListener('click', () => openModal('create'));
+    document.getElementById('closeModalX')?.addEventListener('click', closeModal);
+    document.getElementById('cancelBtn')?.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        submitBtn.disabled = true;
+        const wasEditing = editingId;
+        
+        try {
+            let payload: any;
+            let url: string;
+            let method: string;
+
+            if (wasEditing) {
+                // PATCH: only send fields that actually changed
+                payload = buildChangedPayload();
+                if (Object.keys(payload).length === 0) {
+                    showToast('No hay cambios para guardar.', 'error');
+                    submitBtn.disabled = false;
+                    return;
+                }
+                url = `/users/${wasEditing}`;
+                method = 'PATCH';
+            } else {
+                // POST: full create payload
+                payload = {
+                    name_user: nameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    rol_id: 3,
+                    password: passInput.value,
+                    community_id: parseInt(communitySelect.value),
+                    invite_code: 'ADMIN_CREATE',
+                };
+                url = '/auth/register';
+                method = 'POST';
+            }
+
+            const result = await AuthManager.fetch(url, {
+                method,
+                body: JSON.stringify(payload)
+            });
+
+            if (result) {
+                if (wasEditing) {
+                    // 1. Close modal immediately
+                    closeModal();
+
+                    // 2. Patch the in-memory leaders array
+                    const idx = leaders.findIndex(l => l.id === wasEditing);
+                    if (idx !== -1) {
+                        leaders[idx] = { ...leaders[idx], ...result };
+                    }
+
+                    // 3. Patch the DOM card directly (no full re-render)
+                    const card = grid.querySelector(`[data-leader-id="${wasEditing}"]`) as HTMLElement;
+                    if (card) {
+                        // Update name
+                        const nameEl = card.querySelector('h4');
+                        if (nameEl) nameEl.textContent = result.name_user || leaders[idx]?.name_user || '';
+
+                        // Update avatar initial
+                        const avatarEl = card.querySelector('.leader-avatar');
+                        if (avatarEl) avatarEl.textContent = (result.name_user || 'L').substring(0, 1).toUpperCase();
+
+                        // Update email
+                        const emailEl = card.querySelector('.leader-email');
+                        if (emailEl) emailEl.textContent = result.email || leaders[idx]?.email || '';
+
+                        // Update community chip
+                        const chipEl = card.querySelector('.community-chip');
+                        if (chipEl) {
+                            let communeName = '';
+                            const commId = result.community_id ?? leaders[idx]?.community_id;
+                            if (commId) {
+                                const found = communities.find(c => c.id_community === commId);
+                                communeName = found?.name_community || found?.name || '';
+                            }
+                            chipEl.textContent = communeName || 'Sin comunidad';
+                        }
+
+                        // Highlight the updated card briefly
+                        card.style.transition = 'box-shadow 0.4s, border-color 0.4s';
+                        card.style.boxShadow = '0 0 0 2px #3b82f6';
+                        card.style.borderColor = '#3b82f6';
+                        setTimeout(() => {
+                            card.style.boxShadow = '';
+                            card.style.borderColor = '';
+                        }, 1800);
+                    } else {
+                        // Card not found (filtered out?), do a safe re-render
+                        render();
+                    }
+
+                    // 4. Show success toast
+                    showToast('¡Cambios guardados correctamente!', 'success');
+                } else {
+                    // Create mode: full refresh
+                    closeModal();
+                    showToast('¡Líder registrado con éxito!', 'success');
+                    await fetchLeaders();
+                    render();
+                }
+            }
+        } catch (err: any) {
+            console.error('Submit error:', err);
+            showToast('Error: ' + (err.message || 'No se pudo procesar la solicitud.'), 'error');
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    searchInput.addEventListener('input', () => render());
+
+    // Listen for changes to update button state
+    [nameInput, emailInput, passInput, confirmInput, communitySelect].forEach(el => {
+        el.addEventListener('input', updateSubmitButtonStyle);
+        el.addEventListener('change', updateSubmitButtonStyle);
+    });
+
+    // Delegation for edit/delete & toggle password
+    grid.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const editBtn = target.closest('.leader-edit-btn');
+        const deleteBtn = target.closest('.leader-delete-btn');
+
+        if (editBtn) {
+            const id = parseInt(editBtn.getAttribute('data-id')!);
+            const item = leaders.find(l => l.id === id);
+            if (item) openModal('edit', item);
+        }
+
+        if (deleteBtn) {
+            const id = parseInt(deleteBtn.getAttribute('data-id')!);
+            const item = leaders.find(l => l.id === id);
+            if (item) deleteLeader(id, item.name_user);
+        }
+    });
+
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId) as HTMLInputElement;
+            if (!input) return;
+
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            
+            // Toggle Icon (Eye / Eye Slash)
+            this.innerHTML = isPassword ? 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`;
+        });
+    });
+
+    // ═══════════ RENDER ═══════════
+    function render() {
+        if (!grid) return;
+        
+        const term = searchInput.value.toLowerCase();
+        const filtered = leaders.filter(l => 
+            l.name_user?.toLowerCase().includes(term) || 
+            l.email?.toLowerCase().includes(term) ||
+            l.community_name?.toLowerCase().includes(term)
+        );
+
+        leadersCountText.textContent = `${filtered.length} líderes registrados`;
+
+        if (isLoading) {
+            grid.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <span>Cargando líderes...</span>
+                </div>
+            `;
+            return;
+        }
+
+        if (leaders.length === 0) {
+            grid.innerHTML = `
+                <div class="loading-state empty-state-card" style="background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 20px; padding: 5rem 2rem;">
+                    <div class="empty-icon-circle" style="background: #fff; padding: 1.5rem; border-radius: 50%; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 1rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#3b82f6" width="48" height="48">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                        </svg>
+                    </div>
+                    <h3 style="color: #1e293b; font-weight: 700; font-size: 1.25rem; margin-bottom: 0.5rem;">No hay líderes registrados</h3>
+                    <p style="color: #64748b; margin-bottom: 2rem; max-width: 300px; text-align: center;">Comienza a gestionar tu equipo registrando al primer líder de la comunidad.</p>
+                    <button class="btn-add-leader" onclick="document.getElementById('addLeaderBtn').click()" style="background: #3b82f6; color: white; border: none; padding: 0.75rem 1.75rem; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75z" clip-rule="evenodd" /></svg>
+                        Registrar Líder
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="loading-state">
+                    <span>No se encontraron resultados para "${searchInput.value}".</span>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(l => {
+            const initial = (l.name_user || 'L').substring(0, 1).toUpperCase();
+            
+            // Look up community name in the communities array
+            let communeName = l.community_name;
+            if (!communeName && l.community_id) {
+                const found = communities.find(c => c.id_community === l.community_id);
+                if (found) communeName = found.name;
+            }
+
+            return `
+                <div class="leader-card" data-leader-id="${l.id}">
+                    <div class="leader-card-top">
+                        <div class="leader-identity">
+                            <div class="leader-avatar">${initial}</div>
+                            <div class="leader-info">
+                                <h4>${l.name_user || 'Sin nombre'}</h4>
+                                <span class="leader-email">${l.email || 'Sin correo'}</span>
+                            </div>
+                        </div>
+                        <div class="leader-card-actions">
+                            <button class="leader-action-btn leader-edit-btn" data-id="${l.id}" title="Editar">${editIcon}</button>
+                            <button class="leader-action-btn leader-delete-btn" data-id="${l.id}" title="Eliminar">${deleteIcon}</button>
+                        </div>
+                    </div>
+                    <div class="leader-communities">
+                        <span class="community-chip">${communeName || 'Sin comunidad'}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    init();
+</script>

@@ -27,3 +27,15 @@ def demote(user_id: int, db: Session = Depends(get_db), current=Depends(get_curr
 @router.get("/leaders", response_model=list[schemas.UserResponse])
 def get_leaders(db: Session = Depends(get_db)): #, current=Depends(get_current_user)):
     return service.list_leaders(db)
+
+@router.patch("/{user_id}", response_model=schemas.UserResponse)
+def update_user(user_id: int, data: schemas.UserUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    # exclude_unset=True ensures only the fields sent in the request are included
+    return service.update_user(db, user_id, data.model_dump(exclude_unset=True))
+
+@router.delete("/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    user = service.delete_user(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"message": "Usuario eliminado correctamente"}

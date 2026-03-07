@@ -55,7 +55,9 @@ export const API_CONFIG = {
 
 // Función helper para construir URLs completas
 export function buildApiUrl(endpoint) {
-    return `${API_CONFIG.BASE_URL}${API_CONFIG.API_VERSION}${endpoint}`;
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const cleanVersion = API_CONFIG.API_VERSION.endsWith('/') ? API_CONFIG.API_VERSION : `${API_CONFIG.API_VERSION}/`;
+    return `${API_CONFIG.BASE_URL}${cleanVersion}${cleanEndpoint}`;
 }
 
 // Función helper para hacer requests autenticados
