@@ -22,6 +22,8 @@ class CourseUpdate(CourseBase):
 class CourseResponse(CourseBase):
     id: int
     created_at: datetime
+    mentor_name: Optional[str] = None
+    specialty_name: Optional[str] = None
 
     class Config:
         from_attributes = True

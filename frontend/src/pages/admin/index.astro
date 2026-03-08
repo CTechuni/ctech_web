@@ -236,8 +236,12 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     }
     
     @media (max-width: 1024px) {
-        .metrics-grid-minimal { grid-template-columns: repeat(2, 1fr); }
+        .metrics-grid { grid-template-columns: repeat(2, 1fr); }
         .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+        .metrics-grid { grid-template-columns: 1fr; }
     }
 </style>
 
@@ -312,15 +316,30 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         const ChartLib = window.Chart;
         if (!ChartLib) return;
 
+        // Helper to get last 7 months
+        const getLast7Months = () => {
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const labels = [];
+            const d = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const monthDate = new Date(d.getFullYear(), d.getMonth() - i, 1);
+                labels.push(months[monthDate.getMonth()]);
+            }
+            return labels;
+        };
+
         // 1. Line Chart: Growth
         const growthCtx = document.getElementById('userGrowthChart') as HTMLCanvasElement;
+        const growthLabels = getLast7Months();
+        const growthData = apiData?.user_growth || [0, 0, 0, 0, 0, 0, 0];
+
         new ChartLib(growthCtx, {
             type: 'line',
             data: {
-                labels: ['Sep', 'Oct', 'Nov', 'Dic', 'Ene', 'Feb', 'Mar'],
+                labels: growthLabels,
                 datasets: [{
                     label: 'Usuarios',
-                    data: [12, 18, 25, 29, 41, 52, apiData?.total_users || 0],
+                    data: growthData,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.05)',
                     fill: true,

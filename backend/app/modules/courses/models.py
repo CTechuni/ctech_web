@@ -18,4 +18,13 @@ class Course(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # Relaciones
-    mentor = relationship("User")
+    mentor = relationship("app.modules.users.models.User")
+    specialty = relationship("app.modules.specialties.models.Specialty")
+
+    @property
+    def mentor_name(self):
+        return self.mentor.name_user if self.mentor else None
+
+    @property
+    def specialty_name(self):
+        return self.specialty.name if self.specialty else None

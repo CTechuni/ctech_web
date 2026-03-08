@@ -24,7 +24,8 @@ class UserInfo(BaseModel):
     id: int
     email: str
     role: str
-    name: str
+    name_user: str
+    community_name: Optional[str] = "Sin Comunidad"
 
 class Token(BaseModel):
     access_token: str

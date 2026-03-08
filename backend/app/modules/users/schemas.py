@@ -15,6 +15,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     status: Optional[str] = None
     community_id: Optional[int] = None
+    specialty_id: Optional[int] = None
 
 class ProfileResponse(BaseModel):
     bio: Optional[str] = None
@@ -32,10 +33,13 @@ class UserResponse(UserBase):
     community_id: Optional[int] = None
     community_name: Optional[str] = None
     community_code: Optional[str] = None
+    specialty_id: Optional[int] = None
+    specialty_name: Optional[str] = None
     member_count: Optional[int] = None
     status: str
     created_at: datetime
     profile: Optional[ProfileResponse] = None
 
-    class Config:
-        from_attributes = True
+class UserPaginationResponse(BaseModel):
+    users: list[UserResponse]
+    total: int

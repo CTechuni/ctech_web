@@ -21,6 +21,12 @@ def get_course(id: int, db: Session = Depends(get_db), current=Depends(get_curre
     course = service.get_course(db, id)
     if not course:
         raise HTTPException(status_code=404, detail="Curso no encontrado")
+    
+    # Lógica de Privacidad: Estudiantes y Líderes solo ven cursos de su comunidad
+    user_role = str(current.role).lower()
+    if user_role in ['user', 'usuario', 'leader'] and course.community_id != current.community_id:
+        raise HTTPException(status_code=403, detail="Acceso denegado: este curso pertenece a otra comunidad")
+        
     return course
 
 @router.put("/{id}", response_model=schemas.CourseResponse)

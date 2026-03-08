@@ -43,7 +43,7 @@ export class AuthManager {
         if (path.startsWith('/admin')) role = 'admin';
         else if (path.startsWith('/mentor')) role = 'mentor';
         else if (path.startsWith('/leader')) role = 'leader';
-        else if (path.startsWith('/user')) role = 'user';
+        else if (path.startsWith('/user')) role = 'usuario';
 
         return { role, id };
     }
@@ -95,7 +95,16 @@ export class AuthManager {
 
     isAuthenticated(role, id) {
         const token = this.getToken(role, id);
-        return !!token && !this.isTokenExpired(token);
+        const expired = token ? this.isTokenExpired(token) : true;
+
+        console.debug('[Auth] ¿Autenticado?:', {
+            hasToken: !!token,
+            isExpired: expired,
+            role,
+            id
+        });
+
+        return !!token && !expired;
     }
 
     getToken(role, id) {
@@ -105,13 +114,23 @@ export class AuthManager {
             id = ctx.id;
         }
 
+        // 1. Try context-specific key
         const contextKey = this.getTokenKey(role, id);
         const contextToken = localStorage.getItem(contextKey);
 
+        console.debug('[Auth] Buscando Token:', {
+            contextKey,
+            foundInContext: !!contextToken,
+            role,
+            id
+        });
+
         if (contextToken) return contextToken;
 
-        // Fallback to base key (authToken) if context-specific not found
-        return localStorage.getItem(this.baseTokenKey);
+        // 2. Fallback to base key (authToken) if context-specific not found
+        const baseToken = localStorage.getItem(this.baseTokenKey);
+        console.debug('[Auth] Token de Respaldo (authToken):', { exists: !!baseToken });
+        return baseToken;
     }
 
     getUser(role, id) {
@@ -120,7 +139,16 @@ export class AuthManager {
             role = ctx.role;
             id = ctx.id;
         }
-        const raw = localStorage.getItem(this.getUserKey(role, id));
+
+        // 1. Try context-specific key
+        const contextKey = this.getUserKey(role, id);
+        let raw = localStorage.getItem(contextKey);
+
+        // 2. Fallback to base key
+        if (!raw) {
+            raw = localStorage.getItem(this.baseUserKey);
+        }
+
         try { return raw ? JSON.parse(raw) : null; }
         catch { return null; }
     }
@@ -329,12 +357,26 @@ export function requireRole(expectedRole) {
 
     const { role } = authManager.getCurrentContext();
     const user = authManager.getUser();
-    const userRole = String(user?.role || role || '').toLowerCase();
 
-    console.debug('requireRole check', { expectedRole, userRole });
+    // Normalización: tratamos 'user' y 'usuario' como sinónimos
+    const normalize = (r) => {
+        const nr = String(r || '').toLowerCase().trim();
+        return nr === 'user' ? 'usuario' : nr;
+    };
 
-    if (userRole !== String(expectedRole).toLowerCase()) {
-        console.warn('requireRole failed, redirecting to /', { userRole, expectedRole });
+    const userRole = normalize(user?.role || role || '');
+    const targetRole = normalize(expectedRole);
+
+    console.debug('[Auth] Control de Acceso:', {
+        esperado: targetRole,
+        detectado: userRole,
+        fullUser: user
+    });
+
+    if (userRole !== targetRole) {
+        console.warn('[Auth] ¡Acceso Denegado! Redirigiendo al home...', {
+            motivo: `Rol '${userRole}' no coincide con '${targetRole}'`
+        });
         window.location.href = '/';
         return false;
     }

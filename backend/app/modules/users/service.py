@@ -20,6 +20,9 @@ def change_role(db: Session, user_id: int, new_role_id: int):
 def list_leaders(db: Session):
     return repository.get_leaders_enriched(db)
 
+def list_mentors(db: Session):
+    return repository.get_mentors_enriched(db)
+
 def update_user(db: Session, user_id: int, user_data: dict):
     if "community_id" in user_data and user_data["community_id"]:
         validate_community_available(db, user_data["community_id"], exclude_leader_id=user_id)
@@ -57,6 +60,17 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
 
 def delete_user(db: Session, user_id: int):
     return repository.delete(db, user_id)
+
+def get_all(db: Session):
+    return repository.get_all(db)
+
+def get_paginated(db: Session, page: int, limit: int):
+    users = repository.get_paginated(db, page, limit)
+    total = repository.get_count(db)
+    return {"users": users, "total": total}
+
+def get_user(db: Session, user_id: int):
+    return repository.get_by_id(db, user_id)
 
 def get_all_by_community(db: Session, community_id: int):
     return repository.get_by_community(db, community_id)

@@ -328,7 +328,7 @@
                     throw new Error('No se pudo determinar el rol en la respuesta del servidor');
                 }
                 
-                let redirectPath = '/user/home'; // Redirección estándar solicitada
+                let redirectPath = '/user'; // Redirección estándar solicitada
                 
                 if (role === 'admin') {
                     redirectPath = '/admin/dashboard';
@@ -337,7 +337,7 @@
                 } else if (role === 'mentor') {
                     redirectPath = `/mentor/panel?id=${userId}`;
                 } else if (role === 'usuario' || role === 'user') {
-                    redirectPath = '/user/home';
+                    redirectPath = '/user';
                 }
                 
                 authManager.setAuthData(result.access_token, result.user);

@@ -7,49 +7,5 @@ const subtitle = 'Gestión de mentores y expertos';
 ---
 
 <AdminLayout title={title} subtitle={subtitle}>
-  <section class="admin-page-section">
-    <header class="admin-page-header">
-      <p class="page-kicker">Panel Admin</p>
-      <h2 class="page-title">Directorio de Mentores</h2>
-      <p class="page-subtitle">Gestiona los perfiles y especialidades de los mentores</p>
-    </header>
-
     <AdminMentorsSection />
-  </section>
-
-  <style>
-    .admin-page-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1.75rem;
-    }
-
-    .admin-page-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .page-kicker {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #94a3b8;
-      margin: 0;
-      font-weight: 600;
-    }
-
-    .page-title {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .page-subtitle {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
-  </style>
 </AdminLayout>

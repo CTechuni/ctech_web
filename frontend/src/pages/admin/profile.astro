@@ -264,6 +264,14 @@ const subtitle = 'Mi cuenta administrativa';
       .profile-header-card { flex-direction: column; text-align: center; gap: 2rem; }
       .profile-sections-grid { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 640px) {
+      .profile-stats { gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+      .form-row { grid-template-columns: 1fr; }
+      .profile-header-card { padding: 2rem 1rem; }
+      .profile-avatar-large { width: 100px; height: 100px; font-size: 2.5rem; }
+      .profile-main-info h2 { font-size: 1.8rem; }
+    }
   </style>
 
   <script>

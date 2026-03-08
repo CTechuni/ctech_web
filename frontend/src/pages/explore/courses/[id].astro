@@ -1,0 +1,446 @@
+---
+// src/pages/explore/courses/[id].astro - Pixel Perfect v2
+import UserLayout from "../../../layouts/UserLayout.astro";
+import { escapeHtml } from '../../../utils/escape.js';
+
+export function getStaticPaths() {
+  return [
+    { params: { id: '1' } }, // Mantenemos soporte para rutas estáticas si es necesario
+  ];
+}
+---
+
+<UserLayout title="Contenido del Curso" subtitle="Visualiza lecciones, descarga recursos y domina nuevas tecnologías.">
+    <div class="course-detail-v2" id="courseDetailContent">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <span>Preparando tu entorno de aprendizaje...</span>
+        </div>
+    </div>
+</UserLayout>
+
+<style is:global>
+    :root {
+        --premium-blue: #007bff;
+        --soft-blue: rgba(0, 123, 255, 0.08);
+        --text-main: #0f172a;
+        --text-dim: #64748b;
+        --glass-bg: rgba(255, 255, 255, 0.8);
+    }
+
+    .course-detail-v2 {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        padding-bottom: 6rem;
+    }
+
+    /* ── Immersive Hero ────────────────────────── */
+    .hero-glass {
+        background: white;
+        border-radius: 32px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
+        padding: 3rem;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-glass::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 123, 255, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .hero-info-v2 {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        z-index: 2;
+    }
+
+    .badge-specialty-v2 {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--soft-blue);
+        color: var(--premium-blue);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        width: fit-content;
+    }
+
+    .hero-info-v2 h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--text-main);
+        margin: 0;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+
+    .mentor-chip-v2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 18px;
+        background: #f8fafc;
+        border-radius: 16px;
+        border: 1px solid #eef2f6;
+        width: fit-content;
+    }
+
+    .mentor-avatar-v2 {
+        width: 32px;
+        height: 32px;
+        background: var(--premium-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 0.75rem;
+    }
+
+    .mentor-name-v2 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .mentor-name-v2 span { color: #94a3b8; font-weight: 500; font-size: 0.85rem; }
+
+    .hero-desc-v2 {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        color: var(--text-dim);
+        margin: 0;
+    }
+
+    .hero-visual-v2 {
+        width: 100%;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        aspect-ratio: 16/10;
+        border: 8px solid white;
+        background: #f1f5f9;
+    }
+
+    .hero-visual-v2 img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── Content Sections ──────────────────────── */
+    .content-grid-v2 {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2.5rem;
+    }
+
+    .section-title-v2 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .section-title-v2 i {
+        width: 42px;
+        height: 42px;
+        background: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--premium-blue);
+        font-size: 1.25rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .section-title-v2 h2 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* ── Video Player Area ─────────────────────── */
+    .video-playlist-v2 {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .video-card-v2 {
+        background: white;
+        border-radius: 20px;
+        padding: 1.25rem;
+        border: 1px solid #eef2f6;
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.5rem;
+        align-items: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .video-card-v2:hover {
+        transform: translateX(10px);
+        border-color: var(--premium-blue);
+        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
+    }
+
+    .video-preview-v2 {
+        height: 100px;
+        background: #0f172a;
+        border-radius: 12px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .video-preview-v2::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+    }
+
+    .play-btn-v2 {
+        width: 36px;
+        height: 36px;
+        background: var(--premium-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.8rem;
+        z-index: 1;
+        box-shadow: 0 4px 10px rgba(0,123,255,0.4);
+    }
+
+    .video-info-v2 h4 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0 0 4px; }
+    .video-info-v2 p { font-size: 0.85rem; color: var(--text-dim); margin: 0; font-weight: 500; }
+
+    /* ── Resources Sidebar ─────────────────────── */
+    .sidebar-resources-v2 {
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        padding: 1.5rem;
+        background: rgba(248, 250, 252, 0.5);
+        border-radius: 28px;
+        border: 1px solid #eef2f6;
+        height: fit-content;
+    }
+
+    .resource-item-v2 {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 14px 16px;
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .resource-item-v2:hover {
+        border-color: var(--premium-blue);
+        background: #f0f7ff;
+        transform: translateY(-2px);
+    }
+
+    .res-icon-v2 {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        border-radius: 12px;
+    }
+
+    .res-icon-v2.pdf { background: #fee2e2; color: #ef4444; }
+    .res-icon-v2.book { background: #fef3c7; color: #d97706; }
+
+    .res-text-v2 { display: flex; flex-direction: column; gap: 2px; }
+    .res-text-v2 .name { font-size: 0.88rem; font-weight: 700; color: #334155; }
+    .res-text-v2 .meta { font-size: 0.72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
+
+    /* ── Loading & Empty ───────────────────────── */
+    .loading-state {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8rem 0;
+        color: #94a3b8;
+        gap: 1.5rem;
+    }
+
+    .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #f1f5f9;
+        border-top-color: var(--premium-blue);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-card-v2 {
+        padding: 3rem;
+        text-align: center;
+        background: white;
+        border-radius: 24px;
+        border: 2px dashed #e2e8f0;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+        .hero-glass { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+        .hero-visual-v2 { order: -1; max-width: 600px; }
+        .content-grid-v2 { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    import { authManager, AuthManager } from "../../../utils/auth.js";
+    import { escapeHtml } from "../../../utils/escape.js";
+
+    async function initPage() {
+        const path = window.location.pathname;
+        const segments = path.split('/');
+        const id = segments[segments.length - 1];
+        const container = document.getElementById('courseDetailContent');
+
+        if (!id || isNaN(parseInt(id))) {
+            if (container) container.innerHTML = '<div class="empty-card-v2">Referencia de curso no válida.</div>';
+            return;
+        }
+
+        try {
+            const course = await AuthManager.fetch(`/courses/${id}`);
+            if (!course) throw new Error('Curso no encontrado');
+            
+            renderCourseDetail(course, container);
+        } catch (err) {
+            console.error('[Detail] Error:', err);
+            if (container) container.innerHTML = '<div class="empty-card-v2">No pudimos conectar con el servidor para obtener los detalles de este curso.</div>';
+        }
+    }
+
+    function renderCourseDetail(c, container) {
+        const links = c.content_links || { videos: [], pdfs: [], books: [] };
+        const initial = c.mentor_name ? c.mentor_name[0] : 'U';
+
+        container.innerHTML = `
+            <!-- Premium Hero -->
+            <section class="hero-glass">
+                <div class="hero-info-v2">
+                    <span class="badge-specialty-v2">
+                        <i class="fas fa-tag"></i> ${escapeHtml(c.specialty_name || 'Especialidad')}
+                    </span>
+                    <h1>${escapeHtml(c.title)}</h1>
+                    <div class="mentor-chip-v2">
+                        <div class="mentor-avatar-v2">${initial}</div>
+                        <div class="mentor-name-v2"><span>Instructor</span> ${escapeHtml(c.mentor_name || 'Especialista CTech')}</div>
+                    </div>
+                    <p class="hero-desc-v2">${escapeHtml(c.description || 'Este programa no incluye una descripción detallada en este momento.')}</p>
+                </div>
+                <div class="hero-visual-v2">
+                    <img src="${c.thumbnail_url || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80'}" alt="${escapeHtml(c.title)}">
+                </div>
+            </section>
+
+            <!-- Content Grid -->
+            <div class="content-grid-v2">
+                <!-- Videos / Lessons -->
+                <section class="detail-section">
+                    <div class="section-title-v2">
+                        <i class="fas fa-play"></i>
+                        <h2>Módulos de Aprendizaje</h2>
+                    </div>
+                    
+                    <div class="video-playlist-v2">
+                        ${links.videos && links.videos.length > 0 
+                            ? links.videos.map((v, i) => `
+                                <a href="${v}" target="_blank" class="video-card-v2">
+                                    <div class="video-preview-v2">
+                                        <div class="play-btn-v2"><i class="fas fa-play"></i></div>
+                                    </div>
+                                    <div class="video-info-v2">
+                                        <h4>Módulo ${i+1}: Desarrollo y Conceptos Clave</h4>
+                                        <p>Haz clic para iniciar la reproducción en una pestaña nueva.</p>
+                                    </div>
+                                </a>
+                            `).join('')
+                            : '<div class="empty-card-v2">Próximamente estaremos subiendo las lecciones en video.</div>'
+                        }
+                    </div>
+                </section>
+
+                <!-- Sidebar: Resources -->
+                <aside class="sidebar-resources-v2">
+                    <div class="section-title-v2">
+                        <i class="fas fa-folder-open"></i>
+                        <h2>Recursos</h2>
+                    </div>
+
+                    <div class="resources-stack-v2">
+                        <!-- PDFs -->
+                        ${(links.pdfs || []).map(url => `
+                            <a href="${url}" target="_blank" class="resource-item-v2">
+                                <div class="res-icon-v2 pdf"><i class="fas fa-file-pdf"></i></div>
+                                <div class="res-text-v2">
+                                    <span class="name">Documentación Oficial</span>
+                                    <span class="meta">Guía PDF</span>
+                                </div>
+                            </a>
+                        `).join('')}
+
+                        <!-- Books -->
+                        ${(links.books || []).map(url => `
+                            <a href="${url}" target="_blank" class="resource-item-v2">
+                                <div class="res-icon-v2 book"><i class="fas fa-book-open"></i></div>
+                                <div class="res-text-v2">
+                                    <span class="name">Lectura Recomendada</span>
+                                    <span class="meta">E-Book / PDF</span>
+                                </div>
+                            </a>
+                        `).join('')}
+
+                        ${!(links.pdfs?.length || links.books?.length) 
+                            ? '<div class="empty-card-v2" style="border:none; padding:1rem; font-size:0.8rem;">Sin archivos adjuntos.</div>' 
+                            : ''
+                        }
+                    </div>
+                </aside>
+            </div>
+        `;
+    }
+
+    initPage();
+</script>
+

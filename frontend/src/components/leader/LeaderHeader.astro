@@ -9,10 +9,17 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 ---
 
 <header class="leader-header">
-    <!-- Left: Title block -->
-    <div class="header-title-block">
-        <h1 class="header-title">{title}</h1>
-        <span class="header-subtitle" id="headerCommunity">{subtitle}</span>
+    <!-- Left: Menu Toggle + Title block -->
+    <div class="header-left-group">
+        <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="header-title-block">
+            <h1 class="header-title">{title}</h1>
+            <span class="header-subtitle" id="headerCommunity">{subtitle}</span>
+        </div>
     </div>
 
     <!-- Right: Actions -->
@@ -51,6 +58,28 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     }
 
     /* ── Left ──────────────────────────── */
+    .header-left-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .menu-toggle-btn {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .menu-toggle-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .menu-toggle-btn svg { width: 22px; height: 22px; }
+
     .header-title-block {
         display: flex;
         flex-direction: column;
@@ -69,6 +98,15 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
         font-size: 0.78rem;
         color: #94a3b8;
         font-weight: 400;
+    }
+
+    @media (max-width: 1024px) {
+        .leader-header { padding: 0 16px; }
+        .header-subtitle { display: none; }
+    }
+
+    @media (min-width: 1025px) {
+        .menu-toggle-btn { display: none; }
     }
 
     /* ── Right ─────────────────────────── */
@@ -166,8 +204,8 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
             const name = document.getElementById('headerName');
             const community = document.getElementById('headerCommunity');
 
-            if (avatar) avatar.textContent = user.name_user.substring(0, 2).toUpperCase();
-            if (name) name.textContent = user.name_user.split(' ')[0]; // Solo primer nombre
+            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
+            if (name) name.textContent = user.name_user ? user.name_user.split(' ')[0] : 'Usuario';
             if (community && user.community_name) {
                 community.textContent = user.community_name;
             }
@@ -175,4 +213,9 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     }
 
     loadHeaderProfile();
+
+    // Toggle Sidebar Event
+    document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleSidebar'));
+    });
 </script>

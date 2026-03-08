@@ -3,22 +3,15 @@
 ---
 
 <div class="admin-events-section">
-    <div class="section-top-header">
-        <div class="header-text">
-            <h2>Gestión de Eventos</h2>
-            <p id="eventsCount">0 eventos programados</p>
-        </div>
-        <div class="header-actions">
-            <button class="btn-add-event" id="addEventBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75z" clip-rule="evenodd" /></svg> Nuevo Evento
-            </button>
-        </div>
-    </div>
-
-    <div class="filter-bar">
-        <div class="search-input-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 search-icon"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5zM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5z" clip-rule="evenodd" /></svg>
-            <input type="text" placeholder="Buscar por título, lugar o comunidad..." id="eventSearch">
+    <!-- Toolbar: Búsqueda -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div class="input-group" style="max-width: 320px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar evento o comunidad..." id="eventSearch" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.88rem;">
         </div>
     </div>
 
@@ -263,6 +256,14 @@
         width: 90%;
         text-align: center;
     }
+    @media (max-width: 768px) {
+        .admin-events-section .input-group {
+            max-width: 100% !important;
+        }
+        .events-grid-premium {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <script>
@@ -278,9 +279,9 @@
             // If empty, add mock for visual
             if (allEvents.length === 0) {
                 allEvents = [
-                    { title: 'Workshop de Astro & FastAPI', date_events: '2026-03-15', place: 'Zoom / YouTube', status: 'active', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'Meetup DevFront #15', date_events: '2026-03-22', place: 'Sede CTech Bogotá', status: 'active', image: 'https://images.unsplash.com/photo-1540575861501-7ad060e39fe1?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'Hackathon Data Hub 2026', date_events: '2026-04-05', place: 'Remoto', status: 'draft', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=400' }
+                    { title: 'Workshop de Astro & FastAPI', date_events: '2026-03-15', place: 'Zoom / YouTube', status: 'active', community_name: 'DevFront', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=400' },
+                    { title: 'Meetup DevFront #15', date_events: '2026-03-22', place: 'Sede CTech Bogotá', status: 'active', community_name: 'DevFront', image: 'https://images.unsplash.com/photo-1540575861501-7ad060e39fe1?auto=format&fit=crop&q=80&w=400' },
+                    { title: 'Hackathon Data Hub 2026', date_events: '2026-04-05', place: 'Remoto', status: 'draft', community_name: 'DataHub', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=400' }
                 ];
             }
             renderEvents(allEvents);
@@ -324,14 +325,14 @@
     }
 
     function updateCount(n) {
-        const el = document.getElementById('eventsCount');
-        if (el) el.textContent = `${n} eventos programados`;
+        // Count removed per minimalist standard
     }
 
     document.getElementById('eventSearch')?.addEventListener('input', (e) => {
         const term = (e.target as HTMLInputElement).value.toLowerCase();
         renderEvents(allEvents.filter(ev => 
             ev.title.toLowerCase().includes(term) || 
+            (ev.community_name || '').toLowerCase().includes(term) ||
             (ev.place || '').toLowerCase().includes(term)
         ));
     });

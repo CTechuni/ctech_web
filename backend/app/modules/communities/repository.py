@@ -3,7 +3,7 @@ from sqlalchemy import func, or_, and_
 from app.modules.users.models import User
 from . import models, schemas
 
-def get_all(db: Session):
+def get_all(db: Session, leader_id: int = None):
     # Optimized query with joins for members and leader information
     Member = aliased(User)
     Leader = aliased(User)
@@ -16,15 +16,19 @@ def get_all(db: Session):
         and_(Leader.rol_id == 3, Leader.community_id == models.Community.id_community)
     )
 
-    results = db.query(
+    query = db.query(
         models.Community,
         func.count(Member.id).label("member_count"),
         Leader.name_user.label("leader_name_direct"),
         Leader.email.label("leader_email")
     ).outerjoin(Member, Member.community_id == models.Community.id_community)\
      .outerjoin(Leader, leader_join_cond)\
-     .group_by(models.Community.id_community, Leader.id)\
-     .all()
+     .group_by(models.Community.id_community, Leader.id)
+
+    if leader_id:
+        query = query.filter(models.Community.leader_id == leader_id)
+
+    results = query.all()
     
     final = []
     for comm, count, l_name, l_email in results:

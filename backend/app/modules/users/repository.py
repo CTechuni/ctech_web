@@ -2,9 +2,31 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, outerjoin
 from . import models
 from app.modules.communities.models import Community
+from app.modules.specialties.models import Specialty
 
 def get_all(db: Session):
     return db.query(models.User).options(joinedload(models.User.profile)).all()
+
+def get_paginated(db: Session, page: int, limit: int):
+    offset = (page - 1) * limit
+    results = db.query(
+        models.User,
+        Community.name_community,
+        Specialty.name.label('spec_name')
+    ).options(joinedload(models.User.profile))\
+     .outerjoin(Community, models.User.community_id == Community.id_community)\
+     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
+     .offset(offset).limit(limit).all()
+    
+    users = []
+    for user, comm_name, spec_name in results:
+        user.community_name = comm_name
+        user.specialty_name = spec_name
+        users.append(user)
+    return users
+
+def get_count(db: Session):
+    return db.query(func.count(models.User.id)).scalar()
 
 def get_by_id(db: Session, user_id: int):
     return db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.id == user_id).first()
@@ -25,21 +47,43 @@ def get_leaders_enriched(db: Session):
         Community.name_community,
         Community.code.label('community_code'),
         Community.status_community,
-        MemberCount.c.member_count
+        MemberCount.c.member_count,
+        Specialty.name.label('spec_name')
     ).options(joinedload(models.User.profile))\
      .outerjoin(Community, models.User.community_id == Community.id_community)\
      .outerjoin(MemberCount, models.User.community_id == MemberCount.c.community_id)\
+     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
      .filter(models.User.rol_id == 3)\
      .all()
 
     leaders = []
-    for user, comm_name, comm_code, comm_status, member_count in results:
+    for user, comm_name, comm_code, comm_status, member_count, spec_name in results:
         user.community_name = comm_name
         user.community_code = comm_code
         user.community_status = comm_status
         user.member_count = member_count or 0
+        user.specialty_name = spec_name
         leaders.append(user)
     return leaders
+
+def get_mentors_enriched(db: Session):
+    """Returns mentors with community_name and specialty_name."""
+    results = db.query(
+        models.User,
+        Community.name_community,
+        Specialty.name.label('spec_name')
+    ).options(joinedload(models.User.profile))\
+     .outerjoin(Community, models.User.community_id == Community.id_community)\
+     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
+     .filter(models.User.rol_id == 2)\
+     .all()
+
+    mentors = []
+    for user, comm_name, spec_name in results:
+        user.community_name = comm_name
+        user.specialty_name = spec_name
+        mentors.append(user)
+    return mentors
 
 def update(db: Session, user_id: int, data: dict):
     db.query(models.User).filter(models.User.id == user_id).update(data)

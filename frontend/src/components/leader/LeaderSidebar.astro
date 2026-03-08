@@ -82,6 +82,36 @@ const menuItems = [
         flex-direction: column;
         z-index: 1000;
         overflow: hidden;
+        transition: width 0.3s ease, transform 0.3s ease;
+    }
+
+    /* ── Collapsed State ───────────────────────── */
+    :global(.sidebar-collapsed) .leader-sidebar {
+        width: 70px;
+    }
+
+    :global(.sidebar-collapsed) .brand-name,
+    :global(.sidebar-collapsed) .profile-info,
+    :global(.sidebar-collapsed) .profile-badge,
+    :global(.sidebar-collapsed) .nav-label,
+    :global(.sidebar-collapsed) .logout-btn span {
+        display: none;
+    }
+
+    :global(.sidebar-collapsed) .sidebar-brand { justify-content: center; padding: 20px 0; }
+    :global(.sidebar-collapsed) .collapse-btn { position: absolute; right: -10px; top: 25px; transform: rotate(180deg); background: #007bff; color: white; border: 2px solid #0d1117; }
+    :global(.sidebar-collapsed) .profile-card { grid-template-columns: 1fr; justify-items: center; padding: 10px 0; }
+    :global(.sidebar-collapsed) .nav-item { justify-content: center; padding: 12px 0; }
+
+    /* ── Mobile State ─────────────────────────── */
+    @media (max-width: 1024px) {
+        .leader-sidebar {
+            transform: translateX(-100%);
+        }
+        :global(.sidebar-open) .leader-sidebar {
+            transform: translateX(0);
+        }
+        .collapse-btn { display: none; }
     }
 
     /* ── Brand ─────────────────────────────────── */
@@ -286,8 +316,8 @@ const menuItems = [
             const name = document.getElementById('sidebarName');
             const community = document.getElementById('sidebarCommunity');
 
-            if (avatar) avatar.textContent = user.name_user.substring(0, 2).toUpperCase();
-            if (name) name.textContent = user.name_user;
+            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
+            if (name) name.textContent = user.name_user || 'Usuario';
             if (community) community.textContent = user.community_name || 'Sin Comunidad';
         }
     }
@@ -304,6 +334,11 @@ const menuItems = [
         const href = link.getAttribute('href')?.split('?')[0];
         const isActive = href === currentPath || (href !== '/leader' && currentPath.startsWith(href));
         if (isActive) link.classList.add('active');
+    });
+
+    // 4. Toggle Sidebar Event
+    document.getElementById('collapseBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleSidebar'));
     });
 
     // Inicializar

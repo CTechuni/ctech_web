@@ -94,7 +94,7 @@
 
             <!-- Leader -->
             <div class="comm-form-group" id="leaderGroup">
-                <label class="comm-label" for="commLeader">Líder Asignado <span class="comm-required">*</span></label>
+                <label class="comm-label" for="commLeader">Líder Asignado <span class="comm-optional">(Opcional)</span></label>
                 <select id="commLeader" class="comm-input comm-select">
                     <option value="">Cargando líderes...</option>
                 </select>
@@ -325,6 +325,7 @@
     .comm-icon-box.bg-soft-indigo { background: #eef2ff; color: #4f46e5; }
     .comm-icon-box.bg-soft-rose   { background: #fff0f1; color: #e11d48; }
     .comm-icon-box.bg-soft-orange { background: #fff5ea; color: #ea580c; }
+    .comm-icon-box.bg-white       { background: #ffffff; border: 1px solid #f1f5f9; }
 
     /* ═══════════ MODAL ═══════════ */
     .comm-modal-overlay {
@@ -333,16 +334,15 @@
         background: rgba(15, 23, 42, 0.45);
         backdrop-filter: blur(4px);
         z-index: 9999;
-        display: flex;
+        display: none;
         align-items: center;
         justify-content: center;
-        opacity: 0;
-        visibility: hidden;
+        opacity: 1;
+        visibility: visible;
         transition: opacity 0.25s ease, visibility 0.25s ease;
     }
     .comm-modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
+        display: flex;
     }
     .comm-modal {
         background: #ffffff;
@@ -352,11 +352,8 @@
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-        transform: translateY(20px) scale(0.97);
-        transition: transform 0.25s ease;
-    }
-    .comm-modal-overlay.active .comm-modal {
         transform: translateY(0) scale(1);
+        transition: transform 0.25s ease;
     }
 
     /* Header */
@@ -599,6 +596,17 @@
         position: relative;
         z-index: 10;
     }
+
+    @media (max-width: 768px) {
+        .communities-section .input-group {
+            max-width: 100% !important;
+            order: 2;
+        }
+        .communities-section #addCommunityBtn {
+            width: 100%;
+            order: 1;
+        }
+    }
 </style>
 
 <script>
@@ -749,7 +757,7 @@
         const config = visualConfig[listStore.indexOf(data) % visualConfig.length] || visualConfig[0];
         if (data.logo_url) {
             detailAvatar.innerHTML = `<img src="${data.logo_url}" alt="${data.name_community}">`;
-            detailAvatar.className = 'comm-detail-avatar-container mx-auto';
+            detailAvatar.className = 'comm-detail-avatar-container mx-auto bg-white';
         } else {
             const initials = data.name_community ? data.name_community.substring(0, 2).toUpperCase() : 'CT';
             detailAvatar.innerHTML = initials;
@@ -970,12 +978,7 @@
             }
         }
 
-        // Leader required only in create mode
-        if (!isEdit && !leaderSelect.value) {
-            leaderError.textContent = 'Seleccione un líder';
-            leaderSelect.classList.add('is-invalid');
-            valid = false;
-        }
+        // Leader optional
 
         if (!valid) {
             alert('Por favor, revisa los errores en el formulario antes de continuar.');
@@ -1048,8 +1051,23 @@
             const currentStatus = statusSelect.value;
             const leadVal = parseInt(leaderSelect.value);
             const currentLeaderId = isNaN(leadVal) ? null : leadVal;
-            const currentLogo = selectedFile ? '' : (previewImg.style.display === 'block' ? previewImg.src : '');
+            let logoUrl = editingId ? (originalData.logo_url || '') : '';
 
+            // Handle Cloudinary Upload if a new file is selected
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                
+                const uploadData = await AuthManager.fetch('/communities/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!uploadData || !uploadData.url) throw new Error('Fallo al subir la imagen a Cloudinary');
+                logoUrl = uploadData.url;
+            }
+
+            // Define payload based on mode
             let payload: any = {};
             let hasChanges = false;
 
@@ -1061,14 +1079,12 @@
                 }
                 if (currentCode !== originalData.code) {
                     payload.code = currentCode;
-                    // Automatically sync access_code if it was the same as the old code
                     if (!originalData.access_code || originalData.access_code === originalData.code) {
                         payload.access_code = currentCode;
                     }
                     hasChanges = true;
                 }
                 
-                // Status normalization for comparison
                 let origStatus = originalData.status_community || 'Activo';
                 if (origStatus.toLowerCase() === 'active') origStatus = 'Activo';
                 if (origStatus.toLowerCase() === 'inactive') origStatus = 'Inactivo';
@@ -1083,8 +1099,8 @@
                     hasChanges = true;
                 }
 
-                if (selectedFile || (currentLogo !== originalData.logo_url)) {
-                    payload.logo_url = currentLogo;
+                if (logoUrl !== originalData.logo_url) {
+                    payload.logo_url = logoUrl;
                     hasChanges = true;
                 }
 
@@ -1094,14 +1110,14 @@
                     return;
                 }
             } else {
-                // Create Mode (Always send all required fields)
+                // Create Mode
                 payload = {
                     name_community: currentName,
                     code: currentCode,
                     status_community: 'Activo',
                     access_code: currentCode,
                     description_community: '',
-                    logo_url: currentLogo,
+                    logo_url: logoUrl,
                     leader_id: currentLeaderId
                 };
             }
@@ -1183,7 +1199,7 @@
                     <div class="comm-card" data-id="${item.id_community}">
                         <div class="comm-card-header">
                             <div class="comm-card-identity">
-                                <div class="comm-icon-box ${item.logo_url ? '' : config.theme}">
+                                <div class="comm-icon-box ${item.logo_url ? 'bg-white' : config.theme}">
                                     ${avatarHtml}
                                 </div>
                                 <div>

@@ -36,7 +36,7 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 <body class="leader-body">
     <LeaderSidebar />
 
-    <div class="leader-layout">
+    <div class="leader-layout" id="mainLayout">
         <LeaderHeader title={title} subtitle={subtitle} />
         <main class="leader-main">
             <slot />
@@ -61,6 +61,12 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
             display: flex;
             flex-direction: column;
             background: #f8fafc;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-collapsed .leader-layout {
+            margin-left: 70px;
         }
 
         .leader-main {
@@ -79,8 +85,55 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
         /* ── Responsive ── */
         @media (max-width: 1024px) {
-            .leader-layout { margin-left: 0; }
+            .leader-layout { 
+                margin-left: 0; 
+            }
+            .sidebar-collapsed .leader-layout {
+                margin-left: 0;
+            }
+            .leader-main {
+                padding: 20px 16px;
+            }
+            
+            /* Mobile Overlay when sidebar is open */
+            .sidebar-open::after {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 998;
+            }
         }
     </style>
+
+    <script>
+        // Manejo global del estado del Sidebar
+        const body = document.body;
+        
+        // Cargar estado inicial preferido
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed && window.innerWidth > 1024) {
+            body.classList.add('sidebar-collapsed');
+        }
+
+        // Listener para toggle desde Sidebar o Header
+        window.addEventListener('toggleSidebar', () => {
+            if (window.innerWidth <= 1024) {
+                body.classList.toggle('sidebar-open');
+                body.classList.remove('sidebar-collapsed');
+            } else {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed').toString());
+            }
+        });
+
+        // Cerrar al hacer click fuera en móviles
+        body.addEventListener('click', (e) => {
+            if (body.classList.contains('sidebar-open') && e.clientX > 260) {
+                body.classList.remove('sidebar-open');
+            }
+        });
+    </script>
 </body>
 </html>

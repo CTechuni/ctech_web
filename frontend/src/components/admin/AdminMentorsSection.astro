@@ -3,278 +3,364 @@
 ---
 
 <div class="admin-mentors-section">
-    <div class="section-top-header">
-        <div class="header-text">
-            <h2>Mentores</h2>
-            <p id="mentorsCount">0 mentores activos</p>
+    <!-- Toolbar: Búsqueda, Filtro Especialidad y Contador -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <!-- Buscador -->
+        <div class="input-group" style="max-width: 320px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar mentor o comunidad..." id="mentorSearch" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.88rem;">
         </div>
-        <div class="header-actions">
-            <button class="btn-add-mentor" id="addMentorBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75z" clip-rule="evenodd" /></svg> Nuevo Mentor
-            </button>
+
+        <!-- Filtro Especialidad (Movido a la derecha) -->
+        <div class="input-group" style="max-width: 240px;">
+            <select id="specialtyFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
+                <option value="">Todas las especialidades</option>
+                <!-- Dinámico -->
+            </select>
         </div>
     </div>
 
-    <div class="search-bar-container">
-        <div class="search-input-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 search-icon"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5zM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5z" clip-rule="evenodd" /></svg>
-            <input type="text" placeholder="Buscar mentor por nombre o especialidad..." id="mentorSearch">
-        </div>
-    </div>
-
-    <div class="mentors-grid-premium" id="mentorsGrid">
-        <!-- Render dinámico -->
+    <!-- Mentors Grid -->
+    <div class="mentors-grid" id="mentorsGrid">
         <div class="loading-state">
             <div class="spinner"></div>
-            <span>Organizando red de mentores...</span>
+            <span>Cargando red de mentores...</span>
         </div>
     </div>
 </div>
 
-<!-- Modal simplificado para demostración -->
-<div class="modal-overlay" id="mentorModal">
-    <div class="modal-card">
-        <h3>Gestionar Mentor</h3>
-        <p>Formulario para agregar o editar perfiles de mentores.</p>
-        <button class="btn-close-modal" id="closeMentorModal">Cerrar</button>
+<!-- Modal: Detalle de Mentor -->
+<div class="comm-modal-overlay" id="mentorDetailModal">
+    <div class="comm-modal" style="max-width: 460px;">
+        <div class="comm-modal-header border-0 pb-0">
+            <h5 class="comm-modal-title">Perfil del Mentor</h5>
+            <button class="comm-modal-close" id="closeDetailX" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="px-4 pb-4 pt-2">
+            <div class="text-center mb-4">
+                <div class="mentor-detail-avatar mx-auto" id="detailAvatar"></div>
+                <h4 class="mt-3 mb-1 fw-bold text-dark" id="detailName"></h4>
+                <p class="text-muted small mb-2" id="detailEmail"></p>
+                <div class="badge-premium-mentor" id="detailSpecialty"></div>
+            </div>
+
+            <div class="detail-info-grid">
+                <div class="detail-stat-row">
+                    <span class="detail-label">Comunidad</span>
+                    <span class="detail-value" id="detailComm"></span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="detail-label">Cursos Activos</span>
+                    <span class="detail-value" id="detailCourses"></span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="detail-label">Total Alumnos</span>
+                    <span class="detail-value" id="detailStudents"></span>
+                </div>
+                <div class="detail-stat-row">
+                    <span class="detail-label">Miembro desde</span>
+                    <span class="detail-value" id="detailJoined"></span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="button" class="btn btn-primary w-100 py-3 fw-bold" id="detailActionBtn" style="border-radius: 14px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);">Especialidad: Generalista</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<style>
+<!-- Modal: Confirmación Designar -->
+<div class="comm-modal-overlay" id="demoteModal">
+    <div class="comm-modal" style="max-width: 380px;">
+        <div class="p-4 text-center">
+            <div class="rocket-icon-circle mx-auto mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width:32px; height:32px;">
+                    <path d="M12.817 2.292a.75.75 0 00-1.092 0l-4.746 4.747a.75.75 0 000 1.06l.22.222a.75.75 0 01.149.804l-.81 1.702a.75.75 0 01-.678.427H4.25a.75.75 0 00-.53.22L2.22 13.004a.75.75 0 00-.03 1.03l3.754 4.125a.75.75 0 00.14.116l2.373 1.483a.75.75 0 001.034-.146l1.242-1.55a.75.75 0 00.14-.383v-1.742a.75.75 0 01.427-.678l1.703-.811a.75.75 0 01.803.15l.223.221a.75.75 0 001.06 0l4.747-4.747a.75.75 0 000-1.06l-4.747-4.746zm-.91 10.375a1.125 1.125 0 111.59-1.59 1.125 1.125 0 01-1.59 1.59z" />
+                    <path d="M4.406 14.204a.747.747 0 00-.14.116L2.247 16.34a.75.75 0 00.41 1.258l2.964.444a.75.75 0 01.474.305l1.83 2.146a.75.75 0 001.278-.293l.363-2.61a.75.75 0 01.206-.445l1.696-1.696a.75.75 0 000-1.061l-1.464-1.464a.75.75 0 00-1.06 0L7.143 14.53a.75.75 0 01-.446.206l-2.291.31z" />
+                </svg>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">Designar Mentor</h4>
+            <p class="text-muted small px-2">¿Quieres designar a <strong id="demoteName" class="text-dark"></strong> a usuario estándar? Ya no tendrá permisos de mentor.</p>
+            
+            <div class="d-flex gap-2 mt-4">
+                <button type="button" class="btn btn-light flex-grow-1 py-2 fw-bold" id="cancelDemote" style="border-radius: 12px; border: 1.5px solid #e2e8f0; color: #64748b;">Cancelar</button>
+                <button type="button" class="btn btn-primary flex-grow-1 py-2 fw-bold" id="confirmDemote" style="border-radius: 12px; background: #3b82f6;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+<!-- Modal: Seleccionar Especialidad -->
+<div class="comm-modal-overlay" id="specialtyModal">
+    <div class="comm-modal" style="max-width: 400px;">
+        <div class="comm-modal-header border-0 pb-0">
+            <h5 class="comm-modal-title">Asignar Especialidad</h5>
+            <button class="comm-modal-close" id="closeSpecialtyX" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-4">
+            <p class="text-muted small mb-3">Selecciona la especialidad principal para <strong id="specialtyTargetName" class="text-dark"></strong>:</p>
+            <div class="mb-4">
+                <select id="mentorSpecialtySelect" class="form-select" style="border-radius: 12px; padding: 0.75rem; border-color: #e2e8f0;">
+                    <option value="">Sin especialidad</option>
+                    <!-- Dinámico -->
+                </select>
+            </div>
+            <div class="d-flex gap-3">
+                <button type="button" class="btn btn-light flex-grow-1 py-2 fw-bold" id="cancelSpecialty" style="border-radius: 12px; border: 1.5px solid #e2e8f0; color: #64748b;">Cancelar</button>
+                <button type="button" class="btn btn-primary flex-grow-1 py-2 fw-bold" id="saveSpecialty" style="border-radius: 12px; background: #3b82f6;">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style is:global>
     .admin-mentors-section {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
     }
 
-    .section-top-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .header-text h2 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #1E293B;
-        margin: 0;
-    }
-
-    .header-text p {
-        font-size: 0.9rem;
-        color: #94A3B8;
-        margin: 0.2rem 0 0 0;
-        font-weight: 500;
-    }
-
-    .btn-add-mentor {
-        background: #0073ff;
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 12px rgba(0, 115, 255, 0.2);
-    }
-
-    /* SEARCH BAR */
-    .search-bar-container {
-        max-width: 100%;
-    }
-
-    .search-input-wrap {
-        position: relative;
-        width: 100%;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 1.25rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94A3B8;
-    }
-
-    .search-input-wrap input {
-        width: 100%;
-        padding: 1rem 1rem 1rem 3rem;
-        border-radius: 16px;
-        border: 1px solid white;
-        background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        font-size: 0.95rem;
-        color: #1E293B;
-        outline: none;
-        transition: all 0.2s;
-    }
-
-    /* GRID */
-    .mentors-grid-premium {
+    .mentors-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     }
 
-    /* MENTOR CARD */
-    .mentor-card-premium {
-        background: white;
-        border-radius: 24px;
-        padding: 1.5rem;
-        box-shadow: var(--card-shadow);
-        border: 1px solid #F1F5F9;
+    /* ═══════════ MENTOR CARD ═══════════ */
+    .mentor-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
-        transition: all 0.3s ease;
+        height: 100%;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
-
-    .mentor-card-premium:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    .mentor-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transform: translateY(-2px);
     }
-
-    .card-top {
+    .mentor-card-header {
         display: flex;
-        justify-content: space-between;
         align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1.15rem;
     }
-
-    .mentor-profile {
+    .mentor-card-identity {
         display: flex;
-        gap: 1rem;
         align-items: center;
+        gap: 0.85rem;
     }
-
-    .mentor-avatar-wrap {
-        position: relative;
-    }
-
-    .mentor-avatar {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
+    .mentor-avatar-box {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 1.2rem;
-        color: white;
-    }
-
-    .status-dot-active {
-        position: absolute;
-        bottom: 2px;
-        right: 2px;
-        width: 12px;
-        height: 12px;
-        background: #10B981;
-        border: 2px solid white;
-        border-radius: 50%;
-    }
-
-    .mentor-info h3 {
-        font-size: 1rem;
+        flex-shrink: 0;
+        overflow: hidden;
         font-weight: 700;
-        color: #1E293B;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #fff;
+    }
+    .mentor-name-text {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.95rem;
         margin: 0;
+        line-height: 1.3;
+    }
+    .mentor-email-sub {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #94a3b8;
+    }
+    .mentor-info {
+        display: flex;
+        flex-direction: column;
+    }
+    .mentor-actions {
+        display: flex;
+        gap: 0.35rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .mentor-card:hover .mentor-actions {
+        opacity: 1;
+    }
+    .mentor-card-action-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 8px;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .mentor-card-action-btn:hover {
+        color: #3b82f6;
+        background: #eff6ff;
+    }
+    .mentor-card-action-btn svg {
+        width: 17px !important;
+        height: 17px !important;
+    }
+    .mentor-card-action-btn.rocket-btn:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+    .mentor-role-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        padding: 0 0 0.65rem 0;
+        border-bottom: 1px dashed #f1f5f9;
+    }
+    .mentor-card-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: auto;
+        border-top: 1px solid #f8fafc;
+        padding-top: 0.75rem;
+    }
+    .specialty-badge-card {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #3b82f6;
+        background: #eff6ff;
+        padding: 0.1rem 0.45rem;
+        border-radius: 5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+    /* FOOTER STATS */
+    .mentor-card-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid #f8fafc;
+        padding-top: 1rem;
+        margin-top: auto;
     }
 
-    .mentor-role {
-        font-size: 0.8rem;
-        color: #B57681;
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .stat-item:not(:last-child) {
+        border-right: 1px solid #f8fafc;
+    }
+
+    .stat-value {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: #334155;
+    }
+
+    .stat-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .rating-star {
+        color: #f59e0b;
+        margin-right: 3px;
+    }
+
+    /* MODAL SPECIFICS */
+    .mentor-detail-avatar {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .badge-premium-mentor {
+        display: inline-flex;
+        background: #fdf2f8;
+        color: #db2777;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.72rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
 
-    .card-actions {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .action-btn-sm {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        border: 1px solid #E2E8F0;
-        background: white;
-        color: #94A3B8;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-
-    .mentor-details {
-        display: flex;
-        flex-direction: column;
+    .detail-info-grid {
+        display: grid;
         gap: 0.75rem;
+        margin-top: 1.5rem;
     }
 
-    .rating-row {
+    .detail-stat-row {
+        background: #f8fafc;
+        padding: 0.85rem 1.15rem;
+        border-radius: 14px;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
-        color: #FBBF24;
     }
 
-    .rating-stars {
-        display: flex;
-        gap: 2px;
+    .detail-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
     }
 
-    .rating-count {
-        color: #94A3B8;
-        font-weight: 500;
+    .detail-value {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #1e293b;
     }
 
-    .community-tag {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
-        color: #64748B;
-        font-weight: 500;
-    }
-
-    .comm-mini-circle {
-        width: 16px;
-        height: 16px;
-        background: #EFF6FF;
+    .rocket-icon-circle {
+        width: 64px;
+        height: 64px;
+        background: #eff6ff;
+        color: #3b82f6;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.5rem;
-        color: #2563EB;
-    }
-
-    /* MODAL */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-    }
-
-    .modal-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 20px;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
     }
 
     .loading-state {
@@ -282,103 +368,383 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 4rem;
-        color: #94A3B8;
+        justify-content: center;
+        padding: 5rem;
+        color: #94a3b8;
         gap: 1rem;
     }
 
     .spinner {
-        width: 30px;
-        height: 30px;
-        border: 3px solid #F1F5F9;
-        border-top-color: #0073ff;
+        width: 32px;
+        height: 32px;
+        border: 3px solid #f1f5f9;
+        border-top-color: #3b82f6;
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
 
+    /* ═══════════ MODAL SYSTEM ═══════════ */
+    .comm-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .comm-modal-overlay.active {
+        display: flex;
+    }
+    .comm-modal {
+        background: #ffffff;
+        border-radius: 24px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        transform: translateY(0) scale(1);
+        transition: transform 0.25s ease;
+        position: relative;
+    }
+    .comm-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #f1f5f9;
+        background: #fff;
+    }
+    .comm-modal-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+    .comm-modal-close {
+        background: #f8fafc;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    .comm-modal-close:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+        .admin-mentors-section .input-group {
+            max-width: 100% !important;
+        }
+        .mentors-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <script>
-    import { AuthManager, authManager } from "../../utils/auth.js";
-    const auth = authManager;
+    import { AuthManager } from "../../utils/auth.js";
 
+    // ═══════════ STATE ═══════════
     let allMentors = [];
-    const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444', '#EC4899'];
+    let specialties = [];
+    let pendingDemoteId = null;
 
-    async function fetchData() {
+    const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4'];
+
+    // ═══════════ DOM ELEMENTS ═══════════
+    const grid = document.getElementById('mentorsGrid');
+    const specialtyFilter = document.getElementById('specialtyFilter');
+    const searchInput = document.getElementById('mentorSearch');
+
+    // Modals
+    const detailModal = document.getElementById('mentorDetailModal');
+    const demoteModal = document.getElementById('demoteModal');
+    const specialtyModal = document.getElementById('specialtyModal');
+
+    // Specialty Modal Elements
+    const specialtySelect = document.getElementById('mentorSpecialtySelect');
+    const specialtyTargetName = document.getElementById('specialtyTargetName');
+    const saveSpecialtyBtn = document.getElementById('saveSpecialty') as HTMLButtonElement;
+    let pendingSpecialtyUserId = null;
+
+    // ═══════════ INITIALIZATION ═══════════
+    async function init() {
+        await Promise.all([fetchMentors(), fetchSpecialties()]);
+        render();
+    }
+
+    async function fetchMentors() {
         try {
-            // Mocking for visual demo if API empty, but calling AuthManager
-            const users = await auth.get('users');
-            allMentors = users.filter(u => u.role?.toLowerCase() === 'mentor');
+            // Call the specific /mentors endpoint which returns a list of enriched mentor objects
+            const data = await AuthManager.fetch('/users/mentors');
+            const mentorsList = Array.isArray(data) ? data : [];
             
-            // If none, add some mock data for the wow factor
-            if (allMentors.length === 0) {
-                allMentors = [
-                    { name_user: 'Andrés Mendoza', role: 'Mentor', community: 'DevFront' },
-                    { name_user: 'Sofía Valderrama', role: 'Mentor', community: 'Ux/Ui' },
-                    { name_user: 'Mateo Holguín', role: 'Mentor', community: 'Backend' },
-                    { name_user: 'Valeria Serna', role: 'Mentor', community: 'DataScience' }
-                ];
-            }
+            // Metrics are still simulated if not provided by backend
+            allMentors = mentorsList.map(m => ({
+                ...m,
+                course_count: m.course_count || Math.floor(Math.random() * 5) + 1,
+                student_count: m.student_count || Math.floor(Math.random() * 50) + 10,
+                rating: m.rating || (4 + Math.random()).toFixed(1),
+                specialty_name: m.specialty_name || 'Generalist'
+            }));
 
-            renderMentors(allMentors);
-            updateCount(allMentors.length);
         } catch (e) {
             console.error('Error fetching mentors:', e);
+            allMentors = [];
         }
     }
 
-    function renderMentors(list) {
-        const grid = document.getElementById('mentorsGrid');
+    async function fetchSpecialties() {
+        try {
+            const data = await AuthManager.fetch('/specialties/');
+            specialties = Array.isArray(data) ? data : [];
+            
+            let html = '<option value="">Todas las especialidades</option>';
+            let modalHtml = '<option value="">Sin especialidad</option>';
+            
+            specialties.forEach(s => {
+                const opt = `<option value="${s.id}">${s.name}</option>`;
+                html += `<option value="${s.name}">${s.name}</option>`;
+                modalHtml += opt;
+            });
+            
+            if (specialtyFilter) specialtyFilter.innerHTML = html;
+            if (specialtySelect) specialtySelect.innerHTML = modalHtml;
+        } catch (e) {
+            console.warn('Could not load specialties');
+        }
+    }
+
+    // ═══════════ RENDER ═══════════
+    function render() {
         if (!grid) return;
 
-        grid.innerHTML = list.map((m, i) => {
+        const term = searchInput.value.toLowerCase();
+        const spec = specialtyFilter.value;
+
+        const filtered = allMentors.filter(m => {
+            const matchSearch = (m.name_user || '').toLowerCase().includes(term) || 
+                               (m.community_name || '').toLowerCase().includes(term);
+            const matchSpec = !spec || m.specialty_name === spec;
+            return matchSearch && matchSpec;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="loading-state">
+                    <span class="text-muted">No se encontraron mentores.</span>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = filtered.map((m, i) => {
             const initial = (m.name_user || 'M').substring(0, 1).toUpperCase();
-            const color = colors[i % colors.length];
+            const color = COLORS[i % COLORS.length];
+            const specialtyName = m.specialty_name || 'Generalista';
+            const communityName = m.community_name || 'Comunidad Global';
+            const specialtyEditIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>`;
+            const demoteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>`;
             return `
-                <div class="mentor-card-premium">
-                    <div class="card-top">
-                        <div class="mentor-profile">
-                            <div class="mentor-avatar-wrap">
-                                <div class="mentor-avatar" style="background: ${color}">${initial}</div>
-                                <div class="status-dot-active"></div>
-                            </div>
+                <div class="mentor-card" data-id="${m.id}">
+                    <div class="mentor-card-header">
+                        <div class="mentor-card-identity">
+                            <div class="mentor-avatar-box" style="background: ${color}">${initial}</div>
                             <div class="mentor-info">
-                                <h3>${m.name_user}</h3>
-                                <span class="mentor-role">Mentor</span>
+                                <h4 class="mentor-name-text">${m.name_user}
+                                    <span class="comm-status-dot bg-success" title="Activo"></span>
+                                </h4>
+                                <span class="mentor-email-sub">${m.email || communityName}</span>
                             </div>
                         </div>
-                        <div class="card-actions">
-                            <button class="action-btn-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.199Z" /></svg></button>
+                        <div class="mentor-actions">
+                            <button class="mentor-card-action-btn specialty-btn" data-id="${m.id}" data-name="${m.name_user}" data-sid="${m.specialty_id || ''}" title="Asignar Especialidad">${specialtyEditIcon}</button>
+                            <button class="mentor-card-action-btn rocket-btn" data-demote="${m.id}" data-name="${m.name_user}" title="Designar a Usuario">${demoteIcon}</button>
                         </div>
                     </div>
-                    <div class="mentor-details">
-                        <div class="rating-row">
-                            <div class="rating-stars">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-slate-300"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <span class="rating-count">(24 reseñas)</span>
-                        </div>
-                        <div class="community-tag">
-                            <div class="comm-mini-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM6.262 6.072a8.25 8.25 0 1 0 10.562 10.562L6.072 6.262ZM2.045 12.001C2.045 17.499 6.501 21.956 12 21.956c5.499 0 9.956-4.457 9.956-9.956 0-5.498-4.457-9.955-9.956-9.955-5.499 0-9.955 4.457-9.955 9.955Z" clip-rule="evenodd" /></svg></div>
-                            <span>\${m.community || 'General'}</span>
-                        </div>
+
+                    <div class="mentor-role-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:13px;height:13px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" /></svg>
+                        Mentor &middot; ${communityName}
+                    </div>
+
+                    <div class="mentor-card-footer">
+                        <span class="specialty-badge-card">${specialtyName}</span>
                     </div>
                 </div>
             `;
         }).join('');
     }
 
-    function updateCount(n) {
-        const el = document.getElementById('mentorsCount');
-        if (el) el.textContent = `${n} mentores activos`;
+    // ═══════════ ACTIONS ═══════════
+    function openDetail(m) {
+        const color = COLORS[allMentors.indexOf(m) % COLORS.length] || COLORS[0];
+        const initial = (m.name_user || 'M').substring(0, 1).toUpperCase();
+        
+        const avatarBox = document.getElementById('detailAvatar');
+        avatarBox.style.background = color;
+        avatarBox.textContent = initial;
+
+        document.getElementById('detailName').textContent = m.name_user;
+        document.getElementById('detailEmail').textContent = m.email;
+        document.getElementById('detailSpecialty').textContent = m.specialty_name;
+        document.getElementById('detailComm').textContent = m.community_name || 'Comunidad Global';
+        document.getElementById('detailCourses').textContent = m.course_count;
+        document.getElementById('detailStudents').textContent = m.student_count;
+        document.getElementById('detailJoined').textContent = new Date(m.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const actionBtn = document.getElementById('detailActionBtn');
+        if (actionBtn) {
+            actionBtn.textContent = `Especialidad: ${m.specialty_name || 'Generalista'}`;
+        }
+
+        detailModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
-    fetchData();
+    function openSpecialtyModal(id, name, currentSid) {
+        pendingSpecialtyUserId = id;
+        if (specialtyTargetName) specialtyTargetName.textContent = name;
+        if (specialtySelect) (specialtySelect as HTMLSelectElement).value = currentSid || '';
+        specialtyModal?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function demoteMentor(id, name) {
+        pendingDemoteId = id;
+        document.getElementById('demoteName').textContent = name;
+        demoteModal.classList.add('active');
+    }
+
+    // ═══════════ EVENTS ═══════════
+    grid?.addEventListener('click', (e) => {
+        const target = e.target;
+        
+        // Check if rocket clicked
+        const rocketBtn = target.closest('.rocket-btn');
+        if (rocketBtn) {
+            e.stopPropagation();
+            demoteMentor(rocketBtn.dataset.demote, rocketBtn.dataset.name);
+            return;
+        }
+
+        // Check if specialty clicked
+        const specBtn = target.closest('.specialty-btn');
+        if (specBtn) {
+            e.stopPropagation();
+            openSpecialtyModal(specBtn.dataset.id, specBtn.dataset.name, specBtn.dataset.sid);
+            return;
+        }
+
+        // Check if card clicked
+        const card = target.closest('.mentor-card');
+        if (card) {
+            const id = parseInt(card.dataset.id);
+            const mentor = allMentors.find(m => m.id === id);
+            if (mentor) openDetail(mentor);
+        }
+    });
+
+    document.getElementById('closeDetailX')?.addEventListener('click', () => {
+        detailModal.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    document.getElementById('cancelDemote')?.addEventListener('click', () => {
+        demoteModal.classList.remove('active');
+        pendingDemoteId = null;
+    });
+
+    document.getElementById('confirmDemote')?.addEventListener('click', async () => {
+        if (!pendingDemoteId) return;
+        try {
+            const confirmBtn = document.getElementById('confirmDemote');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Procesando...';
+
+            await AuthManager.fetch(`/users/${pendingDemoteId}/demote`, { method: 'PATCH' });
+            
+            demoteModal.classList.remove('active');
+            
+            // Re-fetch and render
+            await fetchMentors();
+            render();
+            
+            alert('El mentor ha sido designado como usuario correctamente.');
+        } catch (e) {
+            alert('Error: ' + e.message);
+        } finally {
+            const confirmBtn = document.getElementById('confirmDemote');
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Confirmar';
+        }
+    });
+
+    [searchInput, specialtyFilter].forEach(el => {
+        el?.addEventListener('change', render);
+        el?.addEventListener('input', render);
+    });
+
+    // Delegación para cerrar modales al hacer clic fuera
+    [detailModal, demoteModal, specialtyModal].forEach(m => {
+        m?.addEventListener('click', (e) => {
+            if (e.target === m) {
+                m.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    document.getElementById('closeSpecialtyX')?.addEventListener('click', () => {
+        specialtyModal?.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    document.getElementById('cancelSpecialty')?.addEventListener('click', () => {
+        specialtyModal?.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    saveSpecialtyBtn?.addEventListener('click', async () => {
+        if (!pendingSpecialtyUserId) return;
+        try {
+            saveSpecialtyBtn.disabled = true;
+            saveSpecialtyBtn.textContent = 'Guardando...';
+
+            const sid = (specialtySelect as HTMLSelectElement).value;
+            await AuthManager.fetch(`/users/${pendingSpecialtyUserId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ specialty_id: sid ? parseInt(sid) : null })
+            });
+
+            specialtyModal?.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            await fetchMentors();
+            render();
+        } catch (e) {
+            alert('Error al guardar especialidad: ' + e.message);
+        } finally {
+            saveSpecialtyBtn.disabled = false;
+            saveSpecialtyBtn.textContent = 'Guardar';
+        }
+    });
+
+    // Start
+    init();
 </script>
 

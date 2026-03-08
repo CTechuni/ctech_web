@@ -3,121 +3,329 @@ import UserLayout from "../../layouts/UserLayout.astro";
 const title = "Mi Perfil";
 ---
 
-<UserLayout title={title} subtitle="Personaliza tu espacio y gestiona tu cuenta.">
-    <div class="user-profile-grid">
-        <div class="profile-card glass-morphic">
-            <div class="avatar-edit">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="avatar" />
-                <button class="edit-btn"><i class="fas fa-camera"></i></button>
+<UserLayout title={title} subtitle="Gestiona tu información personal y revisa tus logros.">
+    <div class="profile-page-container">
+        <!-- 1. Header Card (Admin Style) -->
+        <div class="profile-header-card glass-morphism">
+            <div class="profile-avatar-large">
+                <span id="profileLargeInitial">--</span>
             </div>
-            <h2 id="displayUserName">Usuario</h2>
-            <p class="user-id">ID: #CT-2024-001</p>
-            
-            <div class="user-stats">
-                <div class="stat">
-                    <span>12</span>
-                    <label>Cursos</label>
-                </div>
-                <div class="stat">
-                    <span>850</span>
-                    <label>Puntos</label>
+            <div class="profile-main-info">
+                <h2 id="profileFullName">Cargando...</h2>
+                <p class="profile-role-tag">Estudiante CTech</p>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="statInscribed">0</span>
+                        <span class="stat-label">Cursos Inscritos</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="statCompleted">0</span>
+                        <span class="stat-label">Completados</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="statEvents">0</span>
+                        <span class="stat-label">Eventos</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="settings-card glass-morphic">
-            <h3>Información de la Cuenta</h3>
-            <div class="info-list">
-                <div class="info-item">
-                    <label>Correo Electrónico</label>
-                    <p>usuario@ctech.com</p>
+        <!-- 2. Profile Sections -->
+        <div class="profile-sections-grid">
+            <section class="settings-card glass-morphism">
+                <div class="card-header">
+                    <h3>Información Personal</h3>
                 </div>
-                <div class="info-item">
-                    <label>Rol en Plataforma</label>
-                    <p>Estudiante</p>
+                <form class="profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" id="profileInputName" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label>Email de Acceso</label>
+                            <input type="email" id="profileInputEmail" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Comunidad</label>
+                        <input type="text" id="profileInputCommunity" value="General" readonly />
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary">Solicitar Edición</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="settings-card glass-morphism">
+                <div class="card-header">
+                    <h3>Seguridad y Privacidad</h3>
                 </div>
-                <button class="update-btn">Actualizar Información</button>
-            </div>
+                <div class="security-options">
+                    <div class="option-item">
+                        <div class="option-info">
+                            <h4>Contraseña</h4>
+                            <p>Protege tu cuenta con una clave segura</p>
+                        </div>
+                        <button class="btn-outline-v2">Cambiar</button>
+                    </div>
+                    <div class="option-item">
+                        <div class="option-info">
+                            <h4>Visibilidad del Perfil</h4>
+                            <p>Permitir que otros vean tus logros</p>
+                        </div>
+                        <div class="status-badge-active">Público</div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
     <style>
-        .user-profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
+        .profile-page-container {
+            display: flex;
+            flex-direction: column;
             gap: 2rem;
         }
 
-        .glass-morphic {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 2.5rem;
+        .glass-morphism {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            padding: 2rem;
         }
 
-        .profile-card { text-align: center; }
-
-        .avatar-edit {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 1.5rem;
-        }
-
-        .avatar-edit img {
-            width: 100%;
-            height: 100%;
-            border-radius: 40px;
-            border: 4px solid rgba(245, 158, 11, 0.2);
-            object-fit: cover;
-        }
-
-        .edit-btn {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            background: #f59e0b;
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .user-id { color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; margin-top: 0.5rem; }
-
-        .user-stats {
+        /* ── Header Card ── */
+        .profile-header-card {
             display: flex;
-            justify-content: space-around;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            align-items: center;
+            gap: 3rem;
+            padding: 3rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         }
 
-        .stat span { display: block; font-size: 1.4rem; font-weight: 800; color: #f59e0b; }
-        .stat label { font-size: 0.8rem; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; font-weight: 700; }
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            background: #007bff;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0, 123, 255, 0.15);
+        }
 
-        .info-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
-        .info-item label { display: block; font-size: 0.85rem; color: rgba(255, 255, 255, 0.4); margin-bottom: 0.4rem; }
-        .info-item p { font-size: 1.1rem; color: white; font-weight: 500; }
+        .profile-main-info h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            color: #0f172a;
+        }
 
-        .update-btn {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fbbf24;
-            padding: 1rem;
-            border-radius: 15px;
+        .profile-role-tag {
+            display: inline-block;
+            margin: 0.5rem 0 1.5rem;
+            background: #eff6ff;
+            color: #007bff;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* ── Sections Grid ── */
+        .profile-sections-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 2rem;
+        }
+
+        .settings-card h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .card-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .form-group input {
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            font-size: 0.95rem;
+            color: #1e293b;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 0.85rem;
+            border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
+            width: fit-content;
             margin-top: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #e2e8f0; color: #1e293b; }
+
+        .security-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        .update-btn:hover { background: #f59e0b; color: white; }
+        .option-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .option-item:last-child { border: none; padding-bottom: 0; }
 
-        @media (max-width: 900px) { .user-profile-grid { grid-template-columns: 1fr; } }
+        .option-info h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .option-info p {
+            margin: 0.2rem 0 0;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .btn-outline-v2 {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-outline-v2:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+        .status-badge-active {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+
+        @media (max-width: 1024px) {
+            .profile-header-card { flex-direction: column; text-align: center; gap: 1.5rem; padding: 2rem; }
+            .profile-sections-grid { grid-template-columns: 1fr; }
+            .profile-stats { justify-content: center; }
+        }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+            .profile-stats { gap: 1.5rem; flex-wrap: wrap; }
+            .profile-avatar-large { width: 90px; height: 90px; font-size: 2.2rem; }
+            .profile-main-info h2 { font-size: 1.6rem; }
+        }
     </style>
+
+    <script>
+        import { authManager } from "../../utils/auth.js";
+
+        function loadUserProfile() {
+            const user = authManager.getUser();
+            if (user) {
+                // Update text content
+                const fullName = document.getElementById('profileFullName');
+                const initial = document.getElementById('profileLargeInitial');
+                
+                if (fullName) fullName.textContent = user.name_user || 'Estudiante';
+                if (initial) initial.textContent = user.name_user ? user.name_user.substring(0, 1).toUpperCase() : 'U';
+
+                // Update form fields
+                const nameInput = document.getElementById('profileInputName') as HTMLInputElement;
+                const emailInput = document.getElementById('profileInputEmail') as HTMLInputElement;
+                const communityInput = document.getElementById('profileInputCommunity') as HTMLInputElement;
+
+                if (nameInput) nameInput.value = user.name_user || '';
+                if (emailInput) emailInput.value = user.email || '';
+                if (communityInput) communityInput.value = user.community_name || 'General';
+
+                // Simulated stats (to be replaced with actual API call)
+                const statInscribed = document.getElementById('statInscribed');
+                const statCompleted = document.getElementById('statCompleted');
+                const statEvents = document.getElementById('statEvents');
+
+                if (statInscribed) statInscribed.textContent = "12";
+                if (statCompleted) statCompleted.textContent = "4";
+                if (statEvents) statEvents.textContent = "8";
+            }
+        }
+
+        loadUserProfile();
+    </script>
 </UserLayout>
+

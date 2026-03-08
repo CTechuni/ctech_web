@@ -30,10 +30,7 @@ const menuItems = [
     <!-- Logo -->
     <div class="sidebar-brand">
         <div class="brand-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
-                <path fill-rule="evenodd" d="M9.315 7.584C12.195 3.883 16.695 1.5 21.75 1.5a.75.75 0 01.75.75c0 5.056-2.383 9.555-6.084 12.436A6.75 6.75 0 019.75 22.5a.75.75 0 01-.75-.75v-4.131A15.838 15.838 0 016.382 15H2.25a.75.75 0 01-.75-.75 6.75 6.75 0 017.815-6.666zM15 6.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" clip-rule="evenodd"/>
-                <path d="M5.26 17.242a.75.75 0 10-.897-1.203 5.243 5.243 0 00-2.05 5.022.75.75 0 00.625.627 5.243 5.243 0 005.022-2.051.75.75 0 10-1.202-.897 3.744 3.744 0 01-3.008 1.51c0-1.23.592-2.323 1.51-3.008z"/>
-            </svg>
+            <img src="/LogoCTech.svg" alt="CTech Logo" class="logo-white" />
         </div>
         <span class="brand-name">CTech</span>
         <button class="collapse-btn" id="collapseBtn" title="Colapsar sidebar">
@@ -45,9 +42,6 @@ const menuItems = [
 
     <!-- Profile Card -->
     <div class="profile-card">
-        <div class="profile-avatar" id="sideAvatarContainer">
-            <span id="userInitial">...</span>
-        </div>
         <div class="profile-info">
             <span class="profile-name" id="userNameSide">Cargando...</span>
             <span class="profile-community" id="userCommSide">Administrador</span>
@@ -78,7 +72,7 @@ const menuItems = [
 
 <style>
     .admin-sidebar {
-        width: 260px;
+        width: var(--sidebar-width);
         height: 100vh;
         position: fixed;
         left: 0;
@@ -88,6 +82,63 @@ const menuItems = [
         flex-direction: column;
         z-index: 1000;
         overflow: hidden;
+        transition: width 0.3s ease, transform 0.3s ease;
+    }
+
+    /* ── Collapsed State (Desktop Only) ────────── */
+    @media (min-width: 1025px) {
+        :global(.sidebar-collapsed) .admin-sidebar {
+            width: 70px;
+        }
+
+        :global(.sidebar-collapsed) .brand-name,
+        :global(.sidebar-collapsed) .profile-info,
+        :global(.sidebar-collapsed) .profile-badge,
+        :global(.sidebar-collapsed) .nav-label,
+        :global(.sidebar-collapsed) .logout-btn span {
+            display: none;
+        }
+
+        :global(.sidebar-collapsed) .sidebar-brand { justify-content: center; padding: 20px 0; }
+        :global(.sidebar-collapsed) .collapse-btn { 
+            position: absolute; 
+            right: -12px; 
+            top: 25px; 
+            transform: rotate(180deg); 
+            background: #007bff; 
+            color: white; 
+            border: 2px solid #007bff;
+            z-index: 2000;
+            width: 24px;
+            height: 24px;
+        }
+        :global(.sidebar-collapsed) .collapse-btn:hover {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+
+        :global(.sidebar-collapsed) .admin-sidebar {
+            overflow: visible;
+        }
+    :global(.sidebar-collapsed) .profile-card { 
+        display: none; /* Ocultar card completa cuando está colapsado para mayor limpieza */
+    }
+        :global(.sidebar-collapsed) .nav-item { justify-content: center; padding: 12px 0; }
+    }
+
+    /* ── Mobile State ─────────────────────────── */
+    @media (max-width: 1024px) {
+        .admin-sidebar {
+            transform: translateX(-100%);
+            width: 260px; /* Always fixed width on mobile when open */
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+        :global(.sidebar-open) .admin-sidebar {
+            transform: translateX(0);
+        }
+        .collapse-btn { display: none; }
     }
 
     /* ── Brand ─────────────────────────────────── */
@@ -98,17 +149,24 @@ const menuItems = [
         padding: 20px 16px 16px;
         border-bottom: 1px solid rgba(255,255,255,0.06);
         position: relative;
+        overflow: visible; /* Asegurar que el botón no se corte */
     }
 
     .brand-icon {
-        width: 34px;
-        height: 34px;
-        background: #007bff;
+        width: 42px;
+        height: 42px;
+        background: #0d1117; /* Mismo color que el sidebar */
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+    }
+
+    .logo-white {
+        width: 32px;
+        height: 32px;
+        filter: brightness(0) invert(1); /* Hace que el logo sea blanco */
     }
 
     .brand-name {
@@ -141,11 +199,10 @@ const menuItems = [
         background: #007bff;
         border-radius: 12px;
         padding: 12px 14px;
-        display: grid;
-        grid-template-columns: 40px 1fr;
-        grid-template-rows: auto auto;
-        column-gap: 10px;
-        align-items: center;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
     }
 
     .profile-avatar {
@@ -191,7 +248,6 @@ const menuItems = [
     }
 
     .profile-badge {
-        grid-column: 2;
         background: rgba(255,255,255,0.2);
         color: white;
         font-size: 0.65rem;
@@ -201,7 +257,7 @@ const menuItems = [
         width: fit-content;
         letter-spacing: 0.03em;
         text-transform: uppercase;
-        margin-top: 4px;
+        margin-top: 2px;
     }
 
     /* ── Navigation ────────────────────────────── */
@@ -293,13 +349,6 @@ const menuItems = [
 
     if (user) {
         if (document.getElementById('userNameSide')) document.getElementById('userNameSide').textContent = user.name_user || 'Admin';
-        
-        const avatarContainer = document.getElementById('sideAvatarContainer');
-        const photoUrl = user.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name_user || 'admin')}&backgroundColor=b6e3f4`;
-        
-        if (avatarContainer) {
-            avatarContainer.innerHTML = `<img src="${photoUrl}" alt="Avatar" />`;
-        }
     }
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
@@ -307,14 +356,30 @@ const menuItems = [
         window.location.href = '/';
     });
 
-    // Mark active nav item
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(link => {
-        const linkPath = link.getAttribute('data-path');
-        if (linkPath && (currentPath === linkPath || (linkPath !== '/admin' && currentPath.startsWith(linkPath)))) {
+    // Toggle Sidebar Event
+    document.getElementById('collapseBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleAdminSidebar'));
+    });
+
+    // Mark active nav item - favoring exact match
+    const currentPath = window.location.pathname.replace(/\/$/, "");
+    const navItems = document.querySelectorAll('.nav-item');
+    let exactMatchFound = false;
+
+    navItems.forEach(link => {
+        const linkPath = link.getAttribute('data-path')?.replace(/\/$/, "");
+        if (linkPath === currentPath) {
             link.classList.add('active');
-        } else if (linkPath === '/admin' && currentPath === '/admin') {
-            link.classList.add('active');
+            exactMatchFound = true;
         }
     });
+
+    if (!exactMatchFound) {
+        navItems.forEach(link => {
+            const linkPath = link.getAttribute('data-path')?.replace(/\/$/, "");
+            if (linkPath && linkPath !== '/admin' && currentPath.startsWith(linkPath)) {
+                link.classList.add('active');
+            }
+        });
+    }
 </script>

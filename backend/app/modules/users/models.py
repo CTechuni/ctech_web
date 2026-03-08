@@ -25,13 +25,15 @@ class User(Base):
     name_user = Column(String(150))
     rol_id = Column(Integer, ForeignKey("roles.id_rol")) 
     community_id = Column(Integer, ForeignKey("communities.id_community"), nullable=True) # <--- Added linkage
+    specialty_id = Column(Integer, ForeignKey("specialties.id"), nullable=True) # <--- Added specialty linkage
     status = Column(String(50), default="active")
     is_email_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
 
-    # Relación con Role
+    # Relaciones
     role = relationship("Role", back_populates="users")
     profile = relationship("Profile", back_populates="user", uselist=False)
+    specialty = relationship("app.modules.specialties.models.Specialty")
 
 class Profile(Base):
     __tablename__ = "profiles"

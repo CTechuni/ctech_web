@@ -45,6 +45,9 @@ const { title, subtitle } = Astro.props;
                 <slot />
             </main>
         </div>
+
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
     </div>
 
     <style is:global>
@@ -79,6 +82,12 @@ const { title, subtitle } = Astro.props;
             display: flex;
             flex-direction: column;
             background: var(--bg-light);
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-collapsed .admin-main-container {
+            margin-left: 70px;
         }
 
         .admin-main-content {
@@ -143,8 +152,76 @@ const { title, subtitle } = Astro.props;
 
         /* ── Responsive ── */
         @media (max-width: 1024px) {
-            .admin-main-container { margin-left: 0; }
+            .admin-main-container { 
+                margin-left: 0; 
+            }
+            .sidebar-collapsed .admin-main-container {
+                margin-left: 0;
+            }
+            .admin-main-content {
+                padding: 20px 16px;
+            }
+
+            /* Mobile Overlay */
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            :global(.sidebar-open) .sidebar-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
         }
     </style>
+
+    <script>
+        const body = document.body;
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        // Inicializar estado colapsado (solo en escritorio)
+        const isCollapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+        if (isCollapsed && window.innerWidth > 1024) {
+            body.classList.add('sidebar-collapsed');
+        }
+
+        // Global Toggle Listener
+        window.addEventListener('toggleAdminSidebar', () => {
+            if (window.innerWidth <= 1024) {
+                body.classList.toggle('sidebar-open');
+                body.classList.remove('sidebar-collapsed');
+            } else {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('adminSidebarCollapsed', body.classList.contains('sidebar-collapsed').toString());
+                body.classList.remove('sidebar-open');
+            }
+        });
+
+        // Close on overlay click
+        overlay?.addEventListener('click', () => {
+            body.classList.remove('sidebar-open');
+        });
+
+        // Close mobile sidebar on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                if (body.classList.contains('sidebar-open')) {
+                    body.classList.remove('sidebar-open');
+                }
+                // Restaurar estado colapsado si aplica
+                const collapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+                if (collapsed) body.classList.add('sidebar-collapsed');
+            } else {
+                // En móviles nunca debe estar "colapsado" (estilo 70px)
+                body.classList.remove('sidebar-collapsed');
+            }
+        });
+    </script>
 </body>
 </html>

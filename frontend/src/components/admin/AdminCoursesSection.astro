@@ -3,30 +3,24 @@
 ---
 
 <div class="admin-courses-section">
-    <div class="section-top-header">
-        <div class="header-text">
-            <h2>Cursos</h2>
-            <p id="coursesTotalCount">0 cursos en la plataforma</p>
+    <!-- Toolbar: Búsqueda y Especialidad -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <!-- Buscador -->
+        <div class="input-group" style="max-width: 320px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar curso o mentor..." id="courseSearch" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.88rem;">
         </div>
-        <div class="header-actions">
-            <button class="btn-secondary-action" id="openToolsBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 0 0-.986.57c-.166.115-.334.11-.45.021l-.933-.717a1.875 1.875 0 0 0-2.524.232L3.33 6.415a1.875 1.875 0 0 0 .232 2.524l.933.717c.115.088.13.227.05.393a7.447 7.447 0 0 0-.57.986c-.088.182-.228.277-.348.297l-1.072.18c-.904.151-1.567.933-1.567 1.85v1.078c0 .917.663 1.699 1.567 1.85l1.072.18c.12.02.26.115.348.297.18.34.373.67.57.986.08.166.065.305-.05.393l-.933.717a1.875 1.875 0 0 0-.232 2.524l1.078 1.078a1.875 1.875 0 0 0 2.524-.232l.933-.717c.115-.088.254-.083.393-.05.34.18.67.373.986.57.182.088.277.228.297.348l.18 1.072c.151.904.933 1.567 1.85 1.567h1.078c.917 0 1.699-.663 1.85-1.567l.18-1.072c.02-.12.115-.26.297-.348a7.485 7.485 0 0 0 .986-.57c.166-.115.305-.115.421-.05l.933.717a1.875 1.875 0 0 0 2.524-.232l1.078-1.078a1.875 1.875 0 0 0-.232-2.524l-.933-.717c-.08-.061-.09-.2-.05-.393a7.44 7.44 0 0 0 .57-.986c.088-.182.228-.277.348-.297l1.072-.18c.904-.151 1.567-.933 1.567-1.85v-1.078c0-.917-.663-1.699-1.567-1.85l-1.072-.18c-.12-.02-.26-.115-.348-.297a7.49 7.49 0 0 0-.57-.986c-.088-.166-.088-.305.05-.393l.933-.717a1.875 1.875 0 0 0 .232-2.524l-1.078-1.078a1.875 1.875 0 0 0-2.524.232l-.933.717c-.115.088-.227.08-.393.05a7.493 7.493 0 0 0-.986-.57c-.182-.088-.277-.228-.297-.348l-.18-1.072c-.151-.904-.933-1.567-1.85-1.567h-1.078ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" /></svg> Utilidades
-            </button>
-            <button class="btn-add-course" id="addCourseBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75z" clip-rule="evenodd" /></svg> Crear Programa
-            </button>
-        </div>
-    </div>
 
-    <div class="filter-bar">
-        <div class="search-input-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 search-icon"><path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5zM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5z" clip-rule="evenodd" /></svg>
-            <input type="text" placeholder="Buscar por título, tecnología o especialidad..." id="courseSearch">
-        </div>
-        <div class="quick-filters">
-            <button class="q-filter active">Todos</button>
-            <button class="q-filter">Premium</button>
-            <button class="q-filter">Gratuitos</button>
+        <!-- Filtro Especialidad -->
+        <div class="input-group" style="max-width: 240px;">
+            <select id="specialtyFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
+                <option value="">Todas las especialidades</option>
+                <!-- Dinámico -->
+            </select>
         </div>
     </div>
 
@@ -152,6 +146,18 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
         gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .admin-courses-section .input-group {
+            max-width: 100% !important;
+        }
+        .courses-grid-premium {
+            grid-template-columns: 1fr;
+        }
+        .course-card-premium {
+            max-width: 100%;
+        }
     }
 
     /* COURSE CARD */
@@ -333,22 +339,37 @@
 
     async function fetchData() {
         try {
-            const data = await auth.get('courses');
-            allCourses = data || [];
+            const data = await AuthManager.fetch('/courses');
+            allCourses = Array.isArray(data) ? data : [];
             
             // Mock if empty
             if (allCourses.length === 0) {
                 allCourses = [
-                    { title: 'Intro a la Web3 con Solidity', description: 'Fundamentos de smart contracts y dApps.', specialty_name: 'Blockchain', price: 49.99, is_premium: true, image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'Arquitectura de Microservicios', description: 'Escalamiento de aplicaciones con Docker y K8s.', specialty_name: 'Back-end', price: 0, is_premium: false, image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'UX/UI Design System Pro', description: 'Crea sistemas de diseño escalables y modernos.', specialty_name: 'Design', price: 79.99, is_premium: true, image: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&q=80&w=400' }
+                    { title: 'Intro a la Web3 con Solidity', description: 'Fundamentos de smart contracts y dApps.', specialty_name: 'Blockchain', mentor_name: 'Diego Torres', price: 49.99, is_premium: true, image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=400' },
+                    { title: 'Arquitectura de Microservicios', description: 'Escalamiento de aplicaciones con Docker y K8s.', specialty_name: 'Back-end', mentor_name: 'Ana Martínez', price: 0, is_premium: false, image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=400' },
+                    { title: 'UX/UI Design System Pro', description: 'Crea sistemas de diseño escalables y modernos.', specialty_name: 'Design', mentor_name: 'Carlos Ruiz', price: 79.99, is_premium: true, image: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&q=80&w=400' }
                 ];
             }
+
+            populateSpecialties(allCourses);
             renderCourses(allCourses);
-            updateCount(allCourses.length);
         } catch (error) {
             console.error('Error fetching courses:', error);
         }
+    }
+
+    function populateSpecialties(courses) {
+        const select = document.getElementById('specialtyFilter');
+        if (!select) return;
+        
+        const specialties = [...new Set(courses.map(c => c.specialty_name).filter(Boolean))].sort();
+        
+        specialties.forEach(spec => {
+            const option = document.createElement('option');
+            option.value = spec;
+            option.textContent = spec;
+            select.appendChild(option);
+        });
     }
 
     function renderCourses(list) {
@@ -384,18 +405,22 @@
         `).join('');
     }
 
-    function updateCount(n) {
-        const el = document.getElementById('coursesTotalCount');
-        if (el) el.textContent = `${n} cursos en la plataforma`;
+    function applyFilters() {
+        const term = (document.getElementById('courseSearch') as HTMLInputElement)?.value.toLowerCase() || '';
+        const specialty = (document.getElementById('specialtyFilter') as HTMLSelectElement)?.value || '';
+
+        const filtered = allCourses.filter(c => {
+            const matchesSearch = c.title.toLowerCase().includes(term) || 
+                                (c.mentor_name || '').toLowerCase().includes(term);
+            const matchesSpecialty = !specialty || c.specialty_name === specialty;
+            return matchesSearch && matchesSpecialty;
+        });
+
+        renderCourses(filtered);
     }
 
-    document.getElementById('courseSearch')?.addEventListener('input', (e) => {
-        const term = (e.target as HTMLInputElement).value.toLowerCase();
-        renderCourses(allCourses.filter(c => 
-            c.title.toLowerCase().includes(term) || 
-            (c.specialty_name || '').toLowerCase().includes(term)
-        ));
-    });
+    document.getElementById('courseSearch')?.addEventListener('input', applyFilters);
+    document.getElementById('specialtyFilter')?.addEventListener('change', applyFilters);
 
     fetchData();
 </script>

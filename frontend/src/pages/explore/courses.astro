@@ -1,0 +1,380 @@
+---
+// src/pages/explore/courses.astro - Pixel Perfect v2
+import UserLayout from "../../layouts/UserLayout.astro";
+import { escapeHtml } from '../../utils/escape.js';
+---
+
+<UserLayout title="Explorar Catálogo" subtitle="Descubre nuevos horizontes y potencia tus habilidades con cursos de tu comunidad.">
+    <div class="explore-courses-v2">
+        <!-- Toolbar: Búsqueda y Filtro -->
+        <div class="explore-toolbar glass-morphism">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="courseSearch" placeholder="¿Qué quieres aprender hoy? (Ej. React, Backend...)" class="search-input">
+            </div>
+            <div class="filter-wrapper">
+                <select id="specialtyFilter" class="specialty-dropdown">
+                    <option value="">Todas las Especialidades</option>
+                </select>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </div>
+        </div>
+
+        <!-- Grid de Cursos -->
+        <div class="courses-grid-premium" id="coursesGrid">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <span>Sincronizando con el catálogo academico...</span>
+            </div>
+        </div>
+    </div>
+</UserLayout>
+
+<style is:global>
+    .explore-courses-v2 {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* ── Toolbar ──────────────────────────────── */
+    .explore-toolbar {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem 2rem !important;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 1rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.85rem 1rem 0.85rem 3rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: 0.95rem;
+        color: #1e293b;
+        background: #f8fafc;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        background: white;
+        border-color: #007bff;
+        box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+        outline: none;
+    }
+
+    .filter-wrapper {
+        position: relative;
+        min-width: 240px;
+    }
+
+    .specialty-dropdown {
+        width: 100%;
+        appearance: none;
+        padding: 0.85rem 1.25rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .specialty-dropdown:hover { background: #f1f5f9; }
+    .specialty-dropdown:focus { border-color: #007bff; outline: none; background: white; }
+
+    .dropdown-arrow {
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+        font-size: 0.8rem;
+    }
+
+    /* ── Grid ─────────────────────────────────── */
+    .courses-grid-premium {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 1.75rem;
+    }
+
+    /* ── Course Card Premium ───────────────────── */
+    .course-card-v2 {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #eef2f6;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .course-card-v2:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 123, 255, 0.3);
+    }
+
+    .card-banner {
+        height: 200px;
+        position: relative;
+        background: #f1f5f9;
+    }
+
+    .card-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .tag-published {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(16, 185, 129, 0.95);
+        backdrop-filter: blur(4px);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .card-body {
+        padding: 1.75rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-specialty {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #007bff;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.6rem;
+    }
+
+    .card-body h3 {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 0.5rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-mentor {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 1.25rem;
+    }
+
+    .card-mentor span { color: #94a3b8; font-weight: 500; }
+
+    .card-footer {
+        padding: 1.25rem 1.75rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fcfdfe;
+    }
+
+    .modules-count {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    .modules-count i { color: #94a3b8; font-size: 1rem; }
+
+    .btn-access {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    }
+
+    .btn-access:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+    }
+
+    /* ── States ────────────────────────────────── */
+    .loading-state {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5rem;
+        color: #94a3b8;
+        gap: 1.25rem;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f1f5f9;
+        border-top-color: #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+        .courses-grid-premium { grid-template-columns: 1fr; }
+        .explore-toolbar { flex-direction: column; align-items: stretch; }
+        .search-wrapper { min-width: 100%; }
+        .filter-wrapper { min-width: 100%; }
+    }
+</style>
+
+<script>
+    import { authManager, AuthManager } from "../../utils/auth.js";
+    import { escapeHtml } from "../../utils/escape.js";
+
+    let allCourses = [];
+
+    async function loadCatalog() {
+        const grid = document.getElementById('coursesGrid');
+        const user = authManager.getUser();
+        
+        if (!user) {
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            // Intentar fetch real
+            const data = await AuthManager.fetch('/courses');
+            const communityCourses = Array.isArray(data) ? data : [];
+            
+            // Lógica de Privacidad: Solo cursos de la misma comunidad
+            // y que estén publicados (asumimos true por defecto en esta vista o según API)
+            allCourses = communityCourses.filter(c => c.community_id == user.community_id);
+
+            // Mock Data if empty (for UI testing)
+            if (allCourses.length === 0) {
+                allCourses = [
+                    { id_course: 101, title: 'Maestría en React v19 & Next15', mentor_name: 'Diego Torres', specialty_name: 'Frontend', thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80', modules_count: 12 },
+                    { id_course: 102, title: 'Arquitectura Limpia con Node.js', mentor_name: 'Ana Martínez', specialty_name: 'Backend', thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?w=800&q=80', modules_count: 8 },
+                    { id_course: 103, title: 'UX/UI: De Cero a Pro System', mentor_name: 'Carlos Ruiz', specialty_name: 'Design', thumbnail: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?w=800&q=80', modules_count: 15 },
+                    { id_course: 104, title: 'DevOps & Kubernetes Cloud', mentor_name: 'Elena Soler', specialty_name: 'DevOps', thumbnail: 'https://images.unsplash.com/photo-1667372333114-3d237c642a8a?w=800&q=80', modules_count: 10 }
+                ];
+            }
+
+            populateSpecialties(allCourses);
+            renderCards(allCourses);
+        } catch (err) {
+            console.error('[Catalog] Error:', err);
+            if (grid) grid.innerHTML = '<div class="loading-state"><span>Ocurrió un error al cargar el catálogo. Por favor reintenta.</span></div>';
+        }
+    }
+
+    function populateSpecialties(courses) {
+        const select = document.getElementById('specialtyFilter');
+        if (!select) return;
+        
+        const specialties = [...new Set(courses.map(c => c.specialty_name).filter(Boolean))].sort();
+        specialties.forEach(spec => {
+            const opt = document.createElement('option');
+            opt.value = spec;
+            opt.textContent = spec;
+            select.appendChild(opt);
+        });
+    }
+
+    function renderCards(list) {
+        const grid = document.getElementById('coursesGrid');
+        if (!grid) return;
+
+        if (list.length === 0) {
+            grid.innerHTML = '<div class="loading-state"><span>No se encontraron cursos que coincidan con tu búsqueda.</span></div>';
+            return;
+        }
+
+        grid.innerHTML = list.map(c => `
+            <div class="course-card-v2">
+                <div class="card-banner">
+                    <img src="${c.thumbnail || 'https://via.placeholder.com/800x450'}" alt="${escapeHtml(c.title)}">
+                    <span class="tag-published">Publicado</span>
+                </div>
+                <div class="card-body">
+                    <span class="card-specialty">${escapeHtml(c.specialty_name || 'Especialidad')}</span>
+                    <h3>${escapeHtml(c.title)}</h3>
+                    <div class="card-mentor"><span>Por</span> ${escapeHtml(c.mentor_name || 'Instructor CTech')}</div>
+                </div>
+                <div class="card-footer">
+                    <div class="modules-count">
+                        <i class="fas fa-layer-group"></i>
+                        ${c.modules_count || 0} Módulos
+                    </div>
+                    <a href="/explore/courses/${c.id_course}" class="btn-access">Acceder</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function handleFilters() {
+        const term = (document.getElementById('courseSearch') as HTMLInputElement)?.value.toLowerCase() || '';
+        const specialty = (document.getElementById('specialtyFilter') as HTMLSelectElement)?.value || '';
+
+        const filtered = allCourses.filter(c => {
+            const matchesSearch = c.title.toLowerCase().includes(term) || 
+                                (c.mentor_name || '').toLowerCase().includes(term);
+            const matchesSpec = !specialty || c.specialty_name === specialty;
+            return matchesSearch && matchesSpec;
+        });
+
+        renderCards(filtered);
+    }
+
+    // Event Listeners
+    document.getElementById('courseSearch')?.addEventListener('input', handleFilters);
+    document.getElementById('specialtyFilter')?.addEventListener('change', handleFilters);
+
+    // Init
+    loadCatalog();
+</script>

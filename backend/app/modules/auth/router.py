@@ -69,6 +69,14 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     
     token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})
     
+    # Obtener nombre de la comunidad si existe
+    community_name = "Sin Comunidad"
+    if user.community_id:
+        from app.modules.communities.models import Community
+        community = db.query(Community).filter(Community.id_community == user.community_id).first()
+        if community:
+            community_name = community.name_community
+
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -76,7 +84,8 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
             "id": user.id,
             "email": user.email,
             "role": role_name,
-            "name": user.name_user or "Usuario"
+            "name_user": user.name_user or "Usuario",
+            "community_name": community_name
         }
     }
 

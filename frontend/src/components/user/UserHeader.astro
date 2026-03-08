@@ -1,138 +1,223 @@
 ---
-// UserHeader.astro
+// UserHeader.astro - Pixel Perfect v2
 interface Props {
     title: string;
     subtitle?: string;
 }
 
-const { title, subtitle } = Astro.props;
+const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
 ---
 
 <header class="user-header">
-    <div class="header-info">
-        <h1>{title}</h1>
-        {subtitle && <p class="subtitle">{subtitle}</p>}
+    <!-- Left: Menu Toggle (visible on mobile) + Title block -->
+    <div class="header-left-group">
+        <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="header-title-block">
+            <h1 class="header-title">{title}</h1>
+            <span class="header-subtitle" id="headerCommunity">{subtitle}</span>
+        </div>
     </div>
 
+    <!-- Right: Actions -->
     <div class="header-actions">
-        <div class="search-bar glass-input">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Buscar cursos, eventos..." />
+        <!-- Notification Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" aria-label="Notificaciones">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span class="notif-badge">2</span>
+            </button>
         </div>
-        <div class="user-profile">
-            <div class="user-info">
-                <span id="userName">User Name</span>
-                <span class="role-tag">Estudiante CTech</span>
-            </div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="avatar" />
+
+        <!-- User Avatar + Name (User Chip) -->
+        <div class="user-chip">
+            <div class="user-avatar" id="headerAvatar">--</div>
+            <span class="user-name" id="headerName">Cargando...</span>
         </div>
     </div>
 </header>
 
 <style>
     .user-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 2.8rem;
-        padding: 0.5rem 0;
+        justify-content: space-between;
+        height: 70px;
+        padding: 0 28px;
+        background: #ffffff;
+        border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
     }
 
-    .header-info h1 {
-        font-size: 2.4rem;
-        font-weight: 900;
+    /* ── Left ──────────────────────────── */
+    .header-left-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .menu-toggle-btn {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .menu-toggle-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .menu-toggle-btn svg { width: 22px; height: 22px; }
+
+    .header-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .header-title {
         margin: 0;
-        background: linear-gradient(135deg, #fff 0%, #f59e0b 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.04em;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
     }
 
-    .subtitle {
-        color: rgba(255, 255, 255, 0.4);
-        margin: 0.5rem 0 0;
-        font-size: 1.1rem;
+    .header-subtitle {
+        font-size: 0.78rem;
+        color: #94a3b8;
         font-weight: 400;
     }
 
+    @media (max-width: 1024px) {
+        .user-header { padding: 0 16px; margin-left: 0; }
+        .header-subtitle { display: none; }
+    }
+
+    @media (min-width: 1025px) {
+        .menu-toggle-btn { display: none; }
+    }
+
+    /* ── Right ─────────────────────────── */
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 3rem;
+        gap: 16px;
     }
 
-    .glass-input {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 0.6rem 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
-        width: 300px;
-        transition: all 0.3s ease;
+    /* Bell notification */
+    .notif-wrapper {
+        position: relative;
     }
 
-    .glass-input:focus-within {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(245, 158, 11, 0.5);
-        box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
-    }
-
-    .glass-input input {
+    .notif-btn {
+        width: 36px;
+        height: 36px;
         background: transparent;
         border: none;
-        color: white;
-        width: 100%;
-        outline: none;
-        font-size: 0.9rem;
-    }
-
-    .user-profile {
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 0.8rem 1.4rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
+        justify-content: center;
+        color: #64748b;
+        border-radius: 8px;
+        transition: background 0.15s;
+        position: relative;
     }
 
-    .user-profile:hover {
-        background: rgba(255, 255, 255, 0.09);
-        border-color: rgba(245, 158, 11, 0.4);
-        transform: translateY(-3px) scale(1.02);
+    .notif-btn:hover { background: #f1f5f9; }
+
+    .notif-btn svg {
+        width: 20px;
+        height: 20px;
     }
 
-    .user-info {
+    .notif-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        background: #007bff;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        border-radius: 50%;
         display: flex;
-        flex-direction: column;
-        align-items: flex-end;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
     }
 
-    .user-info #userName { font-weight: 800; font-size: 1.05rem; color: white; }
-    .role-tag { font-size: 0.75rem; color: #f59e0b; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; }
+    /* User chip */
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 4px 8px 4px 4px;
+        border-radius: 40px;
+        transition: background 0.15s;
+    }
+    .user-chip:hover { background: #f1f5f9; }
 
-    .user-profile img {
-        width: 48px;
-        height: 48px;
-        border-radius: 16px;
-        border: 2px solid rgba(245, 158, 11, 0.3);
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: #007bff;
+        border-radius: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
     }
 </style>
 
 <script>
-    /* ⚠️ BYPASS TEMPORAL - SOLO SIMULACRO VISUAL. Reactivar antes de producción.
-    import { AuthManager, authManager } from "../../utils/auth.js";
-    const auth = authManager;
-    const user = auth.getUser();
-    if (user) {
-        document.getElementById('userName').textContent = user.name_user || user.name;
+    import { authManager } from "../../utils/auth.js";
+
+    function loadHeaderProfile() {
+        const user = authManager.getUser();
+        if (user) {
+            const avatar = document.getElementById('headerAvatar');
+            const name = document.getElementById('headerName');
+            const community = document.getElementById('headerCommunity');
+
+            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
+            if (name) name.textContent = user.name_user ? user.name_user.split(' ')[0] : 'Usuario';
+            if (community && user.community_name) {
+                community.textContent = user.community_name;
+            }
+        }
     }
-    */
-    console.info('[BYPASS VISUAL] UserHeader: usando datos estáticos User Name.');
+
+    loadHeaderProfile();
+
+    // Toggle Sidebar Event
+    document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleSidebar'));
+    });
 </script>
 

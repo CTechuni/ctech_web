@@ -25,13 +25,20 @@ def get_counts(db: Session):
         .group_by(Community.name_community).all()
     community_distribution = {name: count for name, count in comm_dist}
 
+    # Total absoluto para la gráfica (sin filtrar por rol si se requiere el total real)
+    absolute_total_users = db.query(User).count()
+    
+    # Historial de crecimiento (7 meses): 6 ceros y el actual
+    user_growth = [0, 0, 0, 0, 0, 0, absolute_total_users]
+
     return {
         "total_users": total_users,
         "total_courses": total_courses,
         "total_communities": total_communities,
         "active_events": active_events,
         "role_distribution": role_distribution,
-        "community_distribution": community_distribution
+        "community_distribution": community_distribution,
+        "user_growth": user_growth
     }
 def get_community_counts(db: Session, community_id: int):
     # Conteos filtrados por comunidad
