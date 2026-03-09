@@ -7,15 +7,18 @@ from app.modules.events.models import Event
 
 def get_counts(db: Session):
     # Conteos básicos
-    # El usuario pide que total_users sea solo los que tienen el rol de "usuario" (ID 4)
-    total_users = db.query(User).filter(User.rol_id == 4).count()
+    # Cambiamos para contar todos los usuarios en el sistema para el admin
+    total_users = db.query(User).count()
     total_courses = db.query(Course).count()
     total_communities = db.query(Community).filter(Community.status_community == 'Activo').count()
     active_events = db.query(Event).count()
 
-    # Distribución de roles (Admin, Mentor, Leader, User)
+    print(f"[Metrics] Admin Dashboard - Users: {total_users}, Courses: {total_courses}, Communities: {total_communities}, Events: {active_events}")
+
+    # Distribución de roles (Excluyendo Admin por solicitud)
     role_dist = db.query(Role.name_rol, func.count(User.id))\
         .join(User, User.rol_id == Role.id_rol)\
+        .filter(Role.name_rol != 'admin')\
         .group_by(Role.name_rol).all()
     role_distribution = {name: count for name, count in role_dist}
 
@@ -25,8 +28,8 @@ def get_counts(db: Session):
         .group_by(Community.name_community).all()
     community_distribution = {name: count for name, count in comm_dist}
 
-    # Total absoluto para la gráfica (sin filtrar por rol si se requiere el total real)
-    absolute_total_users = db.query(User).count()
+    # Total absoluto para la gráfica (redundante ahora pero lo mantenemos por consistencia)
+    absolute_total_users = total_users
     
     # Historial de crecimiento (7 meses): 6 ceros y el actual
     user_growth = [0, 0, 0, 0, 0, 0, absolute_total_users]

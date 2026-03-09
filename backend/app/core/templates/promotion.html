@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Felicidades Mentor!</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f8fafc;
+            padding-bottom: 40px;
+        }
+
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            color: #1e293b;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-top: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background-color: #18457C;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 140px;
+        }
+
+        .content {
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #f97316;
+            margin-bottom: 16px;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .intro-text {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .badge-box {
+            background-color: #fff7ed;
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px dashed #f97316;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .specialty-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ea580c;
+            margin: 0;
+        }
+
+        .cta-container {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        .btn {
+            background-color: #0073ff;
+            color: #ffffff !important;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .footer {
+            background-color: #f8fafc;
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="header">
+                    <img src="https://ctech-platform.vercel.app/log-CTech.svg" alt="CTech" class="logo">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="title">🚀 ¡Es oficial, eres Mentor!</h1>
+                    <p class="intro-text">Hola <strong>{name_user}</strong>, nos llena de orgullo informarte que has
+                        sido promovido al rol de Mentor.</p>
+
+                    <div class="badge-box">
+                        <p
+                            style="margin: 0 0 8px 0; color: #c2410c; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
+                            Tu Especialidad</p>
+                        <h2 class="specialty-text">{specialty_name}</h2>
+                        <p style="color: #9a3412; font-size: 14px; margin-top: 8px;">Comunidad {name_community}</p>
+                    </div>
+
+                    <p>Como mentor técnico, ahora eres una pieza clave para guiar a otros talentos y moderar sesiones de
+                        aprendizaje. Tendrás acceso a herramientas avanzadas de gestión y contenido prioritario.</p>
+
+                    <div class="cta-container">
+                        <a href="{platform_url}/mentor-dashboard" class="btn">Acceder al Dashboard</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <span style="color: #18457C; font-weight: 600;">Liderazgo y Mentoria Técnica</span>
+                    <p>&copy; 2025 CTech Plateform. Todos los derechos reservados.</p>
+                    <p>Recibiste este correo debido a tu cambio de rol en la plataforma.</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

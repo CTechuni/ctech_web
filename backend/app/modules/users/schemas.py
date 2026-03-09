@@ -43,3 +43,6 @@ class UserResponse(UserBase):
 class UserPaginationResponse(BaseModel):
     users: list[UserResponse]
     total: int
+
+class UserPromoteRequest(BaseModel):
+    specialty_id: int

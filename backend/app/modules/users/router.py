@@ -17,8 +17,8 @@ def get_me(current=Depends(get_current_user), db: Session = Depends(get_db)):
     return service.get_user(db, current["user_id"])
 
 @router.patch("/{user_id}/promote")
-def promote(user_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    return service.change_role(db, user_id, 2) # 2 para Mentor
+def promote(user_id: int, req: schemas.UserPromoteRequest, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    return service.change_role(db, user_id, 2, specialty_id=req.specialty_id) # 2 para Mentor
 
 @router.patch("/{user_id}/demote")
 def demote(user_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):

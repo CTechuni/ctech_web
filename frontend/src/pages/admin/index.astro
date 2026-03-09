@@ -246,29 +246,51 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 </style>
 
 <script>
-    // Autenticación deshabilitada en desarrollo: solo usamos utilidades de API
     import { AuthManager } from '../../utils/auth.js';
 
-    // Stats fetching (opcional, no bloquea la vista si falla)
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('[Dashboard] DOM cargado, iniciando carga de estadísticas...');
+        loadStats();
+        
+        if (!window.Chart) {
+            console.error('[Dashboard] Error: Chart.js no se ha cargado correctamente.');
+        }
+    });
+
     async function loadStats() {
+        console.log('[Dashboard] Intentando obtener métricas de /metrics/admin...');
         try {
             const data = await AuthManager.fetch('/metrics/admin');
+            console.log('[Dashboard] Datos recibidos:', data);
+            
             if (data) {
-                if (document.getElementById('totalUsers')) document.getElementById('totalUsers').textContent = data.total_users || '0';
-                if (document.getElementById('totalCommunities')) document.getElementById('totalCommunities').textContent = data.total_communities || '0';
-                if (document.getElementById('totalCourses')) document.getElementById('totalCourses').textContent = data.total_courses || '0';
-                if (document.getElementById('totalEvents')) document.getElementById('totalEvents').textContent = data.active_events || '0';
+                // Actualizar contadores
+                const updateCounter = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = value !== undefined ? value.toString() : '0';
+                    }
+                };
+
+                updateCounter('totalUsers', data.total_users);
+                updateCounter('totalCommunities', data.total_communities);
+                updateCounter('totalCourses', data.total_courses);
+                updateCounter('totalEvents', data.active_events);
                 
-                // Initialize charts with real data
+                // Inicializar gráficas con datos reales
                 initCharts(data);
+            } else {
+                console.warn('[Dashboard] No se recibieron datos de métricas.');
+                initCharts(); // Fallback a gráficas vacías
             }
 
-            // Load Events
+            // Cargar Eventos
+            console.log('[Dashboard] Intentando obtener eventos...');
             const events = await AuthManager.fetch('/events/');
             renderEvents(events);
         } catch (e) { 
-            console.error('Error fetching admin metrics:', e);
-            initCharts();
+            console.error('[Dashboard] Error fatal al cargar estadísticas:', e);
+            initCharts(); // Fallback para que al menos se vea la estructura
         }
     }
 
@@ -312,9 +334,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     }
 
     function initCharts(apiData = null) {
+        console.log('[Dashboard] Inicializando gráficas...');
         // @ts-ignore
         const ChartLib = window.Chart;
-        if (!ChartLib) return;
+        if (!ChartLib) {
+            console.error('[Dashboard] Chart.js no encontrado en window.Chart');
+            return;
+        }
 
         // Helper to get last 7 months
         const getLast7Months = () => {
@@ -329,7 +355,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         };
 
         // 1. Line Chart: Growth
-        const growthCtx = document.getElementById('userGrowthChart') as HTMLCanvasElement;
+        const growthCtx = document.getElementById('userGrowthChart');
+        if (!growthCtx) return;
+
         const growthLabels = getLast7Months();
         const growthData = apiData?.user_growth || [0, 0, 0, 0, 0, 0, 0];
 
@@ -353,22 +381,17 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
+                interaction: { intersect: false, mode: 'index' },
                 plugins: { 
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                return ` Miembros: ${context.parsed.y}`;
-                            },
-                            afterLabel: function(context) {
+                            label: (context) => ` Miembros: ${context.parsed.y}`,
+                            afterLabel: (context) => {
                                 const dataset = context.dataset.data;
                                 const index = context.dataIndex;
                                 if (index > 0) {
-                                    const prevValue = dataset[index - 1] as number;
+                                    const prevValue = dataset[index - 1];
                                     const currValue = context.parsed.y;
                                     const diff = currValue - prevValue;
                                     const percentage = ((diff / prevValue) * 100).toFixed(1);
@@ -380,31 +403,30 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                         }
                     }
                 },
-                layout: {
-                    padding: { bottom: 0 }
-                },
                 scales: {
                     x: { 
-                        grid: { 
-                            display: true,
-                            color: '#f1f5f9'
-                        }, 
+                        grid: { display: true, color: '#f1f5f9' }, 
                         ticks: { color: '#94a3b8', font: { size: 11 } } 
                     },
                     y: { 
-                        beginAtZero: true, 
+                        beginAtZero: true,
+                        min: 0,
+                        max: 60,
                         grid: { color: '#f1f5f9' },
-                        ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 20 },
-                        max: 60
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 11 },
+                            stepSize: 20
+                        }
                     }
                 }
             }
         });
 
         // 2. Doughnut Chart: Roles
-        const roleCtx = document.getElementById('roleDistChart') as HTMLCanvasElement;
+        const roleCtx = document.getElementById('roleDistChart');
+        if (!roleCtx) return;
         
-        // Dynamic labels and data from API
         const roleLabels = apiData?.role_distribution ? Object.keys(apiData.role_distribution) : ['Usuarios', 'Mentores', 'Líderes'];
         const roleValues = apiData?.role_distribution ? Object.values(apiData.role_distribution) : [0, 0, 0];
 
@@ -424,13 +446,13 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                layout: { padding: { bottom: 0 } },
                 cutout: '80%'
             }
         });
 
         // 3. Bar Chart: Communities
-        const commCtx = document.getElementById('commMembersChart') as HTMLCanvasElement;
+        const commCtx = document.getElementById('commMembersChart');
+        if (!commCtx) return;
         
         const commLabels = apiData?.community_distribution ? Object.keys(apiData.community_distribution) : ['Sin datos'];
         const commValues = apiData?.community_distribution ? Object.values(apiData.community_distribution) : [0];
@@ -454,24 +476,19 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                     x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
                     y: { 
                         beginAtZero: true,
+                        min: 0,
+                        max: 40,
                         grid: { color: '#f1f5f9' }, 
-                        ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 5 },
-                        max: 20
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 11 },
+                            stepSize: 5
+                        }
                     }
                 }
             }
         });
     }
-
-    loadStats();
-    
-    // El initCharts se llama dentro de loadStats para asegurar que tiene los datos
-    // Pero si por alguna razón falla, necesitamos un fallback o manejar el DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!window.Chart) {
-            console.error('Chart.js not loaded');
-        }
-    });
 </script>
 
 </AdminLayout>
