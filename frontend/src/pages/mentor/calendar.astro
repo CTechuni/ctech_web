@@ -1,0 +1,58 @@
+---
+// src/pages/mentor/calendar.astro
+import MentorLayout from '../../layouts/MentorLayout.astro';
+import CalendarShared from '../../components/shared/CalendarShared.astro';
+---
+
+<MentorLayout title="Calendario" subtitle="Eventos y Sesiones">
+    <div class="calendar-mentor-page">
+        <header class="page-header" style="display: none;">
+            <div class="header-info">
+                <h2 class="title">Calendario de Eventos</h2>
+                <p class="subtitle">Explora los eventos globales y planea tus participaciones.</p>
+            </div>
+        </header>
+
+        <div class="calendar-card">
+            <CalendarShared />
+        </div>
+    </div>
+</MentorLayout>
+
+<style>
+    .calendar-mentor-page {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0.5rem 0 0;
+    }
+
+    .calendar-card {
+        background: transparent;
+        padding: 0;
+    }
+
+    @media (max-width: 768px) {
+        .title { font-size: 1.5rem; }
+    }
+</style>

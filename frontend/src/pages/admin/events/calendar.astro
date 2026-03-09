@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CalendarShared from '../../../components/shared/CalendarShared.astro';
 
 const title = 'Calendario';
 const subtitle = 'Eventos y Cursos';
@@ -7,7 +8,7 @@ const subtitle = 'Eventos y Cursos';
 
 <AdminLayout title={title} subtitle={subtitle}>
   <section class="calendar-admin-page">
-    <header class="page-header">
+    <header class="page-header" style="display: none;">
       <div class="header-content">
         <h2 class="page-title">Calendario Global</h2>
         <p class="page-subtitle">Visualiza y organiza todos los eventos y sesiones de la plataforma</p>
@@ -20,79 +21,12 @@ const subtitle = 'Eventos y Cursos';
       </div>
     </header>
 
-    <main class="calendar-container glass-morphism">
-      <div class="calendar-grid-mock">
-        <!-- Mock de calendario premium -->
-        <div class="calendar-sidebar">
-          <div class="mini-calendar">
-            <h3 class="month-title">Marzo 2026</h3>
-            <div class="days-mini-grid">
-              <!-- Reemplaza con lógica real de JS si es necesario -->
-              {[...Array(31)].map((_, i) => (
-                <div class={`day-mini ${i === 2 ? 'active' : ''}`}>{i + 1}</div>
-              ))}
-            </div>
+    <main class="calendar-main-content">
+      <CalendarShared>
+          <div slot="extra-actions" class="admin-extra-actions">
+              <!-- Acciones extra para Admin si fueran necesarias -->
           </div>
-          
-          <div class="categories-filter">
-            <h4>Categorías</h4>
-            <ul class="filter-list">
-              <li><span class="dot purple"></span> Meetups</li>
-              <li><span class="dot blue"></span> Talleres</li>
-              <li><span class="dot green"></span> Mentorías</li>
-              <li><span class="dot orange"></span> Hackathons</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="calendar-main-view">
-          <div class="view-header">
-            <div class="current-interval">2 - 8 de Marzo, 2026</div>
-            <div class="view-switcher">
-              <button class="active">Semana</button>
-              <button>Mes</button>
-              <button>Día</button>
-            </div>
-          </div>
-
-          <div class="week-grid">
-            <div class="week-header">
-              <div>Lun 2</div>
-              <div class="today">Mar 3</div>
-              <div>Mié 4</div>
-              <div>Jue 5</div>
-              <div>Vie 6</div>
-              <div>Sáb 7</div>
-              <div>Dom 8</div>
-            </div>
-            <div class="time-grid">
-              <div class="time-slots">
-                <div>08 AM</div>
-                <div>10 AM</div>
-                <div>12 PM</div>
-                <div>02 PM</div>
-                <div>04 PM</div>
-                <div>06 PM</div>
-              </div>
-              <div class="events-overlay">
-                <!-- Mock Events -->
-                <div class="event-bubble purple" style="top: 20%; left: 14.5%; width: 14%; height: 60px;">
-                  <span class="event-time">09:00 AM</span>
-                  <span class="event-title">Daily Sync Admins</span>
-                </div>
-                <div class="event-bubble blue" style="top: 45%; left: 43%; width: 14%; height: 90px;">
-                  <span class="event-time">01:00 PM</span>
-                  <span class="event-title">Workshop React Hooks</span>
-                </div>
-                <div class="event-bubble green" style="top: 10%; left: 72%; width: 14%; height: 45px;">
-                  <span class="event-time">08:30 AM</span>
-                  <span class="event-title">Mentoría Backend</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </CalendarShared>
     </main>
   </section>
 
@@ -136,201 +70,8 @@ const subtitle = 'Eventos y Cursos';
       box-shadow: 0 4px 10px rgba(0, 115, 255, 0.2);
     }
 
-    .calendar-container {
-      background: white;
-      border-radius: 24px;
-      border: 1px solid #e2e8f0;
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      min-height: 600px;
+    .calendar-main-content {
+        margin-top: 1rem;
     }
-
-    .calendar-grid-mock {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      height: 100%;
-    }
-
-    .calendar-sidebar {
-      padding: 1.5rem;
-      border-right: 1px solid #f1f5f9;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .month-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 1rem;
-    }
-
-    .days-mini-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-
-    .day-mini {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      color: #64748b;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .day-mini:hover { background: #f1f5f9; }
-    .day-mini.active { background: #0073ff; color: white; font-weight: 700; }
-
-    .filter-list {
-      list-style: none;
-      padding: 0;
-      margin: 1rem 0 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .filter-list li {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.85rem;
-      color: #475569;
-      font-weight: 600;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    .purple { background: #8b5cf6; }
-    .blue { background: #3b82f6; }
-    .green { background: #10b981; }
-    .orange { background: #f97316; }
-
-    .calendar-main-view {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .view-header {
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .current-interval {
-      font-weight: 700;
-      color: #1e293b;
-    }
-
-    .view-switcher {
-      background: #f1f5f9;
-      padding: 4px;
-      border-radius: 8px;
-      display: flex;
-      gap: 4px;
-    }
-
-    .view-switcher button {
-      border: none;
-      background: transparent;
-      padding: 0.4rem 1rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #64748b;
-      cursor: pointer;
-    }
-
-    .view-switcher button.active {
-      background: white;
-      color: #0f172a;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-    .week-header {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      padding: 1rem 0;
-      background: #f8fafc;
-      border-bottom: 1px solid #f1f5f9;
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #64748b;
-    }
-
-    .week-header .today {
-      color: #0073ff;
-      position: relative;
-    }
-
-    .week-header .today::after {
-      content: '';
-      position: absolute;
-      bottom: -1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 2px;
-      background: #0073ff;
-    }
-
-    .time-grid {
-      display: flex;
-      position: relative;
-      flex: 1;
-    }
-
-    .time-slots {
-      width: 80px;
-      display: flex;
-      flex-direction: column;
-      padding: 1rem 0;
-      border-right: 1px solid #f1f5f9;
-    }
-
-    .time-slots div {
-      height: 100px;
-      padding: 0 0.75rem;
-      font-size: 0.75rem;
-      color: #94a3b8;
-      font-weight: 600;
-    }
-
-    .events-overlay {
-      flex: 1;
-      position: relative;
-    }
-
-    .event-bubble {
-      position: absolute;
-      border-radius: 10px;
-      padding: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.2);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-
-    .event-time { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
-    .event-title { font-size: 0.75rem; font-weight: 700; }
-
-    .event-bubble.purple { background: rgba(139, 92, 246, 0.1); color: #7c3aed; border-left: 4px solid #8b5cf6; }
-    .event-bubble.blue { background: rgba(59, 130, 246, 0.1); color: #2563eb; border-left: 4px solid #3b82f6; }
-    .event-bubble.green { background: rgba(16, 185, 129, 0.1); color: #059669; border-left: 4px solid #10b981; }
-
   </style>
 </AdminLayout>

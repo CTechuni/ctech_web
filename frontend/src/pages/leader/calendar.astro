@@ -1,403 +1,50 @@
 ---
 // frontend/src/pages/leader/calendar.astro
 import LeaderLayout from '../../layouts/LeaderLayout.astro';
+import CalendarShared from '../../components/shared/CalendarShared.astro';
 ---
 
 <LeaderLayout title="Calendario" subtitle="Eventos de la Comunidad">
     <div class="calendar-page">
-        
-        <!-- 1. Widgets de Próximos Eventos (Top Bar) -->
-            <div class="upcoming-widgets" id="upcomingWidgets">
-                <!-- Dinámico -->
-            </div>
+        <header class="calendar-header" style="display: none;">
+            <h2 class="section-title">Mi Agenda de Comunidad</h2>
+            <p class="section-desc">Visualiza los próximos eventos y actividades de tu comunidad.</p>
+        </header>
 
-        <!-- 2. Cabecera y Controles del Calendario -->
-        <div class="calendar-controls">
-            <div class="month-navigator">
-                <button class="nav-btn">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                <span class="current-month">Marzo 2026</span>
-                <button class="nav-btn">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- 3. Grilla Mensual (Calendar Grid) -->
-        <div class="calendar-container">
-            <div class="calendar-header-grid">
-                <span>Dom</span>
-                <span>Lun</span>
-                <span>Mar</span>
-                <span>Mie</span>
-                <span>Jue</span>
-                <span>Vie</span>
-                <span>Sab</span>
-            </div>
-            
-            <div class="calendar-body-grid" id="calendarGrid">
-                <!-- Render dinámico -->
-            </div>
-        </div>
-
-        <!-- 4. Leyenda (Footer) -->
-        <div class="calendar-legend">
-            <div class="legend-item">
-                <span class="dot dot-online"></span>
-                <span class="legend-text">Online</span>
-            </div>
-            <div class="legend-item">
-                <span class="dot dot-presencial"></span>
-                <span class="legend-text">Presencial</span>
-            </div>
-        </div>
+        <main class="calendar-main-content">
+            <CalendarShared />
+        </main>
     </div>
 </LeaderLayout>
 
-<style is:global>
+<style>
     .calendar-page {
         max-width: 1200px;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
-        gap: 32px;
+        gap: 2rem;
     }
 
-    /* ── 1. Upcoming Widgets ── */
-    .upcoming-widgets {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
+    .calendar-header {
+        margin-bottom: 0.5rem;
     }
 
-    .widget-card {
-        background: white;
-        border-radius: 20px;
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        transition: transform 0.2s ease;
-    }
-
-    .widget-card:hover { transform: translateY(-3px); }
-
-    .date-circle {
-        width: 52px;
-        height: 52px;
-        background: #eff6ff;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .date-day {
-        font-size: 1.1rem;
+    .section-title {
+        font-size: 1.75rem;
         font-weight: 800;
-        color: #3b82f6;
-        line-height: 1;
-    }
-
-    .date-month {
-        font-size: 0.65rem;
-        font-weight: 700;
-        color: #3b82f6;
-        text-transform: uppercase;
-    }
-
-    .widget-info { display: flex; flex-direction: column; gap: 2px; }
-
-    .widget-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #1e293b;
+        color: #0f172a;
         margin: 0;
     }
 
-    .widget-time {
-        font-size: 0.8rem;
-        color: #94a3b8;
-        font-weight: 500;
-    }
-
-    /* ── 2. Calendar Controls ── */
-    .calendar-controls {
-        display: flex;
-        justify-content: center;
-    }
-
-    .month-navigator {
-        background: white;
-        padding: 8px 16px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        gap: 24px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-    }
-
-    .current-month {
-        font-size: 1.1rem;
-        font-weight: 800;
-        color: #0f172a;
-        min-width: 140px;
-        text-align: center;
-    }
-
-    .nav-btn {
-        background: none;
-        border: none;
+    .section-desc {
         color: #64748b;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 8px;
-        transition: all 0.2s;
+        font-size: 1rem;
+        margin: 0.5rem 0 0;
     }
 
-    .nav-btn:hover { background: #f1f5f9; color: #3b82f6; }
-
-    /* ── 3. Calendar Grid ── */
-    .calendar-container {
-        background: white;
-        border-radius: 20px;
-        border: 1px solid #e2e8f0;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-    }
-
-    .calendar-header-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .calendar-header-grid span {
-        padding: 16px;
-        text-align: center;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #94a3b8;
-    }
-
-    .calendar-body-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-    }
-
-    .day-cell, .day-cell-today {
-        height: 120px;
-        padding: 12px;
-        border-right: 1px solid #f1f5f9;
-        border-bottom: 1px solid #f1f5f9;
-        position: relative;
-    }
-
-    .day-cell:nth-child(7n) { border-right: none; }
-
-    .day-cell span {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #64748b;
-    }
-
-    .day-cell.muted span { color: #cbd5e1; }
-    .day-cell.active span { color: #1e293b; }
-
-    .day-number.active-today {
-        width: 28px;
-        height: 28px;
-        background: #3b82f6;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        font-weight: 700;
-    }
-
-    /* Event Pills */
-    .event-pill {
-        margin-top: 8px;
-        padding: 6px 10px;
-        border-radius: 8px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .event-pill.online {
-        background: #eff6ff;
-        color: #3b82f6;
-        border-left: 3px solid #3b82f6;
-    }
-
-    .event-pill.presencial {
-        background: #fdf2f8;
-        color: #db2777;
-        border-left: 3px solid #db2777;
-    }
-
-    /* ── 4. Legend ── */
-    .calendar-legend {
-        display: flex;
-        justify-content: center;
-        gap: 32px;
-        margin-bottom: 16px;
-    }
-
-    .legend-item { display: flex; align-items: center; gap: 8px; }
-
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-online { background: #3b82f6; }
-    .dot-presencial { background: #db2777; }
-
-    .legend-text {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748b;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 1024px) {
-        .upcoming-widgets { grid-template-columns: 1fr; }
-        .day-cell, .day-cell-today { height: 100px; }
-    }
-
-    @media (max-width: 640px) {
-        .calendar-header-grid span { padding: 10px 4px; font-size: 0.75rem; }
-        .day-cell, .day-cell-today { height: 80px; padding: 6px; }
-        .event-pill { font-size: 0.6rem; padding: 4px 6px; }
+    .calendar-main-content {
+        background: transparent;
+        padding: 0;
     }
 </style>
-
-<script>
-    import { authManager } from "../../utils/auth.js";
-
-    // ── CONFIG & STATE ──
-    const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    let currentDate = new Date(2026, 2, 8); // Marzo 2026 (según solicitud)
-    let myEvents = [];
-
-    // ── INITIALIZATION ──
-    async function init() {
-        const user = authManager.getUser();
-        if (!user) return;
-
-        try {
-            // En un escenario real: const allEvents = await authManager.get('events');
-            // Simulamos datos filtrados por la comunidad del líder
-            const mockEvents = [
-                { title: 'Meetup DevFront #12', date: '2026-03-04', time: '7:00 PM', type: 'online', community: user.community_name },
-                { title: 'Taller: Astro v4 Pro', date: '2026-03-12', time: '10:00 AM', type: 'presencial', community: user.community_name },
-                { title: 'Networking CTech', date: '2026-03-18', time: '6:30 PM', type: 'online', community: user.community_name },
-                { title: 'Evento Otra Comunidad', date: '2026-03-20', time: '5:00 PM', type: 'online', community: 'Otra' }
-            ];
-
-            // Filtro por comunidad del líder
-            myEvents = mockEvents.filter(ev => ev.community === user.community_name);
-            
-            renderUpcoming();
-            renderCalendar();
-        } catch (e) {
-            console.error("Error al cargar eventos del calendario:", e);
-        }
-    }
-
-    // ── RENDERERS ──
-    function renderUpcoming() {
-        const container = document.getElementById('upcomingWidgets');
-        if (!container) return;
-
-        // Mostrar los 3 primeros eventos próximos
-        const sorted = [...myEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        
-        container.innerHTML = sorted.slice(0, 3).map(ev => {
-            const dateObj = new Date(ev.date + 'T12:00:00'); // Evitar problemas de timezone
-            const day = dateObj.getDate();
-            const month = MONTHS[dateObj.getMonth()].substring(0, 3).toUpperCase();
-
-            return `
-                <div class="widget-card">
-                    <div class="date-circle">
-                        <span class="date-day">${day}</span>
-                        <span class="date-month">${month}</span>
-                    </div>
-                    <div class="widget-info">
-                        <h4 class="widget-title">${ev.title}</h4>
-                        <span class="widget-time">${ev.time}</span>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function renderCalendar() {
-        const grid = document.getElementById('calendarGrid');
-        if (!grid) return;
-
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        
-        // Primer día del mes
-        const firstDay = new Date(year, month, 1).getDay();
-        // Días en el mes actual
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        // Días en el mes anterior (para rellenar inicio)
-        const daysInPrevMonth = new Date(year, month, 0).getDate();
-
-        let html = '';
-
-        // 1. Rellenar días del mes anterior
-        for (let i = firstDay - 1; i >= 0; i--) {
-            html += `<div class="day-cell muted"><span>${daysInPrevMonth - i}</span></div>`;
-        }
-
-        // 2. Días del mes actual
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isToday = day === 3 && month === 2; // Simulación de "hoy" según imagen
-            const dayEvents = myEvents.filter(ev => ev.date === dateStr);
-
-            if (isToday) {
-                html += `
-                    <div class="day-cell-today">
-                        <div class="day-number active-today">${day}</div>
-                        ${dayEvents.map(ev => `<div class="event-pill ${ev.type}">${ev.title}</div>`).join('')}
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div class="day-cell active">
-                        <span>${day}</span>
-                        ${dayEvents.map(ev => `<div class="event-pill ${ev.type}">${ev.title}</div>`).join('')}
-                    </div>
-                `;
-            }
-        }
-
-        // 3. Rellenar días del mes siguiente (completar grilla de 42 celdas)
-        const remaining = 42 - (firstDay + daysInMonth);
-        for (let i = 1; i <= remaining; i++) {
-            html += `<div class="day-cell muted"><span>${i}</span></div>`;
-        }
-
-        grid.innerHTML = html;
-        
-        // Actualizar título del mes
-        const monthTitle = document.querySelector('.current-month');
-        if (monthTitle) monthTitle.textContent = `${MONTHS[month]} ${year}`;
-    }
-
-    init();
-</script>

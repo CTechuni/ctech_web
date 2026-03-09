@@ -50,3 +50,14 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
     )
 
     return {"message": "Registro exitoso", "event_title": event.title}
+
+@router.delete("/{event_id}")
+def delete_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    # Solo administradores pueden borrar
+    if current.role != "admin":
+        raise HTTPException(status_code=403, detail="No tienes permisos para borrar eventos")
+        
+    success = service.delete_event(db, event_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    return {"message": "Evento eliminado correctamente"}

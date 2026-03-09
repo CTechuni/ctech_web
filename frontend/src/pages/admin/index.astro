@@ -309,7 +309,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             const month = date.toLocaleString('es-ES', { month: 'short' }).toUpperCase().replace('.', '');
             const time = event.event_time || '06:00 PM';
             const location = event.location || 'CTech Hub';
-            const isOnline = event.event_type?.toLowerCase() === 'online';
+            const type = (event.event_type || 'virtual').toLowerCase();
+            const isVirtual = type === 'online' || type === 'virtual';
+            const typeLabel = isVirtual ? 'Virtual' : 'Presencial';
 
             return `
                 <div class="card border-0 shadow-sm mb-3">
@@ -323,8 +325,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                             <div class="small text-muted opacity-75">${location} • ${time}</div>
                         </div>
                         <div class="ms-auto ps-3 flex-shrink-0">
-                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: ${isOnline ? '#e7f1ff' : '#fff0f0'}; color: ${isOnline ? '#3b82f6' : '#e05252'}; padding: 5px 14px;">
-                                ${event.event_type || 'Presencial'}
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: ${isVirtual ? '#e7f1ff' : '#fff0f0'}; color: ${isVirtual ? '#3b82f6' : '#e05252'}; padding: 5px 14px;">
+                                ${typeLabel}
                             </span>
                         </div>
                     </div>

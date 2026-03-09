@@ -5,138 +5,146 @@ interface Props {
     subtitle?: string;
 }
 
-const { title, subtitle } = Astro.props;
+const { title, subtitle = 'Portal de Mentoría' } = Astro.props;
 ---
 
 <header class="mentor-header">
-    <div class="header-info">
-        <h1>{title}</h1>
-        {subtitle && <p class="subtitle">{subtitle}</p>}
+    <!-- Left: Title block -->
+    <div class="header-left-group">
+        <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="header-title-block">
+            <h1 class="header-title">{title}</h1>
+            <span class="header-subtitle">{subtitle}</span>
+        </div>
     </div>
 
+    <!-- Right: Profile -->
     <div class="header-actions">
-        <div class="notifications">
-            <i class="fas fa-bell"></i>
-            <span class="badge">3</span>
-        </div>
-        <div class="user-profile">
-            <div class="user-info">
-                <span id="userName">Mentor Name</span>
-                <span class="role-tag">Mentor</span>
+        <div class="user-chip">
+            <div class="user-avatar" id="headerAvatarContainer">
+                <span id="headerInitial">M</span>
             </div>
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=mentor" alt="avatar" />
+            <span class="user-name" id="userNameHeader">Mentor</span>
         </div>
     </div>
 </header>
 
 <style>
     .mentor-header {
+        position: sticky;
+        top: 0;
+        z-index: 990;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 2.5rem;
-        padding: 1rem 0;
+        justify-content: space-between;
+        height: 70px;
+        padding: 0 32px;
+        background: #ffffff;
+        border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 2rem;
     }
 
-    .header-info h1 {
-        font-size: 2.2rem;
-        font-weight: 800;
+    .header-left-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .menu-toggle-btn {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        display: none;
+    }
+    
+    @media (max-width: 1024px) {
+        .menu-toggle-btn { display: flex; }
+    }
+
+    .header-title-block {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-title {
         margin: 0;
-        background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.02em;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
     }
 
-    .subtitle {
-        color: rgba(255, 255, 255, 0.4);
-        margin: 0.3rem 0 0;
-        font-size: 1rem;
-        font-weight: 400;
+    .header-subtitle {
+        font-size: 0.78rem;
+        color: #94a3b8;
     }
 
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 2rem;
     }
 
-    .notifications {
-        position: relative;
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.6);
-        cursor: pointer;
-        transition: color 0.3s ease;
-    }
-
-    .notifications:hover { color: #a78bfa; }
-
-    .badge {
-        position: absolute;
-        top: -5px;
-        right: -8px;
-        background: #ef4444;
-        color: white;
-        font-size: 0.7rem;
-        padding: 2px 5px;
-        border-radius: 10px;
-        border: 2px solid #0f172a;
-    }
-
-    .user-profile {
+    .user-chip {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        background: rgba(255, 255, 255, 0.03);
-        padding: 0.6rem 1.2rem;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        transition: all 0.3s ease;
+        gap: 10px;
+        padding: 6px 12px;
+        background: #f8fafc;
+        border-radius: 40px;
+        border: 1px solid #e2e8f0;
     }
 
-    .user-profile:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(167, 139, 250, 0.3);
-    }
-
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-
-    .user-info #userName {
-        font-weight: 600;
-        font-size: 0.95rem;
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        background: var(--color-azure-radiant, #007bff);
+        border-radius: 50%;
         color: white;
-    }
-
-    .role-tag {
-        font-size: 0.75rem;
-        color: #a78bfa;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .user-profile img {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        object-fit: cover;
-        border: 2px solid rgba(167, 139, 250, 0.2);
+    .user-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
     }
 </style>
 
 <script>
-    /* ⚠️ BYPASS TEMPORAL - SOLO SIMULACRO VISUAL. Reactivar antes de producción.
-    import { AuthManager, authManager } from "../../utils/auth.js";
-    const auth = authManager;
-    const user = auth.getUser();
-    if (user) {
-        document.getElementById('userName').textContent = user.name_user || user.name;
+    import { authManager as auth } from "../../utils/auth.js";
+    
+    const currentUser = auth.getUser();
+    if (currentUser) {
+        const nameHeader = document.getElementById('userNameHeader');
+        if (nameHeader) {
+            nameHeader.textContent = (currentUser.name_user || 'Mentor').split(' ')[0];
+        }
+        
+        const headerInitial = document.getElementById('headerInitial');
+        if (headerInitial) {
+            const fullName = currentUser.name_user || 'Mentor';
+            headerInitial.textContent = fullName.charAt(0).toUpperCase();
+        }
     }
-    */
-    console.info('[BYPASS VISUAL] MentorHeader: usando datos estáticos Mentor Name.');
+
+    document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleMentorSidebar'));
+    });
 </script>
 

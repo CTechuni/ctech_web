@@ -24,90 +24,18 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 <input type="text" placeholder="Buscar evento..." class="search-input" />
             </div>
             <div class="filter-buttons">
-                <button class="filter-btn active">Todos</button>
-                <button class="filter-btn">Online</button>
-                <button class="filter-btn">Presencial</button>
+                <button class="filter-btn active" data-filter="all">Todos</button>
+                <button class="filter-btn" data-filter="virtual">Virtual</button>
+                <button class="filter-btn" data-filter="presencial">Presencial</button>
             </div>
         </div>
 
         <!-- Events Grid -->
-        <div class="events-grid">
-            <!-- Event Card 1 (Online) -->
-            <div class="event-card">
-                <div class="card-header">
-                    <span class="badge badge-online">Online</span>
-                    <span class="event-date">4 mar 2026</span>
-                </div>
-                <div class="card-body">
-                    <h3 class="event-title">Workshop de Astro v4</h3>
-                    <p class="event-desc">Exploraremos las nuevas APIs de contenido y las optimizaciones de rendimiento en Astro.</p>
-                </div>
-                <div class="card-footer">
-                    <div class="meta-item">
-                        <i class="fa-regular fa-clock"></i>
-                        <span>18:30 hr</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fa-regular fa-link"></i>
-                        <span>Meet (Link)</span>
-                    </div>
-                    <div class="meta-item assistants">
-                        <i class="fa-solid fa-users"></i>
-                        <span>24</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Event Card 2 (Presencial) -->
-            <div class="event-card">
-                <div class="card-header">
-                    <span class="badge badge-presencial">Presencial</span>
-                    <span class="event-date">12 mar 2026</span>
-                </div>
-                <div class="card-body">
-                    <h3 class="event-title">Meetup CTech: AI & Frontend</h3>
-                    <p class="event-desc">Charla sobre cómo integrar LLMs en tus aplicaciones frontend de forma eficiente.</p>
-                </div>
-                <div class="card-footer">
-                    <div class="meta-item">
-                        <i class="fa-regular fa-clock"></i>
-                        <span>19:00 hr</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>Hub Central</span>
-                    </div>
-                    <div class="meta-item assistants">
-                        <i class="fa-solid fa-users"></i>
-                        <span>45</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Event Card 3 (Online) -->
-            <div class="event-card">
-                <div class="card-header">
-                    <span class="badge badge-online">Online</span>
-                    <span class="event-date">18 mar 2026</span>
-                </div>
-                <div class="card-body">
-                    <h3 class="event-title">Masterclass: TailwindCSS Pro</h3>
-                    <p class="event-desc">Técnicas avanzadas para construir sistemas de diseño escalables con Tailwind.</p>
-                </div>
-                <div class="card-footer">
-                    <div class="meta-item">
-                        <i class="fa-regular fa-clock"></i>
-                        <span>18:00 hr</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fa-regular fa-link"></i>
-                        <span>Zoom</span>
-                    </div>
-                    <div class="meta-item assistants">
-                        <i class="fa-solid fa-users"></i>
-                        <span>120</span>
-                    </div>
-                </div>
+        <div class="events-grid" id="eventsGrid">
+            <!-- Shimmer/Loading items -->
+            <div class="loading-placeholder">
+                <div class="spinner"></div>
+                <p>Cargando eventos...</p>
             </div>
         </div>
     </div>
@@ -242,7 +170,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         gap: 24px;
     }
 
-    .event-card {
+    :global(.event-card) {
         background: white;
         border-radius: 16px;
         border: 1px solid #e2e8f0;
@@ -254,19 +182,19 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     }
 
-    .event-card:hover {
+    :global(.event-card:hover) {
         transform: translateY(-4px);
         box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
         border-color: #cbd5e1;
     }
 
-    .card-header {
+    :global(.card-header) {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .badge {
+    :global(.badge) {
         padding: 4px 10px;
         border-radius: 6px;
         font-size: 0.7rem;
@@ -275,27 +203,27 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         letter-spacing: 0.02em;
     }
 
-    .badge-online {
+    :global(.badge-virtual), :global(.badge-online) {
         background: #eff6ff;
         color: #3b82f6;
     }
 
-    .badge-presencial {
+    :global(.badge-presencial) {
         background: #f5f3ff;
         color: #8b5cf6;
     }
 
-    .event-date {
+    :global(.event-date) {
         font-size: 0.8rem;
         font-weight: 500;
         color: #64748b;
     }
 
-    .card-body {
+    :global(.card-body) {
         flex: 1;
     }
 
-    .event-title {
+    :global(.event-title) {
         font-size: 1.15rem;
         font-weight: 700;
         color: #0f172a;
@@ -303,7 +231,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         line-height: 1.4;
     }
 
-    .event-desc {
+    :global(.event-desc) {
         font-size: 0.9rem;
         color: #64748b;
         margin: 0;
@@ -314,15 +242,16 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         overflow: hidden;
     }
 
-    .card-footer {
+    :global(.card-footer) {
         display: flex;
         align-items: center;
         gap: 12px;
         padding-top: 16px;
         border-top: 1.5px dashed #f1f5f9;
+        margin-top: auto;
     }
 
-    .meta-item {
+    :global(.meta-item) {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -331,56 +260,160 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         color: #94a3b8;
     }
 
-    .meta-item i {
+    :global(.meta-item i) {
         font-size: 0.85rem;
         color: #cbd5e1;
     }
 
-    .assistants {
+    :global(.assistants) {
         margin-left: auto;
         background: #f8fafc;
         padding: 4px 8px;
         border-radius: 6px;
     }
 
-    .assistants i {
+    :global(.assistants i) {
         color: #3b82f6;
         font-size: 0.75rem;
     }
 
+    /* Loading state */
+    .loading-placeholder {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 100px 0;
+        color: #94a3b8;
+    }
+
+    .spinner {
+        width: 32px;
+        height: 32px;
+        border: 4px solid #f1f5f9;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── Responsive ── */
     @media (max-width: 1024px) {
-        .events-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .events-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media (max-width: 640px) {
-        .events-grid {
-            grid-template-columns: 1fr;
-        }
-        .events-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-        }
-        .btn-create-event {
-            width: 100%;
-            justify-content: center;
-        }
-        .filters-row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .search-box {
-            max-width: 100%;
-        }
-        .filter-buttons {
-            width: 100%;
-        }
-        .filter-btn {
-            flex: 1;
-            text-align: center;
-        }
+        .events-grid { grid-template-columns: 1fr; }
+        .events-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+        .btn-create-event { width: 100%; justify-content: center; }
+        .filters-row { flex-direction: column; align-items: flex-start; }
+        .search-box { max-width: 100%; }
+        .filter-buttons { width: 100%; }
+        .filter-btn { flex: 1; text-align: center; }
     }
 </style>
+
+<script>
+    import { authManager as auth } from "../../utils/auth.js";
+
+    let allEvents = [];
+    let currentFilter = 'all';
+
+    async function init() {
+        try {
+            const data = await auth.get('events');
+            allEvents = data || [];
+
+            // Mock fallback
+            if (allEvents.length === 0) {
+                allEvents = [
+                    { title: 'Workshop de Astro v4', event_date: '2026-03-04', description: 'Exploraremos las nuevas APIs de contenido y las optimizaciones de rendimiento en Astro.', location: 'Zoom / Meet', event_type: 'virtual', capacity: 24, event_time: '18:30' },
+                    { title: 'Meetup CTech: AI & Frontend', event_date: '2026-03-12', description: 'Charla sobre cómo integrar LLMs en tus aplicaciones frontend de forma eficiente.', location: 'Hub Central', event_type: 'presencial', capacity: 45, event_time: '19:00' },
+                    { title: 'Masterclass: TailwindCSS Pro', event_date: '2026-03-18', description: 'Técnicas avanzadas para construir sistemas de diseño escalables con Tailwind.', location: 'Zoom', event_type: 'virtual', capacity: 120, event_time: '18:00' }
+                ];
+            }
+
+            renderGrid();
+        } catch (err) {
+            console.error('Leader Events: Load failure', err);
+            const grid = document.getElementById('eventsGrid');
+            if (grid) grid.innerHTML = '<p>Error al cargar el catálogo de eventos.</p>';
+        }
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('eventsGrid');
+        const searchTerm = (document.querySelector('.search-input') as HTMLInputElement)?.value.toLowerCase() || '';
+        
+        if (!grid) return;
+
+        const filtered = allEvents.filter(ev => {
+            const matchesSearch = ev.title.toLowerCase().includes(searchTerm) || (ev.location || '').toLowerCase().includes(searchTerm);
+            
+            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
+            let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+            
+            const matchesFilter = currentFilter === 'all' || normalizedType === currentFilter;
+            return matchesSearch && matchesFilter;
+        });
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px;">No se encontraron eventos con los criterios actuales.</p>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(ev => {
+            const dateObj = new Date(ev.event_date + 'T00:00:00');
+            const dateStr = dateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+            
+            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
+            let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+            
+            const typeLabel = type === 'virtual' ? 'Virtual' : 'Presencial';
+            const badgeClass = type === 'virtual' ? 'badge-virtual' : 'badge-presencial';
+
+            return `
+                <div class="event-card">
+                    <div class="card-header">
+                        <span class="badge ${badgeClass}">${typeLabel}</span>
+                        <span class="event-date">${dateStr}</span>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="event-title">${ev.title}</h3>
+                        <p class="event-desc">${ev.description || ev.desc || ''}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="meta-item">
+                            <i class="fa-regular fa-clock"></i>
+                            <span>${ev.event_time || '18:00'} hr</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="${type === 'virtual' ? 'fa-regular fa-link' : 'fa-solid fa-location-dot'}"></i>
+                            <span>${(ev.location || '').split(',')[0] || 'TBD'}</span>
+                        </div>
+                        <div class="meta-item assistants">
+                            <i class="fa-solid fa-users"></i>
+                            <span>${ev.capacity || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Listeners
+    document.querySelector('.search-input')?.addEventListener('input', renderGrid);
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.getAttribute('data-filter') || 'all';
+            renderGrid();
+        });
+    });
+
+    init();
+</script>

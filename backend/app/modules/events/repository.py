@@ -39,3 +39,11 @@ def update_image(db: Session, event_id: int, url: str):
         db_event.image_url = url
         db.commit()
     return db_event
+
+def delete(db: Session, event_id: int):
+    db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if db_event:
+        db.delete(db_event)
+        db.commit()
+        return True
+    return False

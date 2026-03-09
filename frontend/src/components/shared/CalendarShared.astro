@@ -1,0 +1,616 @@
+---
+// src/components/shared/CalendarShared.astro
+/**
+ * Universal Functional Calendar Component
+ * Optimized for CTech's Admin, Leader and Mentor panels.
+ */
+---
+
+<div class="calendar-wrapper">
+    <!-- 1. Calendar Navigation & Filters -->
+    <div class="calendar-top-bar">
+        <div class="month-selector">
+            <button id="prevMonth" class="action-btn" aria-label="Mes anterior">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+            </button>
+            <h2 id="currentMonthLabel" class="month-label">Marzo 2026</h2>
+            <button id="nextMonth" class="action-btn" aria-label="Mes siguiente">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="calendar-actions">
+            <div class="type-filters">
+                <button class="filter-pill active" data-filter="all">Todos</button>
+                <button class="filter-pill" data-filter="virtual">Virtual</button>
+                <button class="filter-pill" data-filter="presencial">Presencial</button>
+            </div>
+            <slot name="extra-actions" />
+        </div>
+    </div>
+
+    <!-- 2. The Calendar Grid -->
+    <div class="calendar-container">
+        <div class="calendar-header-days">
+            <span>Dom</span>
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mié</span>
+            <span>Jue</span>
+            <span>Vie</span>
+            <span>Sáb</span>
+        </div>
+        <div id="calendarGrid" class="calendar-body-grid">
+            <!-- Dynamic days will be rendered here -->
+            <div class="calendar-loading">
+                <div class="spinner"></div>
+                <span>Cargando eventos...</span>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- 4. Event Details Modal -->
+<div id="eventDetailModal" class="event-modal-overlay">
+    <div class="event-modal-card">
+        <button id="closeEventModal" class="modal-close-btn" aria-label="Cerrar modal">&times;</button>
+        
+        <div id="modalImageContainer" class="modal-image-area" style="display: none;">
+            <img id="modalEventImage" src="" alt="Evento" class="modal-main-img" />
+        </div>
+
+        <div class="modal-content-area">
+            <div class="modal-header-info">
+                <span id="modalEventBadge" class="type-badge">VIRTUAL</span>
+                <h3 id="modalEventTitle">Título del Evento</h3>
+                <p id="modalEventDesc" class="description-text">Descripción detallada del evento aquí...</p>
+            </div>
+
+            <div class="modal-details-grid">
+                <div class="detail-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                    <span id="modalEventDate" class="detail-text">24 de Marzo, 2026</span>
+                </div>
+                <div class="detail-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span id="modalEventTime" class="detail-text">18:30 hr</span>
+                </div>
+                <div class="detail-item">
+                    <svg id="locationIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                    <span id="modalEventLocation" class="detail-text">Ubicación / Link</span>
+                </div>
+            </div>
+            
+            <div id="modalFooterActions" class="modal-footer" style="display: flex; flex-direction: column; gap: 12px;">
+                <a id="modalFormBtn" href="#" target="_blank" class="btn-primary-action" style="display: none; text-align: center; text-decoration: none;">Registrarse / Formulario</a>
+                <div style="display: flex; gap: 12px; width: 100%;">
+                    <a id="modalLinkBtn" href="#" target="_blank" class="btn-secondary-action" style="display: none;">Ver Evento</a>
+                    <button id="modalPrimaryBtn" class="btn-primary-action" style="background: #f1f5f9; color: #475569;">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .calendar-wrapper { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 20px; 
+        max-width: 1000px; 
+        margin: 0 auto; 
+    }
+
+    /* Top Bar */
+    .calendar-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .month-selector {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        padding: 4px 10px;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        border: 1px solid #e2e8f0;
+    }
+
+    .month-label { margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a; min-width: 110px; text-align: center; }
+
+    .action-btn {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover { background: #f1f5f9; color: var(--color-azure-radiant, #0073ff); }
+
+    .calendar-actions .type-filters {
+        display: flex;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 14px;
+        gap: 4px;
+    }
+
+    .filter-pill {
+        border: none;
+        background: transparent;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-pill.active {
+        background: white;
+        color: var(--color-azure-radiant, #0073ff);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    /* Container & Grid */
+    .calendar-container {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+        overflow: hidden;
+    }
+
+    .calendar-header-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .calendar-header-days span {
+        padding: 12px;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .calendar-body-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    /* Day Cells */
+    :global(.calendar-day) {
+        min-height: 100px;
+        padding: 8px;
+        border-right: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: background 0.2s;
+    }
+
+    :global(.calendar-day:nth-child(7n)) { border-right: none; }
+    :global(.day-label) { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; display: block; }
+    :global(.calendar-day.muted) { background: #fafbfc; opacity: 0.4; pointer-events: none; }
+    :global(.calendar-day.today .day-label) { 
+        background: var(--color-azure-radiant, #0073ff); 
+        color: white; 
+        width: 28px; 
+        height: 28px; 
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+    }
+
+    /* Event Pills in Calendar */
+    :global(.event-micro-pill) {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 5px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        transition: transform 0.15s;
+    }
+
+    :global(.event-micro-pill:hover) { transform: scale(1.03); }
+    :global(.pill-virtual), :global(.pill-online) { background: #eff6ff; color: #3b82f6; border-left: 3px solid #3b82f6; }
+    :global(.pill-presencial) { background: #fdf2f8; color: #db2777; border-left: 3px solid #db2777; }
+
+
+
+    /* Modal Styling */
+    .event-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        padding: 16px;
+    }
+
+    .event-modal-card {
+        background: white;
+        border-radius: 28px;
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes modalIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        background: rgba(255,255,255,0.9);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        color: #1e293b;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .modal-image-area { 
+        width: 100%; 
+        height: 220px; 
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden; 
+        border-bottom: 1px solid #e2e8f0;
+        padding: 24px;
+    }
+    .modal-main-img { 
+        max-width: 100%; 
+        max-height: 100%; 
+        object-fit: contain;
+        border-radius: 12px;
+    }
+
+    .modal-content-area { padding: 32px; }
+
+    .modal-header-info { margin-bottom: 24px; }
+    .type-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    #modalEventTitle { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; }
+    .description-text { font-size: 0.95rem; color: #64748b; line-height: 1.6; margin-bottom: 0; }
+
+    .modal-details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 20px;
+        margin-bottom: 24px;
+    }
+
+    .detail-item { display: flex; align-items: center; gap: 12px; }
+    .detail-item svg { width: 20px; height: 20px; color: var(--color-azure-radiant, #0073ff); flex-shrink: 0; }
+    .detail-text { font-size: 0.9rem; font-weight: 600; color: #334155; }
+
+    .btn-primary-action:hover { background: #0062cc; }
+
+    .btn-secondary-action {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        color: var(--color-azure-radiant, #0073ff);
+        border: 2px solid var(--color-azure-radiant, #0073ff);
+        padding: 12px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary-action:hover { 
+        background: var(--color-azure-radiant, #0073ff);
+        color: white;
+    }
+
+    .btn-primary-action {
+        flex: 1;
+        background: #f1f5f9;
+        color: #475569;
+        border: none;
+        padding: 14px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary-action:hover { background: #e2e8f0; }
+
+    .loading-state { grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; padding: 60px; color: #94a3b8; }
+    .spinner { width: 32px; height: 32px; border: 4px solid #f1f5f9; border-top-color: #0073ff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+        :global(.calendar-day) { min-height: 80px; padding: 6px; }
+        :global(.event-micro-pill) { font-size: 0.6rem; padding: 3px 6px; }
+        .modal-content-area { padding: 24px; }
+    }
+</style>
+
+<script>
+    import { authManager } from "../../utils/auth.js";
+
+    const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    let displayDate = new Date(2026, 2, 1); // Starting at March 2026
+    let currentFilter = 'all';
+    let allEvents = [];
+
+    // ── INITIALIZATION ──
+    async function initCalendar() {
+        setupEventListeners();
+        await loadEvents();
+    }
+
+    async function loadEvents() {
+        try {
+            // Tentamos obtener eventos mediante el fetch estático de AuthManager
+            // En producción el endpoint sería '/events' o similar
+            const rawEvents = await authManager.constructor.fetch('/events').catch(() => null);
+            
+            if (rawEvents && Array.isArray(rawEvents)) {
+                allEvents = rawEvents;
+            } else {
+                // Mock fallback para demo de producción
+                allEvents = [
+                    { id: 1, title: 'Workshop: Astro v4', event_date: '2026-03-04', description: 'Profundizando en las nuevas APIs de Astro para optimizar el rendimiento del frontend.', location: 'Zoom / Meet', event_type: 'virtual', event_time: '18:30', image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800' },
+                    { id: 2, title: 'Meetup CTech CDMX', event_date: '2026-03-12', description: ' Networking presencial con la comunidad de tecnología en México.', location: 'CTech Hub, Reforma', event_type: 'presencial', event_time: '19:00', image_url: '' },
+                    { id: 3, title: 'Hackathon AI 2026', event_date: '2026-03-22', description: '48 horas de pura innovación usando LLMs locales y arquitecturas distribuidas.', location: 'Discord Community', event_type: 'virtual', event_time: '10:00', image_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800' }
+                ];
+            }
+            renderGrid();
+        } catch (err) {
+            console.error('Calendar: Error loading events', err);
+            const grid = document.getElementById('calendarGrid');
+            if (grid) grid.innerHTML = '<div class="loading-state">Error al conectar con el servidor de eventos</div>';
+        }
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('calendarGrid');
+        if (!grid) return;
+
+        const year = displayDate.getFullYear();
+        const month = displayDate.getMonth();
+        
+        // 1. Label update
+        const label = document.getElementById('currentMonthLabel');
+        if (label) label.textContent = `${MONTHS_ES[month]} ${year}`;
+
+        // 2. Logic grid
+        const firstDayIdx = new Date(year, month, 1).getDay(); // 0 is Sun
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevMonthLastDay = new Date(year, month, 0).getDate();
+        
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+        let html = '';
+
+        // Past days
+        for (let i = firstDayIdx - 1; i >= 0; i--) {
+            html += `<div class="calendar-day muted"><span class="day-label">${prevMonthLastDay - i}</span></div>`;
+        }
+
+        // Current month days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isToday = isCurrentMonth && today.getDate() === day;
+            
+            const dayEvents = allEvents.filter(ev => {
+                const evDate = ev.event_date || ev.date_events; // flex field naming
+                if (!evDate) return false;
+                const matchesDate = evDate.startsWith(dateISO);
+                
+                let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
+                let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+                
+                const matchesFilter = currentFilter === 'all' || normalizedType === currentFilter;
+                return matchesDate && matchesFilter;
+            });
+
+            html += `
+                <div class="calendar-day ${isToday ? 'today' : ''}" data-date="${dateISO}">
+                    <span class="day-label">${day}</span>
+                    <div class="events-container">
+                        ${dayEvents.map(ev => {
+                            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
+                            let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+                            return `<div class="event-micro-pill pill-${type}" data-event-id="${ev.id}">${ev.title}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Next month filler
+        const totalShown = firstDayIdx + daysInMonth;
+        const remaining = 35 - totalShown; // Prefer 5 weeks
+        const extra = remaining < 0 ? 42 - totalShown : remaining;
+        
+        for (let i = 1; i <= extra; i++) {
+            html += `<div class="calendar-day muted"><span class="day-label">${i}</span></div>`;
+        }
+
+        grid.innerHTML = html;
+
+        // Add Clicks
+        document.querySelectorAll('.event-micro-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                const id = (e.target as HTMLElement).getAttribute('data-event-id');
+                showEventDetails(id);
+            });
+        });
+    }
+
+    function showEventDetails(id) {
+        const event = allEvents.find(e => String(e.id) === String(id));
+        if (!event) return;
+
+        const modal = document.getElementById('eventDetailModal');
+        if (!modal) return;
+
+        // Image Handling
+        const imgContainer = document.getElementById('modalImageContainer');
+        const img = document.getElementById('modalEventImage') as HTMLImageElement;
+        
+        if (event.image_url) {
+            img.src = event.image_url;
+            imgContainer.style.display = 'block';
+        } else {
+            imgContainer.style.display = 'none';
+        }
+
+        // Info mapping
+        document.getElementById('modalEventTitle').textContent = event.title;
+        document.getElementById('modalEventDesc').textContent = event.description || event.description_event || 'Sin descripción disponible.';
+        document.getElementById('modalEventDate').textContent = new Date(event.event_date + 'T12:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' });
+        document.getElementById('modalEventTime').textContent = (event.event_time || '18:00') + ' hr';
+        document.getElementById('modalEventLocation').textContent = event.location || event.place || 'Consultar con organizador';
+        
+        const badge = document.getElementById('modalEventBadge');
+        let typeRaw = `${event.event_type || ''} ${event.type_event || ''} ${event.location || ''}`.toLowerCase();
+        let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+        
+        if (badge) {
+            badge.textContent = type.toUpperCase();
+            badge.className = `type-badge pill-${type}`;
+        }
+
+        // Link & Form Handling
+        const formBtn = document.getElementById('modalFormBtn') as HTMLAnchorElement;
+        const linkBtn = document.getElementById('modalLinkBtn') as HTMLAnchorElement;
+        
+        const urlForm = event.url_form || event.form_url;
+        const normalizedType = (event.event_type || '').toLowerCase();
+        const eventLink = event.event_link || event.link || ((normalizedType === 'virtual' || normalizedType === 'online') ? event.location : null);
+        
+        // Handle Registration Form (Prioridad 1)
+        if (urlForm && (urlForm.startsWith('http') || urlForm.includes('.'))) {
+            formBtn.href = urlForm;
+            formBtn.style.display = 'block';
+        } else {
+            formBtn.style.display = 'none';
+        }
+
+        // Handle General Event Link (Prioridad 2)
+        if (eventLink && eventLink !== urlForm && (eventLink.startsWith('http') || eventLink.includes('.'))) {
+            linkBtn.href = eventLink;
+            linkBtn.style.display = 'flex';
+        } else {
+            linkBtn.style.display = 'none';
+        }
+
+        modal.style.display = 'flex';
+    }
+
+    function setupEventListeners() {
+        document.getElementById('prevMonth')?.addEventListener('click', () => {
+            displayDate.setMonth(displayDate.getMonth() - 1);
+            renderGrid();
+        });
+
+        document.getElementById('nextMonth')?.addEventListener('click', () => {
+            displayDate.setMonth(displayDate.getMonth() + 1);
+            renderGrid();
+        });
+
+        document.querySelectorAll('.filter-pill').forEach(p => {
+            p.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                p.classList.add('active');
+                currentFilter = p.getAttribute('data-filter') || 'all';
+                renderGrid();
+            });
+        });
+
+        document.getElementById('closeEventModal')?.addEventListener('click', () => {
+            document.getElementById('eventDetailModal').style.display = 'none';
+        });
+
+        document.getElementById('modalPrimaryBtn')?.addEventListener('click', () => {
+            document.getElementById('eventDetailModal').style.display = 'none';
+        });
+
+        // Close on overlay click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('eventDetailModal');
+            if (e.target === modal) modal.style.display = 'none';
+        });
+    }
+
+    initCalendar();
+</script>

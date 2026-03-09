@@ -44,3 +44,6 @@ def get_upcoming_events(db: Session, limit: int = 5):
 def process_image_upload(db: Session, event_id: int, file_url: str):
     # Aquí iría la lógica de validación de formato antes de guardar
     return repository.update_image(db, event_id, file_url)
+
+def delete_event(db: Session, event_id: int):
+    return repository.delete(db, event_id)
