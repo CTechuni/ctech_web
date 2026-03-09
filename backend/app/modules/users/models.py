@@ -28,6 +28,8 @@ class User(Base):
     specialty_id = Column(Integer, ForeignKey("specialties.id"), nullable=True) # <--- Added specialty linkage
     status = Column(String(50), default="active")
     is_email_verified = Column(Boolean, default=False)
+    reset_token = Column(String(255), unique=True, nullable=True, index=True)
+    reset_token_expires = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     # Relaciones

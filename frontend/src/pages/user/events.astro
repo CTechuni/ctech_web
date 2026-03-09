@@ -39,7 +39,7 @@ const title = "Eventos";
 </style>
 
 <script>
-    import { authManager } from '../../utils/auth.js';
+    import { authManager, AuthManager } from '../../utils/auth.js';
 
     let allEvents = [];
 
@@ -47,7 +47,7 @@ const title = "Eventos";
         const user = authManager.getUser();
         if (!user) return;
         try {
-            const events = await authManager.get('events');
+            const events = await AuthManager.fetch('/events/');
             allEvents = events || [];
             const communityId = user.community_id;
             const filtered = allEvents.filter(e => e.community_id == communityId && e.status === 'publicado');
@@ -120,7 +120,7 @@ const title = "Eventos";
             
             try {
                 // LLAMADA AL BACKEND PARA REGISTRO Y ENVÍO DE EMAIL
-                const response = await authManager.fetch(`/events/${eventId}/register`, {
+                const response = await AuthManager.fetch(`/events/${eventId}/register`, {
                     method: 'POST'
                 });
 

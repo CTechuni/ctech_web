@@ -20,14 +20,34 @@ def create_user(db: Session, user_data: dict):
     return db_user
 
 def update_user_password(db: Session, user_id: int, new_hashed_password: str):
-    """Actualiza la contraseña de un usuario existente."""
+    """Actualiza la contraseña de un usuario existente y limpia el token de reset."""
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if db_user:
         db_user.password_hash = new_hashed_password
+        db_user.reset_token = None
+        db_user.reset_token_expires = None
         db.commit()
         db.refresh(db_user)
         return db_user
     return None
+
+def set_reset_token(db: Session, user_id: int, token: str, expires: datetime):
+    """Guarda un token de recuperación para un usuario."""
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        db_user.reset_token = token
+        db_user.reset_token_expires = expires
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    return None
+
+def get_user_by_reset_token(db: Session, token: str):
+    """Busca un usuario por su token de recuperación activo."""
+    return db.query(models.User).filter(
+        models.User.reset_token == token,
+        models.User.reset_token_expires > datetime.utcnow()
+    ).first()
 
 # --- Funciones de Seguridad (Logout) ---
 

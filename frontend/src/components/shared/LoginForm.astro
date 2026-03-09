@@ -36,7 +36,7 @@
             <span class="checkmark"></span>
             Recordarme
         </label>
-        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <a href="#" class="forgot-password" onclick="toggleForgotPassword(event, true)">¿Olvidaste tu contraseña?</a>
     </div>
 
     <button type="submit" class="login-btn">
@@ -51,6 +51,38 @@
 
     <div class="signup-link">
         <p>¿No tienes cuenta? <a href="#" onclick="window.closeModal('loginModal'); window.openModal('signupModal')">Regístrate aquí</a></p>
+    </div>
+</form>
+
+<!-- Forgot Password Form Overlay -->
+<form class="login-form" id="forgotPasswordForm" style="display: none;" method="POST">
+    <div style="text-align: center; margin-bottom: 1rem;">
+        <h3 style="color: var(--color-primary-dark); margin-bottom: 0.5rem;">Recuperar Contraseña</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin: 0; line-height: 1.4;">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="forgotEmail">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="forgotEmail" 
+            name="forgotEmail" 
+            placeholder="tu@email.com"
+            required
+        >
+        <span class="error-message" id="forgotEmailError"></span>
+    </div>
+
+    <div id="forgotPasswordSuccess" class="alert alert-success" style="display: none; border-radius: 12px; font-size: 0.85rem; font-weight: 500; background-color: #dcfce7; color: #166534; padding: 0.75rem; border: 1px solid #bbf7d0; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+        Revisa tu bandeja de entrada o spam. Hemos enviado un correo con las instrucciones.
+    </div>
+
+    <button type="submit" class="login-btn" id="forgotSubmitBtn">
+        Enviar Enlace
+    </button>
+
+    <div class="signup-link" style="margin-top: 1rem;">
+        <a href="#" onclick="toggleForgotPassword(event, false)" style="color: #64748b;">Volver a Iniciar Sesión</a>
     </div>
 </form>
 
@@ -277,9 +309,11 @@
 
         const emailInputFixed = document.getElementById('email');
         const passwordInputFixed = document.getElementById('password');
+        const forgotEmailInputFixed = document.getElementById('forgotEmail');
 
         emailInputFixed?.addEventListener('keydown', preventSpaces);
         passwordInputFixed?.addEventListener('keydown', preventSpaces);
+        forgotEmailInputFixed?.addEventListener('keydown', preventSpaces);
 
         document.getElementById('email')?.addEventListener('input', () => clearError('email', 'emailError'));
         document.getElementById('password')?.addEventListener('input', () => clearError('password', 'passwordError'));
@@ -430,4 +464,94 @@
             alert('Error al cerrar sesión: ' + (error?.message || error));
         }
     };
+
+    // Toggle para visualizar Forgot Password Form
+    window.toggleForgotPassword = function(e, showForgot) {
+        if(e) e.preventDefault();
+        const loginFormEl = document.getElementById('loginForm');
+        const forgotFormEl = document.getElementById('forgotPasswordForm');
+        const forgotSuccess = document.getElementById('forgotPasswordSuccess');
+        const emailInput = document.getElementById('forgotEmail');
+        
+        if (showForgot) {
+            loginFormEl.style.display = 'none';
+            forgotFormEl.style.display = 'flex';
+            if(forgotSuccess) forgotSuccess.style.display = 'none';
+            if(emailInput) emailInput.value = '';
+        } else {
+            loginFormEl.style.display = 'flex';
+            forgotFormEl.style.display = 'none';
+        }
+    };
+
+    // Manejo del formulario de Forgot Password
+    const forgotForm = document.getElementById('forgotPasswordForm');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('forgotEmail');
+            const errorSpan = document.getElementById('forgotEmailError');
+            const btn = document.getElementById('forgotSubmitBtn');
+            const successMsg = document.getElementById('forgotPasswordSuccess');
+            const email = String(emailInput.value || '').trim();
+            
+            errorSpan.textContent = '';
+            errorSpan.classList.remove('visible');
+            inputRemoveError(emailInput);
+            successMsg.style.display = 'none';
+            
+            if (!email) {
+                inputErrorAndMsg(emailInput, errorSpan, 'El correo es obligatorio');
+                return;
+            } else if (email.includes(' ')) {
+                inputErrorAndMsg(emailInput, errorSpan, 'El correo no puede contener espacios');
+                return;
+            } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+                inputErrorAndMsg(emailInput, errorSpan, 'Correo inválido');
+                return;
+            }
+            
+            const originalText = btn.textContent;
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
+            
+            try {
+                // Configurar URL usando el helper
+                const { API_CONFIG, buildApiUrl } = await import('../../config/api.js');
+                const url = buildApiUrl(API_CONFIG.AUTH.FORGOT_PASSWORD);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successMsg.style.display = 'block';
+                    emailInput.value = '';
+                } else {
+                    inputErrorAndMsg(emailInput, errorSpan, data.detail || 'Error al enviar la solicitud');
+                }
+            } catch (error) {
+                console.error('forgot password failed', error);
+                inputErrorAndMsg(emailInput, errorSpan, 'Error de conexión con el servidor');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        function inputErrorAndMsg(input, errorEl, msg) {
+            input.classList.add('error');
+            errorEl.textContent = msg;
+            errorEl.classList.add('visible');
+        }
+        function inputRemoveError(input) {
+            if(input) input.classList.remove('error');
+        }
+    }
+
 </script>

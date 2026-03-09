@@ -28,6 +28,7 @@ def get_paginated(db: Session, page: int, limit: int, role_id: int = None, searc
             (Community.name_community.ilike(search_filter))
         )
         
+    query = query.order_by(models.User.created_at.desc())
     results = query.offset(offset).limit(limit).all()
     
     users = []
@@ -78,6 +79,7 @@ def get_leaders_enriched(db: Session):
      .outerjoin(MemberCount, models.User.community_id == MemberCount.c.community_id)\
      .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
      .filter(models.User.rol_id == 3)\
+     .order_by(models.User.created_at.desc())\
      .all()
 
     leaders = []
@@ -100,6 +102,7 @@ def get_mentors_enriched(db: Session):
      .outerjoin(Community, models.User.community_id == Community.id_community)\
      .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
      .filter(models.User.rol_id == 2)\
+     .order_by(models.User.created_at.desc())\
      .all()
 
     mentors = []

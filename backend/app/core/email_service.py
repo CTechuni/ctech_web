@@ -100,4 +100,18 @@ class EmailService:
             logger.error(f"Error al renderizar plantilla de registro a evento: {str(e)}")
             return False
 
+    def send_reset_password_email(self, recipient_email: str, name_user: str, token: str):
+        try:
+            template = self.env.get_template("reset_password.html")
+            reset_link = f"{settings.PLATFORM_URL}/reset-password?email={recipient_email}&token={token}"
+            html_content = template.render(
+                name_user=name_user,
+                reset_link=reset_link,
+                platform_url=settings.PLATFORM_URL
+            )
+            return self._send_email(recipient_email, "Recuperación de Contraseña - CTech", html_content)
+        except Exception as e:
+            logger.error(f"Error al renderizar plantilla de recuperación de contraseña: {str(e)}")
+            return False
+
 email_service = EmailService()

@@ -104,9 +104,65 @@ def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     service.block_token(db, token)
     return {"message": "Sesión cerrada exitosamente"}
 
-@router.post("/reset-password")
+import secrets
+from datetime import datetime, timedelta
+from . import repository
+
+@router.post("/forgot-password")
+def forgot_password(data: schemas.ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == data.email).first()
+    if not user:
+        # Por seguridad en producción, a veces se prefiere no revelar si el correo existe.
+        # Pero aquí mantendremos la lógica actual o similar.
+        raise HTTPException(
+            status_code=400,
+            detail="Si el correo está registrado, recibirás un enlace."
+        )
+    
+    # Generar token seguro
+    token = secrets.token_urlsafe(32)
+    expires = datetime.utcnow() + timedelta(hours=1)
+    
+    repository.set_reset_token(db, user.id, token, expires)
+    
+    from app.core.email_service import email_service
+    background_tasks.add_task(
+        email_service.send_reset_password_email,
+        recipient_email=user.email,
+        name_user=user.name_user,
+        token=token
+    )
+    
+    return {"message": "Se ha enviado un enlace de recuperación a tu correo electrónico."}
+
+@router.patch("/reset-password")
 def reset_password(data: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
-    # Aquí Pydantic ya validó que la 'new_password' sea compleja
-    # Lógica para buscar el usuario por el token y actualizar...
-    return {"message": "Contraseña actualizada correctamente"}
+    print(f"--- RESET PASSWORD DEBUG ---")
+    print(f"Token received: {data.token[:10]}...")
+    print(f"Email received: {data.email}")
+    
+    # 1. Buscar usuario por token y email
+    user = repository.get_user_by_reset_token(db, token=data.token)
+    
+    if not user or user.email != data.email:
+        print(f"Validation FAILED: User not found or email mismatch")
+        raise HTTPException(
+            status_code=400, 
+            detail="El enlace de recuperación es inválido o ha expirado."
+        )
+    
+    print(f"User validated: {user.email} (ID: {user.id})")
+    
+    # 2. Generar hash
+    new_hashed_password = service.get_password_hash(data.new_password)
+    
+    # 3. Actualizar (update_user_password ya limpia el token)
+    updated_user = repository.update_user_password(db, user.id, new_hashed_password)
+    
+    if updated_user:
+        print(f"DATABASE PERSISTENCE: Success! Password updated for {updated_user.email}")
+        return {"message": "Contraseña actualizada correctamente"}
+    else:
+        print(f"DATABASE PERSISTENCE: FAILED!")
+        raise HTTPException(status_code=500, detail="Error interno al actualizar la contraseña")
     

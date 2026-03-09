@@ -349,4 +349,21 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 }
 
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'login') {
+            // Remove the parameter from the URL cleanly
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+            
+            // Open the login modal
+            if (typeof window.openModal === 'function') {
+                window.openModal('loginModal');
+            }
+        }
+    });
+</script>
+
 </MainLayout>
