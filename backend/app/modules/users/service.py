@@ -102,9 +102,9 @@ def delete_user(db: Session, user_id: int):
 def get_all(db: Session):
     return repository.get_all(db)
 
-def get_paginated(db: Session, page: int, limit: int):
-    users = repository.get_paginated(db, page, limit)
-    total = repository.get_count(db)
+def get_paginated(db: Session, page: int, limit: int, role_id: int = None, search: str = None):
+    users = repository.get_paginated(db, page, limit, role_id, search)
+    total = repository.get_count(db, role_id, search)
     return {"users": users, "total": total}
 
 def get_user(db: Session, user_id: int):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -9,7 +9,7 @@ router = APIRouter(tags=["Auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-def register(data: schemas.UserCreate, db: Session = Depends(get_db)):
+def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     # 1. Validar nombre (solo letras y espacios)
     import re
     if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", data.name_user):
@@ -51,6 +51,16 @@ def register(data: schemas.UserCreate, db: Session = Depends(get_db)):
     new_profile = Profile(user_id=new_user.id)
     db.add(new_profile)
     db.commit()
+
+    # 6. Enviar Correo de Bienvenida (Background Task)
+    from app.core.email_service import email_service
+    
+    background_tasks.add_task(
+        email_service.send_welcome_email, 
+        recipient_email=new_user.email,
+        name_user=new_user.name_user,
+        name_community=community.name_community
+    )
 
     return {"message": "Usuario registrado exitosamente"}
 

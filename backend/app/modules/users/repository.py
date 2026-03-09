@@ -7,16 +7,28 @@ from app.modules.specialties.models import Specialty
 def get_all(db: Session):
     return db.query(models.User).options(joinedload(models.User.profile)).all()
 
-def get_paginated(db: Session, page: int, limit: int):
+def get_paginated(db: Session, page: int, limit: int, role_id: int = None, search: str = None):
     offset = (page - 1) * limit
-    results = db.query(
+    query = db.query(
         models.User,
         Community.name_community,
         Specialty.name.label('spec_name')
     ).options(joinedload(models.User.profile))\
      .outerjoin(Community, models.User.community_id == Community.id_community)\
-     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
-     .offset(offset).limit(limit).all()
+     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)
+    
+    if role_id:
+        query = query.filter(models.User.rol_id == role_id)
+        
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            (models.User.name_user.ilike(search_filter)) |
+            (models.User.email.ilike(search_filter)) |
+            (Community.name_community.ilike(search_filter))
+        )
+        
+    results = query.offset(offset).limit(limit).all()
     
     users = []
     for user, comm_name, spec_name in results:
@@ -25,8 +37,20 @@ def get_paginated(db: Session, page: int, limit: int):
         users.append(user)
     return users
 
-def get_count(db: Session):
-    return db.query(func.count(models.User.id)).scalar()
+def get_count(db: Session, role_id: int = None, search: str = None):
+    query = db.query(func.count(models.User.id))
+    if role_id:
+        query = query.filter(models.User.rol_id == role_id)
+    if search:
+        search_filter = f"%{search}%"
+        # Need to join with community if we search by community name in count too
+        query = query.outerjoin(Community, models.User.community_id == Community.id_community)\
+                     .filter(
+                        (models.User.name_user.ilike(search_filter)) |
+                        (models.User.email.ilike(search_filter)) |
+                        (Community.name_community.ilike(search_filter))
+                     )
+    return query.scalar()
 
 def get_by_id(db: Session, user_id: int):
     return db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.id == user_id).first()

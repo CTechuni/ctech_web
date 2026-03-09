@@ -113,20 +113,9 @@ const menuItems = [
 </style>
 
 <script>
-    /* ⚠️ BYPASS TEMPORAL - SOLO SIMULACRO VISUAL. Reactivar antes de producción.
-    import { AuthManager, authManager } from "../../utils/auth.js";
-
+    import { authManager } from "../../utils/auth.js";
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
-        const auth = authManager;
-        auth.logout();
-        window.location.href = '/login';
-    });
-    */
-
-    // Logout estático para simulacro
-    document.getElementById('logoutBtn')?.addEventListener('click', () => {
-        console.info('[BYPASS VISUAL] Logout deshabilitado durante simulacro.');
-        window.location.href = '/';
+        authManager.logout();
     });
 
     // Mark active link and persist ID

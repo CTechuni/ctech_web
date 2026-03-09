@@ -385,10 +385,21 @@ const { title, subtitle = 'Gestión Global' } = Astro.props;
         }
         
         const avatarContainer = document.getElementById('headerAvatarContainer');
-        const photoUrl = currentUser.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUser.name_user || 'admin')}&backgroundColor=b6e3f4`;
-        
-        if (avatarContainer) {
-            avatarContainer.innerHTML = `<img src="${photoUrl}" alt="Avatar" class="avatar-img" />`;
+        const headerInitial = document.getElementById('headerInitial');
+
+        if (avatarContainer && headerInitial) {
+            const fullName = currentUser.name_user || 'Admin';
+            const initials = fullName
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .substring(0, 2)
+                .toUpperCase();
+            
+            headerInitial.textContent = initials;
+            // Aseguramos que no haya una imagen previa si el contenedor se reutiliza
+            const existingImg = avatarContainer.querySelector('img');
+            if (existingImg) existingImg.remove();
         }
     }
 

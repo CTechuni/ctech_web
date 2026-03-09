@@ -37,6 +37,7 @@ export const API_CONFIG = {
     // Endpoints de comunidades
     COMMUNITIES: {
         LIST: '/communities',
+        WITH_LOGO: '/communities/with-logo',
         JOIN: '/communities/join',
         LEAVE: '/communities/leave',
         CREATE: '/communities/create',

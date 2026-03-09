@@ -4,7 +4,14 @@ from app.modules.notifications import service as notification_service
 from app.modules.communities.models import Community
 
 def list_events(db: Session):
-    return repository.get_all(db)
+    results = repository.get_all(db)
+    events = []
+    for event, community_name in results:
+        # Pydantic will pick up community_name from the object attributes
+        event.community_name = community_name
+        events.append(event)
+    return events
+
 
 def create_event(db: Session, data):
     new_event = repository.create(db, data)
@@ -25,6 +32,14 @@ def create_event(db: Session, data):
             "event"
         )
     return new_event
+
+def get_upcoming_events(db: Session, limit: int = 5):
+    results = repository.get_upcoming(db, limit)
+    events = []
+    for event, community_name in results:
+        event.community_name = community_name
+        events.append(event)
+    return events
 
 def process_image_upload(db: Session, event_id: int, file_url: str):
     # Aquí iría la lógica de validación de formato antes de guardar

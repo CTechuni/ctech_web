@@ -16,3 +16,5 @@ def update_community(db: Session, community_id: int, data: schemas.CommunityUpda
 def delete_community(db: Session, community_id: int):
     return repository.delete(db, community_id)
     
+def list_with_logo(db: Session):
+    return repository.get_with_logo(db)

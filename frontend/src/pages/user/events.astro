@@ -107,23 +107,48 @@ const title = "Eventos";
         setRegistrationMap(regs);
     }
 
-    function toggleRegistration(eventId) {
+    async function toggleRegistration(eventId) {
         const regs = getRegistrationMap();
         const already = regs[eventId] || 0;
         const ev = allEvents.find(e => e.id_event === eventId);
         if (!ev) return;
+        
         const cap = ev.capacity || 0;
+        
         if (!already) {
             if (cap <= 0) return; // no space
-            regs[eventId] = 1;
+            
+            try {
+                // LLAMADA AL BACKEND PARA REGISTRO Y ENVÍO DE EMAIL
+                const response = await authManager.fetch(`/events/${eventId}/register`, {
+                    method: 'POST'
+                });
+
+                if (response && (response.message === "Registro exitoso" || response.event_title)) {
+                    regs[eventId] = 1;
+                    setRegistrationMap(regs);
+                    alert(`¡Inscripción exitosa a "${ev.title}"! Se ha enviado una confirmación a tu correo.`);
+                } else {
+                    alert("No se pudo completar el registro en este momento.");
+                }
+            } catch (err) {
+                console.error('Error registering for event:', err);
+                alert("Error al procesar el registro. Intenta de nuevo.");
+            }
         } else {
+            // Cancelación (por ahora sigue siendo local)
             cancelRegistration(eventId);
+            alert("Has cancelado tu registro al evento.");
         }
+        
         setRegistrationMap(regs);
-        // re-render filtered list
+        
+        // Re-renderizar lista filtrada
         const user = authManager.getUser();
-        const communityId = user.community_id;
-        const filtered = allEvents.filter(e => e.community_id == communityId && e.status === 'publicado');
-        renderEvents(filtered);
+        if (user) {
+            const communityId = user.community_id;
+            const filtered = allEvents.filter(e => e.community_id == communityId && e.status === 'publicado');
+            renderEvents(filtered);
+        }
     }
 </script>

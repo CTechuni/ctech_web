@@ -86,4 +86,10 @@ def delete(db: Session, community_id: int):
         db.delete(community)
         db.commit()
     return community
+
+def get_with_logo(db: Session):
+    return db.query(models.Community).filter(
+        models.Community.logo_url != None,
+        models.Community.logo_url != ""
+    ).all()
     

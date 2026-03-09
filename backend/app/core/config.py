@@ -17,10 +17,17 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
 
-    # Cloudinary para las imágenes
+    # Cloudinary configuration
     CLOUDINARY_CLOUD_NAME: str
     CLOUDINARY_API_KEY: str
     CLOUDINARY_API_SECRET: str
+
+    # Gmail configuración
+    GMAIL_USER: str
+    GMAIL_PASSWORD: str
+
+    # URLs para correos
+    PLATFORM_URL: str = "http://localhost:4321"
 
     @property
     def DATABASE_URL(self):

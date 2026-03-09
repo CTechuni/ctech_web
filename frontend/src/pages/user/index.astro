@@ -25,7 +25,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
                 </svg>
             </div>
             <div class="stat-content">
-                <span class="stat-value">2</span>
+                <span class="stat-value" id="upcomingEventsStat">--</span>
                 <span class="stat-label">Eventos Próximos</span>
             </div>
         </div>
@@ -108,27 +108,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
                 <h2>Próximos Eventos</h2>
             </div>
             <div class="mini-events-list">
-                <div class="mini-event-card">
-                    <div class="date-badge">
-                        <span class="day">15</span>
-                        <span class="month">MAR</span>
-                    </div>
-                    <div class="event-details">
-                        <h4>Hackathon Global CTech</h4>
-                        <p>10:00 AM • Online</p>
-                    </div>
-                </div>
-
-                <div class="mini-event-card">
-                    <div class="date-badge">
-                        <span class="day">22</span>
-                        <span class="month">MAR</span>
-                    </div>
-                    <div class="event-details">
-                        <h4>Charla: IA en el Trabajo</h4>
-                        <p>04:30 PM • Auditorio A</p>
-                    </div>
-                </div>
+                <div class="stat-label" style="padding: 10px; text-align: center;">Buscando eventos...</div>
             </div>
             <a href="/user/calendar" class="full-calendar-btn">Ver Calendario Completo</a>
         </div>
@@ -295,11 +275,68 @@ import UserLayout from '../../layouts/UserLayout.astro';
 </UserLayout>
 
 <script>
-    import { authManager, requireRole } from '../../utils/auth.js';
+    import { authManager, AuthManager, requireRole } from '../../utils/auth.js';
     
-    // Proteger la vista para roles de usuario
+    // 1. Proteger la vista
     if (requireRole('usuario')) {
         console.info('[Dashboard Usuario] Sesión verificada.');
     }
+
+    // 2. Cargar Eventos Próximos
+    async function loadUpcomingEvents() {
+        const container = document.querySelector('.mini-events-list');
+        if (!container) return;
+
+        try {
+            const events = await AuthManager.fetch('/events/upcoming');
+            
+            // Actualizar contador en la card de stats
+            const statText = document.getElementById('upcomingEventsStat');
+            if (statText) statText.textContent = events ? events.length.toString() : '0';
+
+            if (!events || events.length === 0) {
+                container.innerHTML = '<div class="stat-label" style="padding: 10px; text-align: center;">No hay eventos próximos</div>';
+                return;
+            }
+
+            const monthNames = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+
+            container.innerHTML = events.map(event => {
+                const eventDate = new Date(event.event_date + 'T00:00:00');
+                const day = eventDate.getDate();
+                const month = monthNames[eventDate.getMonth()];
+                
+                // Formatear hora si existe
+                let timeStr = 'Hora por definir';
+                if (event.event_time) {
+                    const [h, m] = event.event_time.split(':');
+                    const hour = parseInt(h);
+                    const ampm = hour >= 12 ? 'PM' : 'AM';
+                    const displayHour = hour % 12 || 12;
+                    timeStr = `${displayHour}:${m} ${ampm}`;
+                }
+
+                return `
+                    <div class="mini-event-card">
+                        <div class="date-badge">
+                            <span class="day">${day}</span>
+                            <span class="month">${month}</span>
+                        </div>
+                        <div class="event-details">
+                            <h4>${event.title}</h4>
+                            <p>${timeStr} • ${event.location || 'Virtual'}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+        } catch (error) {
+            console.error('[UpcomingEvents] Error:', error);
+            container.innerHTML = '<div class="stat-label" style="color: #ef4444; padding: 10px;">Error al cargar eventos</div>';
+        }
+    }
+
+    // Inicializar
+    loadUpcomingEvents();
 </script>
 

@@ -67,13 +67,6 @@ const subtitle = 'Mi cuenta administrativa';
             </div>
             <button class="btn-outline">Cambiar</button>
           </div>
-          <div class="option-item">
-            <div class="option-info">
-              <h4>Autenticación de 2 Factores</h4>
-              <p>Protege tu cuenta administrativa</p>
-            </div>
-            <span class="status-badge-active">Activado</span>
-          </div>
         </div>
       </section>
     </div>
@@ -280,7 +273,18 @@ const subtitle = 'Mi cuenta administrativa';
 
     if (user) {
       if (document.getElementById('profileFullName')) document.getElementById('profileFullName').textContent = user.name_user || 'Admin';
-      if (document.getElementById('profileLargeInitial')) document.getElementById('profileLargeInitial').textContent = (user.name_user || 'A').substring(0, 1).toUpperCase();
+      
+      const profileInitial = document.getElementById('profileLargeInitial');
+      if (profileInitial) {
+        const fullName = user.name_user || 'Admin';
+        const initials = fullName
+          .split(' ')
+          .map(word => word[0])
+          .join('')
+          .substring(0, 2)
+          .toUpperCase();
+        profileInitial.textContent = initials;
+      }
       
       // Update form inputs
       const nameInput = document.getElementById('profileInputName') as HTMLInputElement;

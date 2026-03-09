@@ -112,35 +112,35 @@
         <table class="main">
             <tr>
                 <td class="header">
-                    <img src="https://ctech-platform.vercel.app/log-CTech.svg" alt="CTech" class="logo">
+                    <!-- Barra de color CTech -->
                 </td>
             </tr>
             <tr>
                 <td class="content">
                     <h1 class="title">🚀 ¡Es oficial, eres Mentor!</h1>
-                    <p class="intro-text">Hola <strong>{name_user}</strong>, nos llena de orgullo informarte que has
+                    <p class="intro-text">Hola <strong>{{ name_user }}</strong>, nos llena de orgullo informarte que has
                         sido promovido al rol de Mentor.</p>
 
                     <div class="badge-box">
                         <p
                             style="margin: 0 0 8px 0; color: #c2410c; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">
                             Tu Especialidad</p>
-                        <h2 class="specialty-text">{specialty_name}</h2>
-                        <p style="color: #9a3412; font-size: 14px; margin-top: 8px;">Comunidad {name_community}</p>
+                        <h2 class="specialty-text">{{ specialty_name }}</h2>
+                        <p style="color: #9a3412; font-size: 14px; margin-top: 8px;">Comunidad {{ name_community }}</p>
                     </div>
 
                     <p>Como mentor técnico, ahora eres una pieza clave para guiar a otros talentos y moderar sesiones de
                         aprendizaje. Tendrás acceso a herramientas avanzadas de gestión y contenido prioritario.</p>
 
                     <div class="cta-container">
-                        <a href="{platform_url}/mentor-dashboard" class="btn">Acceder al Dashboard</a>
+                        <a href="{{ platform_url }}/mentor-dashboard" class="btn">Acceder al Dashboard</a>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="footer">
                     <span style="color: #18457C; font-weight: 600;">Liderazgo y Mentoria Técnica</span>
-                    <p>&copy; 2025 CTech Plateform. Todos los derechos reservados.</p>
+                    <p>&copy; 2025 CTech Platform. Todos los derechos reservados.</p>
                     <p>Recibiste este correo debido a tu cambio de rol en la plataforma.</p>
                 </td>
             </tr>

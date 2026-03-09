@@ -7,21 +7,24 @@
 
     <div class="form-group">
         <label for="community">Comunidad CTech</label>
-        <select id="community" name="community">
-            <!-- Las comunidades se cargan dinámicamente -->
+        <select id="community" name="community" class="rounded-xl shadow-sm">
+            <option value="">Cargando comunidades disponibles...</option>
         </select>
         <span class="error-message" id="communityError"></span>
     </div>
 
     <div class="form-group">
-        <label for="inviteCode">Código de invitación</label>
+        <label for="inviteCode">Código de acceso</label>
         <input 
             type="text" 
             id="inviteCode" 
             name="inviteCode" 
-            placeholder="Ingresa tu código de invitación"
+            placeholder="Ingresa el código de tu comunidad"
+            class="rounded-xl shadow-sm"
+            autocomplete="off"
         >
         <span class="error-message" id="inviteCodeError"></span>
+        <div id="codeFeedback" class="field-feedback"></div>
     </div>
 
     <div class="form-group">
@@ -31,6 +34,7 @@
             id="fullName" 
             name="fullName" 
             placeholder="Tu nombre completo"
+            class="rounded-xl shadow-sm"
         >
         <span class="error-message" id="fullNameError"></span>
     </div>
@@ -42,6 +46,7 @@
             id="email_signup" 
             name="email" 
             placeholder="tu@email.com"
+            class="rounded-xl shadow-sm"
         >
         <span class="error-message" id="emailSignupError"></span>
     </div>
@@ -90,20 +95,6 @@
         Crear Cuenta
     </button>
 
-    <div class="divider">
-        <span>o</span>
-    </div>
-
-    <div class="social-signup">
-        <button type="button" class="social-btn google-btn">
-            <span class="material-icons">account_circle</span>
-            Registrarse con Google
-        </button>
-        <button type="button" class="social-btn github-btn">
-            <span class="material-icons">code</span>
-            Registrarse con GitHub
-        </button>
-    </div>
 
     <div class="login-link">
         <p>¿Ya tienes cuenta? <a href="#" onclick="window.closeModal('signupModal'); window.openModal('loginModal')">Inicia sesión aquí</a></p>
@@ -132,12 +123,21 @@
 
     .form-group input,
     .form-group select {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--color-medium-grey);
-        border-radius: 25px;
-        font-size: 0.9rem;
-        transition: border-color 0.3s ease;
-        background-color: var(--color-white);
+        padding: 0.75rem 1.2rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+        color: #1e293b;
+    }
+
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
     }
 
     .form-group select {
@@ -188,11 +188,22 @@
 
     .error-message {
         color: #ef4444;
-        font-size: 0.8rem;
-        margin-left: 1rem;
-        margin-top: -0.1rem;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
         display: none;
     }
+
+    .field-feedback {
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .feedback-error { color: #ef4444; }
+    .feedback-success { color: #10b981; }
 
     .error-message.visible {
         display: block;
@@ -294,67 +305,6 @@
         cursor: not-allowed;
     }
 
-    .divider {
-        text-align: center;
-        position: relative;
-        color: #666;
-        font-size: 0.9rem;
-        margin: 1rem 0;
-    }
-
-    .divider::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background-color: #e9ecef;
-        z-index: 1;
-    }
-
-    .divider span {
-        background-color: var(--color-white);
-        padding: 0 1rem;
-        position: relative;
-        z-index: 2;
-    }
-
-    .social-signup {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .social-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e9ecef;
-        border-radius: 25px;
-        background-color: var(--color-white);
-        color: #333;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .social-btn:hover {
-        border-color: #98989849;
-        background-color: var(--color-white);
-    }
-
-    .social-btn:active {
-        background-color: #e4e4e4;
-        color: var(--color-primary-dark);
-        border-color: #e4e4e4;
-    }
-
-    .social-btn .material-icons {
-        font-size: 1.2rem;
-    }
 
     .login-link {
         text-align: center;
@@ -524,7 +474,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Cargar comunidades dinámicamente
+    // 5. Cargar comunidades y Validación Cruzada
+    let communityCodes = {};
+
     async function loadCommunities() {
         const communitySelect = document.getElementById('community');
         if (!communitySelect) return;
@@ -532,25 +484,69 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const mod = await import('../../utils/auth.js');
             const AuthManager = mod.AuthManager;
-            const communities = await AuthManager.fetch('/communities');
+            const communities = await AuthManager.fetch('/communities/public');
             
             if (communities && Array.isArray(communities)) {
-                communitySelect.innerHTML = '<option value="">Selecciona una comunidad</option>';
+                communitySelect.innerHTML = '<option value="">Selecciona tu comunidad</option>';
                 communities.forEach(c => {
                     const opt = document.createElement('option');
                     opt.value = c.id_community;
                     opt.textContent = c.name_community;
                     communitySelect.appendChild(opt);
+                    
+                    // Guardar código para validación instantánea
+                    communityCodes[c.id_community] = c.code;
                 });
+            } else {
+                communitySelect.innerHTML = '<option value="">No hay comunidades disponibles</option>';
             }
         } catch (err) {
             console.error('Error al cargar comunidades:', err);
+            communitySelect.innerHTML = '<option value="">Error al cargar comunidades</option>';
         }
     }
+
+    const inviteInput = document.getElementById('inviteCode');
+    const communitySelect = document.getElementById('community');
+    const submitBtn = form.querySelector('.signup-btn');
+    const codeFeedback = document.getElementById('inviteCodeError');
+
+    function validateCode() {
+        const selectedId = communitySelect.value;
+        const inputCode = inviteInput.value.trim();
+        
+        if (!selectedId || !inputCode) {
+            inviteInput.classList.remove('error');
+            codeFeedback.textContent = '';
+            codeFeedback.classList.remove('visible');
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const expectedCode = communityCodes[selectedId];
+        
+        if (inputCode !== expectedCode) {
+            inviteInput.classList.add('error');
+            codeFeedback.textContent = 'El código no coincide con la comunidad seleccionada';
+            codeFeedback.classList.add('visible');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+        } else {
+            inviteInput.classList.remove('error');
+            codeFeedback.textContent = '';
+            codeFeedback.classList.remove('visible');
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        }
+    }
+
+    communitySelect?.addEventListener('change', validateCode);
+    inviteInput?.addEventListener('input', validateCode);
+
     loadCommunities();
 
     // Toggle Password Visibility Logic
-    document.querySelectorAll('.toggle-password').forEach(btn => {
+    form.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
             const input = document.getElementById(targetId);

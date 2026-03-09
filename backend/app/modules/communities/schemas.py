@@ -31,4 +31,12 @@ class CommunityResponse(CommunityBase):
 
     class Config:
         from_attributes = True
+
+class CommunityPublicResponse(BaseModel):
+    id_community: int
+    name_community: str
+    code: str
+
+    class Config:
+        from_attributes = True
         

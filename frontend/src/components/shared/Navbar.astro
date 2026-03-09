@@ -6,19 +6,19 @@ import SignupForm from './SignupForm.astro';
 
 <nav class="navbar">
   <div class="navbar-inner">
+    <button class="menu-toggle" type="button" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+
     <div class="logo-container">
       <a href="/" class="logo-link" aria-label="CTech">
         <img src="/LogoCTech.svg" alt="Logo CTech" class="logo-img logo-white" />
       </a>
     </div>
 
-    <button class="menu-toggle" type="button" aria-label="Abrir menú">
-      <span class="material-icons">menu</span>
-    </button>
-
     <ul class="menu-nav" role="navigation" aria-label="Navegación principal">
-      <li><a href="#nosotros">Nosotros</a></li>
-      <li><a href="#contenido">Contenido</a></li>
+      <li><a href="#hero-section">Nosotros</a></li>
+      <li><a href="#courses-preview">Contenido</a></li>
       <li><a href="#eventos">Eventos</a></li>
       <li><a href="#equipo">Equipo</a></li>
       <li><a href="#comunidades">Comunidades</a></li>
@@ -182,9 +182,14 @@ import SignupForm from './SignupForm.astro';
   @media (max-width: 900px) {
     .navbar-inner {
       padding: 0 1rem;
+      justify-content: flex-start;
+      gap: 1rem;
     }
     .menu-toggle {
       display: inline-flex;
+    }
+    .auth-actions {
+      margin-left: auto;
     }
     .menu-nav {
       display: none;

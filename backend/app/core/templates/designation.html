@@ -114,13 +114,14 @@
         <table class="main">
             <tr>
                 <td class="header">
-                    <img src="https://ctech-platform.vercel.app/log-CTech.svg" alt="CTech" class="logo">
+                    <!-- Barra de color CTech -->
                 </td>
             </tr>
             <tr>
                 <td class="content">
                     <h1 class="title">Actualización de Rol</h1>
-                    <p class="intro-text">Hola <strong>{name_user}</strong>, te informamos que tu rol en la plataforma
+                    <p class="intro-text">Hola <strong>{{ name_user }}</strong>, te informamos que tu rol en la
+                        plataforma
                         ha sido actualizado.</p>
 
                     <div class="info-card">
@@ -128,21 +129,21 @@
                             style="margin: 0 0 8px 0; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">
                             Nuevo Rol</p>
                         <h2 class="role-text">Usuario Estándar</h2>
-                        <p style="color: #64748b; font-size: 14px; margin-top: 8px;">Comunidad {name_community}</p>
+                        <p style="color: #64748b; font-size: 14px; margin-top: 8px;">Comunidad {{ name_community }}</p>
                     </div>
 
                     <p>Queremos recordarte que sigues siendo una pieza fundamental de nuestra comunidad. Podrás seguir
                         disfrutando de todos los beneficios habituales, acceso a contenido y eventos exclusivos.</p>
 
                     <div class="cta-container">
-                        <a href="{platform_url}/dashboard" class="btn">Ir a mi Panel</a>
+                        <a href="{{ platform_url }}/dashboard" class="btn">Ir a mi Panel</a>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="footer">
                     <span style="color: #18457C; font-weight: 600;">Sigamos Construyendo Juntos</span>
-                    <p>&copy; 2025 CTech Plateform. Todos los derechos reservados.</p>
+                    <p>&copy; 2025 CTech Platform. Todos los derechos reservados.</p>
                     <p>Tu participación es lo más valioso para nosotros.</p>
                 </td>
             </tr>

@@ -2,15 +2,15 @@
 // Astro component script (if needed)
 ---
 
-<section id="hero" class="hero-section">
+<section id="hero-section" class="hero-section">
     <div class="hero-badge">Plataforma Tecnológica Comunitaria</div>
     <h1>Aprende. <span class="highlight">Conecta.</span><br />
         <span class="gradient-text">Lidera.</span></h1>
     <p class="hero-sub">CTech es la plataforma donde las comunidades tecnológicas crecen juntas,
         con cursos, mentores, eventos y rutas de aprendizaje estructuradas.</p>
     <div class="hero-cta">
-        <a href="#" class="cta-primary">Comenzar gratis →</a>
-        <a href="#cursos" class="cta-secondary"><span class="cta-icon" aria-hidden="true">▷</span> Ver cursos</a>
+        <button class="cta-primary" onclick="openModal('signupModal')">Comenzar gratis →</button>
+        <a href="#courses-preview" class="cta-secondary"><span class="cta-icon" aria-hidden="true">▷</span> Ver cursos</a>
     </div>
     <slot />
 </section>
@@ -80,6 +80,8 @@
     .hero-cta .cta-primary {
         background: var(--color-azure-radiant);
         color: #fff;
+        border: none;
+        cursor: pointer;
     }
     .hero-cta .cta-primary:hover { background: #005ceb; transform: translateY(-2px); }
     .hero-cta .cta-secondary {
@@ -109,7 +111,7 @@
             padding: 4rem 1rem 3rem;
         }
         .hero-section h1 {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             text-align: center;
         }
         .hero-sub {

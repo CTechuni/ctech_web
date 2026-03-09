@@ -5,39 +5,9 @@
 <section class="comunidades" id="comunidades">
     <h2>Nuestras Comunidades</h2>
     <p class="comunidades-sub">+6 comunidades activas con más de 500 miembros</p>
-    <div class="comunidades-grid">
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">DevFront Colombia</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">Backend Masters</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">DataScience Hub</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">Mobile Devs</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">DevOps Cloud</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">UX/UI Design</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">AI Research</span>
-        </div>
-        <div class="comunidad-item">
-            <div class="comunidad-icon" aria-hidden="true"></div>
-            <span class="comunidad-name">Blockchain Dev</span>
-        </div>
+    <div class="comunidades-grid" id="comunidadesGrid">
+        <!-- Renderizado dinámico vía JS -->
+        <p class="loading-msg">Cargando comunidades...</p>
     </div>
     <div class="join-btn-container">
         <a href="/user/communities" class="join-btn">Unirse a una comunidad →</a>
@@ -97,6 +67,19 @@
         max-width: 100px;
     }
 
+    .comunidad-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .loading-msg {
+        grid-column: 1 / -1;
+        color: #666;
+        font-style: italic;
+    }
+
     .join-btn-container {
         text-align: center;
         margin-top: 2.5rem;
@@ -116,7 +99,7 @@
     /* Responsive Comunidades */
     @media (max-width: 768px) {
         .comunidades-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 1.25rem;
         }
         .comunidad-icon {
@@ -144,4 +127,39 @@
     }
 </style>
 
-<!-- JavaScript removed: Use Astro or client-side frameworks for dynamic behavior -->
+<script>
+    import { API_CONFIG, buildApiUrl } from '../../config/api.js';
+
+    async function loadComunidades() {
+        const grid = document.getElementById('comunidadesGrid');
+        if (!grid) return;
+
+        try {
+            const url = buildApiUrl(API_CONFIG.COMMUNITIES.WITH_LOGO);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+            
+            const communities = await response.json();
+            
+            if (!communities || communities.length === 0) {
+                grid.innerHTML = '<p class="loading-msg">Próximamente más comunidades...</p>';
+                return;
+            }
+
+            grid.innerHTML = communities.map(c => `
+                <div class="comunidad-item">
+                    <div class="comunidad-icon">
+                        <img src="${c.logo_url}" alt="${c.name_community}" loading="lazy">
+                    </div>
+                    <span class="comunidad-name">${c.name_community}</span>
+                </div>
+            `).join('');
+
+        } catch (err) {
+            console.error(err);
+            grid.innerHTML = '<p class="loading-msg">Error al cargar comunidades</p>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadComunidades);
+</script>

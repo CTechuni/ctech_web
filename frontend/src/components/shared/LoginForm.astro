@@ -59,7 +59,7 @@
     .login-form {
         display: flex;
         flex-direction: column;
-        gap: 0.3rem;
+        gap: 0.6rem;
     }
 
     .form-group {
@@ -269,6 +269,18 @@
             }
         }
 
+        const preventSpaces = (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        };
+
+        const emailInputFixed = document.getElementById('email');
+        const passwordInputFixed = document.getElementById('password');
+
+        emailInputFixed?.addEventListener('keydown', preventSpaces);
+        passwordInputFixed?.addEventListener('keydown', preventSpaces);
+
         document.getElementById('email')?.addEventListener('input', () => clearError('email', 'emailError'));
         document.getElementById('password')?.addEventListener('input', () => clearError('password', 'passwordError'));
 
@@ -284,6 +296,20 @@
 
             const email = String(emailInput.value || '').trim();
             const password = String(passwordInput.value || '');
+
+            if (email.includes(' ')) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'El correo no puede contener espacios';
+                emailError.classList.add('visible');
+                hasErrors = true;
+            }
+
+            if (password.includes(' ')) {
+                passwordInput.classList.add('error');
+                passwordError.textContent = 'La contraseña no puede contener espacios';
+                passwordError.classList.add('visible');
+                hasErrors = true;
+            }
 
             // Validations...
             if (!email) {
@@ -371,7 +397,7 @@
     }
 
     // Toggle Password Visibility Logic
-    document.querySelectorAll('.toggle-password').forEach(btn => {
+    loginForm.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
             const input = document.getElementById(targetId);

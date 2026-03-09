@@ -20,6 +20,16 @@ async def upload_community_logo(file: UploadFile = File(...), current=Depends(ge
         raise HTTPException(status_code=500, detail="Error al subir la imagen a Cloudinary")
     return {"url": url}
 
+# Listado público para registro
+@router.get("/public", response_model=list[schemas.CommunityPublicResponse])
+def get_public_communities(db: Session = Depends(get_db)):
+    return service.list_communities(db)
+
+# Listado de comunidades con logo para la landing
+@router.get("/with-logo", response_model=list[schemas.CommunityPublicResponse])
+def get_communities_with_logo(db: Session = Depends(get_db)):
+    return service.list_with_logo(db)
+
 # Listado filtrado por dueño
 @router.get("/", response_model=list[schemas.CommunityResponse])
 def get_communities(db: Session = Depends(get_db), current=Depends(get_current_user)):

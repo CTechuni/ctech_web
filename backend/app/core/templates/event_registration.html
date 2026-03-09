@@ -124,13 +124,13 @@
         <table class="main">
             <tr>
                 <td class="header">
-                    <img src="https://ctech-platform.vercel.app/log-CTech.svg" alt="CTech" class="logo">
+                    <!-- Barra de color CTech -->
                 </td>
             </tr>
             <tr>
                 <td class="content">
                     <h1 class="title">¡Tu registro está confirmado!</h1>
-                    <p class="intro-text">Hola <strong>{name_user}</strong>, nos alegra confirmarte que ya tienes tu
+                    <p class="intro-text">Hola <strong>{{ name_user }}</strong>, nos alegra confirmarte que ya tienes tu
                         cupo para el evento de tu comunidad.</p>
 
                     <div class="event-card">
@@ -138,33 +138,36 @@
                             <p
                                 style="margin: 0 0 4px 0; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase;">
                                 Evento</p>
-                            <h2 style="margin: 0; font-size: 18px; color: #1e293b;">{event_name}</h2>
+                            <h2 style="margin: 0; font-size: 18px; color: #1e293b;">{{ event_name }}</h2>
                         </div>
                         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
                             <p style="margin: 4px 0;"><span
                                     style="font-weight: 700; color: #64748b; width: 80px; display: inline-block; font-size: 12px;">FECHA:</span>
-                                <span style="font-weight: 600;">{event_date}</span></p>
+                                <span style="font-weight: 600;">{{ event_date }}</span>
+                            </p>
                             <p style="margin: 4px 0;"><span
                                     style="font-weight: 700; color: #64748b; width: 80px; display: inline-block; font-size: 12px;">HORA:</span>
-                                <span style="font-weight: 600;">{event_time}</span></p>
+                                <span style="font-weight: 600;">{{ event_time }}</span>
+                            </p>
                             <p style="margin: 4px 0;"><span
                                     style="font-weight: 700; color: #64748b; width: 80px; display: inline-block; font-size: 12px;">MODALIDAD:</span>
-                                <span style="font-weight: 600;">{event_type}</span></p>
+                                <span style="font-weight: 600;">{{ event_type }}</span>
+                            </p>
                         </div>
                     </div>
 
                     <p>No olvides agendarlo en tu calendario. Te esperamos para seguir aprendiendo y compartiendo junto
-                        a la comunidad <strong>{name_community}</strong>.</p>
+                        a la comunidad <strong>{{ name_community }}</strong>.</p>
 
                     <div class="cta-container">
-                        <a href="{event_link}" class="btn">Ver Detalles del Evento</a>
+                        <a href="{{ event_link }}" class="btn">Ver Detalles del Evento</a>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="footer">
                     <span style="color: #18457C; font-weight: 600;">Aprendizaje Continuo en CTech</span>
-                    <p>&copy; 2025 CTech Plateform. Todos los derechos reservados.</p>
+                    <p>&copy; 2025 CTech Platform. Todos los derechos reservados.</p>
                     <p>Recibiste este correo por tu registro en un evento oficial.</p>
                 </td>
             </tr>
