@@ -245,8 +245,9 @@
 
 </style>
 
-<script type="module">
+<script>
     import { AuthManager, authManager } from "../../utils/auth.js";
+    import { API_CONFIG, buildApiUrl } from "../../config/api.js";
 
     // Cerrar modal (complemento de openModal)
     function closeModal(modalId) {
@@ -380,35 +381,15 @@
 
                 console.debug('login result', result);
 
-                // REDIRECCIÓN (Estricta según rol e ID)
+                // Redirección según rol
                 const role = String(result.user?.role || '').toLowerCase().trim();
-                const userId = result.user?.id;
-                
-                if (!role) {
-                    throw new Error('No se pudo determinar el rol en la respuesta del servidor');
-                }
-                
-                let redirectPath = '/user'; // Redirección estándar solicitada
-                
-                if (role === 'admin') {
-                    redirectPath = '/admin/dashboard';
-                } else if (role === 'leader') {
-                    redirectPath = '/leader/';
-                } else if (role === 'mentor') {
-                    redirectPath = '/mentor/';
-                } else if (role === 'usuario' || role === 'user') {
-                    redirectPath = '/user';
-                }
-                
-                authManager.setAuthData(result.access_token, result.user);
-                
-                console.log("Login success, redirecting to:", redirectPath);
-                window.location.assign(redirectPath);
-                
-                // Fallback if assign fails
-                setTimeout(() => {
-                    window.location.href = redirectPath;
-                }, 500);
+
+                let redirectPath = '/user';
+                if (role === 'admin')        redirectPath = '/admin/dashboard';
+                else if (role === 'leader')  redirectPath = '/leader/';
+                else if (role === 'mentor')  redirectPath = '/mentor/';
+
+                window.location.href = redirectPath;
 
             } catch (error) {
                 console.error('login failed', error);
@@ -518,7 +499,6 @@
             
             try {
                 // Configurar URL usando el helper
-                const { API_CONFIG, buildApiUrl } = await import('../../config/api.js');
                 const url = buildApiUrl(API_CONFIG.AUTH.FORGOT_PASSWORD);
                 
                 const response = await fetch(url, {

@@ -169,10 +169,8 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         // ── 1. Obtener community_id siempre desde el servidor ──────────────────
         let communityId = null;
         try {
-            // Leer token del localStorage (cualquier clave disponible)
-            const token = localStorage.getItem('token_leader')
-                       || localStorage.getItem('authToken')
-                       || '';
+            // Leer token de la clave unificada
+            const token = sessionStorage.getItem('authToken') || '';
             if (!token) { console.warn('[Leader] Sin token'); return; }
 
             const meRes = await fetch('http://localhost:8000/api/v1/users/me', {
@@ -188,7 +186,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         // ── 2. Cargar métricas ─────────────────────────────────────────────────
         let metrics = null;
         try {
-            const token = localStorage.getItem('token_leader') || localStorage.getItem('authToken') || '';
+            const token = sessionStorage.getItem('authToken') || '';
             const mRes = await fetch(`http://localhost:8000/api/v1/metrics/community/${communityId}`, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });

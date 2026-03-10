@@ -438,7 +438,7 @@ textarea.fi { resize: vertical; }
 </style>
 
 <script>
-import { AuthManager } from '../../utils/auth.js';
+import { AuthManager, authManager } from '../../utils/auth.js';
 
 let allEvents     = [];
 let pendingEvents = [];
@@ -573,7 +573,7 @@ async function uploadImageIfNeeded() {
     form.append('file', pendingImageFile);
 
     try {
-        const token = (await import('../../utils/auth.js')).authManager.getToken();
+        const token = authManager.getToken();
         const res   = await fetch('http://localhost:8000/api/v1/events/upload-image', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },

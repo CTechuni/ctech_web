@@ -350,7 +350,7 @@ document.getElementById('btnConfirmDelete').addEventListener('click', async () =
     btn.disabled = true;
     try {
         await AuthManager.fetch('/users/me', { method: 'DELETE' });
-        localStorage.clear();
+        sessionStorage.clear();
         window.location.href = '/';
     } catch (err) {
         alert('Error al eliminar la cuenta: ' + err.message);

@@ -352,7 +352,7 @@ document.getElementById('btnConfirmDelete').addEventListener('click', async () =
         const res = await AuthManager.fetch('/users/me', { method: 'DELETE' });
         if (res !== null) {
             // Limpiar sesión y redirigir
-            localStorage.clear();
+            sessionStorage.clear();
             window.location.href = '/';
         }
     } catch (err) {

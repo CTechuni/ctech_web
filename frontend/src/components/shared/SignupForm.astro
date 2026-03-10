@@ -326,18 +326,10 @@
 
 </style>
 
-<script type="module">
+<script>
+import { AuthManager, authManager } from '../../utils/auth.js';
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Intentar importar authManager de forma dinámica (evita errores si el bundler lo trata distinto)
-    async function getAuthManager() {
-        try {
-            const mod = await import('../../utils/auth.js');
-            return mod.authManager ?? mod.default ?? null;
-        } catch (err) {
-            console.warn('No se pudo importar authManager:', err);
-            return null;
-        }
-    }
 
     const form = document.getElementById('signupForm');
     const pwdInput = document.getElementById('password_signup');
@@ -438,11 +430,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
             }
 
-            const authManager = await getAuthManager();
-            if (!authManager || typeof authManager.register !== 'function') {
-                throw new Error('Servicio de autenticación no disponible');
-            }
-
             const userData = {
                 community_id: community,      
                 inviteCode,
@@ -482,8 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!communitySelect) return;
 
         try {
-            const mod = await import('../../utils/auth.js');
-            const AuthManager = mod.AuthManager;
             const communities = await AuthManager.fetch('/communities/public');
             
             if (communities && Array.isArray(communities)) {

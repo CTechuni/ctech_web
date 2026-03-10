@@ -1,94 +1,18 @@
 // Utilidades para manejo de autenticación
 import { API_CONFIG, buildApiUrl } from '../config/api.js';
 
+// ── Claves en sessionStorage (aisladas por pestaña) ───────────────────────────
+// sessionStorage nunca se comparte entre pestañas del mismo dominio,
+// lo que permite tener 4 roles distintos abiertos simultáneamente.
+const TOKEN_KEY = 'authToken';
+const USER_KEY  = 'user';
+
 export class AuthManager {
     constructor() {
-        this.baseTokenKey = 'authToken';
-        this.baseUserKey = 'user';
         this.authChangeListeners = [];
-        this.setupStorageListener();
     }
 
-    // ── Helper: Dynamic Keys ──────────────────────────────────────────────────
-
-    /**
-     * Clave por rol (sin ID) — usada como clave principal de sesión activa.
-     */
-    getRoleTokenKey(role) {
-        if (!role) return this.baseTokenKey;
-        return `token_${String(role).toLowerCase()}`;
-    }
-
-    getRoleUserKey(role) {
-        if (!role) return this.baseUserKey;
-        return `user_${String(role).toLowerCase()}`;
-    }
-
-    getTokenKey(role, id) {
-        if (!role) return this.baseTokenKey;
-        const r = String(role).toLowerCase();
-        if (r === 'admin') return 'token_admin_001';
-        return `token_${r}_${id}`;
-    }
-
-    getUserKey(role, id) {
-        if (!role) return this.baseUserKey;
-        const r = String(role).toLowerCase();
-        if (r === 'admin') return 'user_admin_001';
-        return `user_${r}_${id}`;
-    }
-
-    /**
-     * Intenta determinar el rol e id actuales desde la URL o el estado global.
-     */
-    getCurrentContext() {
-        if (typeof window === 'undefined') return { role: null, id: null };
-
-        const path = window.location.pathname;
-        const params = new URLSearchParams(window.location.search);
-
-        let role = null;
-        let id = params.get('id');
-
-        if (path.startsWith('/admin')) role = 'admin';
-        else if (path.startsWith('/mentor')) role = 'mentor';
-        else if (path.startsWith('/leader')) role = 'leader';
-        else if (path.startsWith('/user')) role = 'user';   // coincide con lo que devuelve el backend
-
-        return { role, id };
-    }
-
-    // ── Setup: Sincronización entre pestañas ──────────────────────────────────
-
-    setupStorageListener() {
-        if (typeof window === 'undefined') return;
-
-        window.addEventListener('storage', (event) => {
-            // Sincronización básica para la sesión activa actual
-            const { role, id } = this.getCurrentContext();
-            const currentTokenKey = this.getTokenKey(role, id);
-
-            if (event.key === currentTokenKey) {
-                if (!event.newValue) {
-                    this.handleRemoteLogout();
-                } else {
-                    this.handleRemoteLogin();
-                }
-            }
-        });
-    }
-
-    handleRemoteLogout() {
-        this.notifyAuthChange('logout');
-    }
-
-    handleRemoteLogin() {
-        const { role, id } = this.getCurrentContext();
-        const user = this.getUser(role, id);
-        this.notifyAuthChange('login', user);
-    }
-
-    // ── Event listeners ────────────────────────────────────────────────────────
+    // ── Event listeners ───────────────────────────────────────────────────────
 
     onAuthChange(callback) {
         this.authChangeListeners.push(callback);
@@ -96,125 +20,43 @@ export class AuthManager {
 
     notifyAuthChange(action, user = null) {
         this.authChangeListeners.forEach(cb => {
-            try { cb({ action, user }); }
-            catch (e) { /* silently fail */ }
+            try { cb({ action, user }); } catch (e) { /* silently fail */ }
         });
     }
 
     // ── Estado ────────────────────────────────────────────────────────────────
 
-    isAuthenticated(role, id) {
-        const token = this.getToken(role, id);
-        const expired = token ? this.isTokenExpired(token) : true;
-
-        console.debug('[Auth] ¿Autenticado?:', {
-            hasToken: !!token,
-            isExpired: expired,
-            role,
-            id
-        });
-
-        return !!token && !expired;
+    isAuthenticated() {
+        const token = this.getToken();
+        return !!token && !this.isTokenExpired(token);
     }
 
-    getToken(role, id) {
-        if (!role && !id) {
-            const ctx = this.getCurrentContext();
-            role = ctx.role;
-            id = ctx.id;
-        }
-
-        // 1. Clave por rol solamente (sesión activa de ese rol en este navegador)
-        if (role) {
-            const roleKey = this.getRoleTokenKey(role);
-            const roleToken = localStorage.getItem(roleKey);
-            if (roleToken) return roleToken;
-        }
-
-        // 2. Clave rol+id específica (compatibilidad)
-        if (id) {
-            const contextKey = this.getTokenKey(role, id);
-            const contextToken = localStorage.getItem(contextKey);
-            if (contextToken) return contextToken;
-        }
-
-        // 3. Fallback absoluto
-        return localStorage.getItem(this.baseTokenKey);
+    getToken() {
+        if (typeof sessionStorage === 'undefined') return null;
+        return sessionStorage.getItem(TOKEN_KEY);
     }
 
-    getUser(role, id) {
-        if (!role && !id) {
-            const ctx = this.getCurrentContext();
-            role = ctx.role;
-            id = ctx.id;
+    getUser() {
+        if (typeof sessionStorage === 'undefined') return null;
+        try {
+            const raw = sessionStorage.getItem(USER_KEY);
+            return raw ? JSON.parse(raw) : null;
+        } catch {
+            return null;
         }
-
-        // 1. Clave por rol solamente (sesión activa de ese rol en este navegador)
-        if (role) {
-            const roleKey = this.getRoleUserKey(role);
-            const raw = localStorage.getItem(roleKey);
-            if (raw) try { return JSON.parse(raw); } catch (e) { }
-        }
-
-        // 2. Clave rol+id específica (compatibilidad)
-        if (id) {
-            const contextKey = this.getUserKey(role, id);
-            let raw = localStorage.getItem(contextKey);
-            if (raw) try { return JSON.parse(raw); } catch (e) { }
-        }
-
-        // 3. Fallback absoluto
-        const raw = localStorage.getItem(this.baseUserKey);
-        try { return raw ? JSON.parse(raw) : null; }
-        catch { return null; }
     }
 
     // ── Persistencia ──────────────────────────────────────────────────────────
 
     setAuthData(token, user) {
-        const role = user.role;
-        const id = user.id;
-
-        // Clave principal: por rol (sin ID) — permite múltiples roles en el mismo navegador
-        const roleTokenKey = this.getRoleTokenKey(role);
-        const roleUserKey  = this.getRoleUserKey(role);
-        localStorage.setItem(roleTokenKey, token);
-        localStorage.setItem(roleUserKey, JSON.stringify(user));
-
-        // Clave secundaria: rol+id (compatibilidad con código existente)
-        if (id) {
-            localStorage.setItem(this.getTokenKey(role, id), token);
-            localStorage.setItem(this.getUserKey(role, id), JSON.stringify(user));
-        }
-
-        // Clave base: fallback universal (última sesión activa)
-        localStorage.setItem(this.baseTokenKey, token);
-        localStorage.setItem(this.baseUserKey, JSON.stringify(user));
-
+        sessionStorage.setItem(TOKEN_KEY, token);
+        sessionStorage.setItem(USER_KEY, JSON.stringify(user));
         this.notifyAuthChange('login', user);
     }
 
-    clearAuthData(role, id) {
-        // Limpiar clave por rol
-        localStorage.removeItem(this.getRoleTokenKey(role));
-        localStorage.removeItem(this.getRoleUserKey(role));
-
-        // Limpiar clave rol+id si corresponde
-        if (id) {
-            localStorage.removeItem(this.getTokenKey(role, id));
-            localStorage.removeItem(this.getUserKey(role, id));
-        }
-
-        // Limpiar claves base solo si pertenecen a este rol
-        const baseUser = localStorage.getItem(this.baseUserKey);
-        try {
-            const parsedBase = baseUser ? JSON.parse(baseUser) : null;
-            if (parsedBase && String(parsedBase.role || '').toLowerCase() === String(role || '').toLowerCase()) {
-                localStorage.removeItem(this.baseTokenKey);
-                localStorage.removeItem(this.baseUserKey);
-            }
-        } catch (e) { /* ignorar */ }
-
+    clearAuthData() {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
         this.notifyAuthChange('logout');
     }
 
@@ -222,7 +64,7 @@ export class AuthManager {
 
     isTokenExpired(token) {
         try {
-            // JWT usa base64URL (usa - y _ en lugar de + y /, sin padding =)
+            // JWT usa base64URL (- y _ en lugar de + y /, sin padding =)
             // atob() solo acepta base64 estándar, hay que convertir primero
             const base64url = token.split('.')[1];
             const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
@@ -234,11 +76,23 @@ export class AuthManager {
         }
     }
 
+    // ── Contexto de URL (para requireRole) ────────────────────────────────────
+
+    getCurrentContext() {
+        if (typeof window === 'undefined') return { role: null };
+        const path = window.location.pathname;
+        let role = null;
+        if (path.startsWith('/admin'))       role = 'admin';
+        else if (path.startsWith('/mentor')) role = 'mentor';
+        else if (path.startsWith('/leader')) role = 'leader';
+        else if (path.startsWith('/user'))   role = 'user';
+        return { role };
+    }
+
     // ── Auth actions ──────────────────────────────────────────────────────────
 
     async login(email, password) {
         const url = buildApiUrl(API_CONFIG.AUTH.LOGIN);
-
         try {
             const response = await fetch(url, {
                 method: 'POST',
@@ -248,37 +102,30 @@ export class AuthManager {
 
             if (!response.ok) {
                 const err = await response.json().catch(() => ({}));
-
-                // Handle Pydantic array detail or string
                 const detail = Array.isArray(err.detail)
                     ? err.detail.map(e => e.msg).join(', ')
                     : (err.detail || 'Credenciales inválidas');
-
                 throw new Error(detail);
             }
 
             const data = await response.json();
-            console.debug('authManager.login received', data);
+            // sessionStorage ya es aislada por pestaña; solo guardamos la nueva sesión
             this.setAuthData(data.access_token, data.user);
-            console.debug('authManager.login stored token, user', data.user);
             return data;
         } catch (error) {
-            console.error('authManager.login error', error);
             throw error;
         }
     }
 
     async register(userData) {
-        // Mapear los nombres de campo del formulario a los que espera el backend
         const payload = {
             email: userData.email,
             password: userData.password,
             name_user: userData.fullName || userData.name_user,
             community_id: parseInt(userData.community_id || userData.community),
             invite_code: userData.inviteCode || userData.invite_code,
-            rol_id: userData.rol_id || 4 // Standard user por defecto
+            rol_id: userData.rol_id || 4
         };
-
         return AuthManager.fetch(API_CONFIG.AUTH.REGISTER, {
             method: 'POST',
             body: JSON.stringify(payload)
@@ -286,25 +133,16 @@ export class AuthManager {
     }
 
     logout(reason = '') {
-        const { role, id } = this.getCurrentContext();
-        this.clearAuthData(role, id);
-
-        let url = '/';
-        if (reason === 'inactivity') {
-            url = '/?reason=inactivity';
-        }
-
-        window.location.href = url;
+        this.clearAuthData();
+        window.location.href = reason === 'inactivity' ? '/?reason=inactivity' : '/';
     }
 
     // ── Timer de Inactividad ──────────────────────────────────────────────────
 
     initInactivityTimer(timeoutMinutes = 120) {
         if (typeof window === 'undefined') return;
-
         let timeout;
         const ms = timeoutMinutes * 60 * 1000;
-
         const resetTimer = () => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
@@ -312,35 +150,21 @@ export class AuthManager {
                 this.logout('inactivity');
             }, ms);
         };
-
-        // Eventos que cuentan como "actividad"
-        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-        events.forEach(name => {
-            document.addEventListener(name, resetTimer, true);
-        });
-
-        resetTimer(); // Iniciar
-        console.log(`Timer de inactividad iniciado: ${timeoutMinutes} min`);
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart']
+            .forEach(name => document.addEventListener(name, resetTimer, true));
+        resetTimer();
     }
 
     // ── Peticiones autenticadas (estático) ────────────────────────────────────
 
-    /**
-     * Realiza una petición autenticada al backend.
-     * @param {string} endpoint  - Ruta relativa, ej: '/users/'
-     * @param {RequestInit} options
-     */
     static async fetch(endpoint, options = {}) {
-        // Usar la instancia global para obtener el token dinámico
-        const token = authManager.getToken();
+        const token = sessionStorage.getItem(TOKEN_KEY);
         const url = buildApiUrl(endpoint);
 
         const headers = { ...options.headers };
-
         if (!(options.body instanceof FormData)) {
             headers['Content-Type'] = headers['Content-Type'] || 'application/json';
         }
-
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
@@ -349,50 +173,44 @@ export class AuthManager {
             const response = await fetch(url, { ...options, headers });
 
             if (response.status === 401) {
-                throw new Error('Tu sesión ha expirado o no tienes permisos (401). El redirect está deshabilitado.');
+                throw new Error('Sesión expirada o sin permisos (401).');
             }
-
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
                 throw new Error(error.detail || `Error ${response.status}`);
             }
 
-            // Respuestas 204 No Content no tienen body
             const contentType = response.headers.get('content-type') || '';
             if (response.status === 204 || !contentType.includes('application/json')) return null;
 
             return response.json();
         } catch (error) {
-            console.error(`DEBUG: AuthManager.fetch FAILED for ${url}:`, error);
+            console.error(`AuthManager.fetch FAILED [${url}]:`, error);
             throw error;
         }
     }
 }
 
-// ── Instancia global y helpers ────────────────────────────────────────────────
+// ── Instancia global ──────────────────────────────────────────────────────────
 
 export const authManager = new AuthManager();
 
-/** Redirige al inicio si el usuario no está autenticado. */
+// ── Guards ────────────────────────────────────────────────────────────────────
+
 export function requireAuth() {
     if (typeof window === 'undefined') return true;
-
     if (!authManager.isAuthenticated()) {
-        console.warn('requireAuth: No autenticado, redirigiendo a /');
         window.location.href = '/';
         return false;
     }
     return true;
 }
 
-/** Redirige al inicio si el usuario no tiene el rol esperado. */
 export function requireRole(expectedRole) {
     if (typeof window === 'undefined') return true;
 
-    // 1. Verificar autenticación base
     const token = authManager.getToken();
     if (!token || authManager.isTokenExpired(token)) {
-        console.warn('[Auth] No autenticado o token expirado. Redirigiendo...');
         window.location.href = '/';
         return false;
     }
@@ -400,45 +218,27 @@ export function requireRole(expectedRole) {
     const { role: pathRole } = authManager.getCurrentContext();
     const user = authManager.getUser();
 
-    // Normalización Flexible: permite variaciones en los nombres de roles
     const normalize = (r) => {
         if (!r) return '';
         const nr = String(r).toLowerCase().trim();
         if (nr.includes('mentor')) return 'mentor';
-        if (nr.includes('admin')) return 'admin';
+        if (nr.includes('admin'))  return 'admin';
         if (nr.includes('leader') || nr.includes('lider')) return 'leader';
         if (nr === 'user' || nr === 'usuario' || nr === 'standard') return 'usuario';
         return nr;
     };
 
-    const userRole = normalize(user?.role || pathRole || '');
+    const userRole   = normalize(user?.role || pathRole || '');
     const targetRole = normalize(expectedRole);
 
-    console.debug('[Auth] Control de Acceso:', {
-        esperado: targetRole,
-        detectado: userRole,
-        pathRole: pathRole
-    });
-
-    // Si coinciden los roles normalizados, permitir acceso
     if (userRole === targetRole) return true;
-
-    // Si el rol detectado por URL coincide con el esperado, dar el beneficio de la duda
-    // (Útil si el objeto user no cargó correctamente pero el token es válido para esa ruta)
     if (normalize(pathRole) === targetRole) return true;
 
-    console.warn('[Auth] ¡Acceso Denegado! Roles no coinciden.', {
-        userRole, targetRole
-    });
-
+    console.warn('[Auth] Acceso denegado.', { userRole, targetRole });
     window.location.href = '/';
     return false;
 }
 
-/**
- * Event listener para cambios de autenticación
- * Útil para sincronizar UI entre pestañas
- */
 export function onAuthStateChanged(callback) {
     authManager.onAuthChange(callback);
 }
