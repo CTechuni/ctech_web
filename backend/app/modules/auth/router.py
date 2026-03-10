@@ -94,8 +94,10 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
             "id": user.id,
             "email": user.email,
             "role": role_name,
+            "rol_id": user.rol_id,
             "name_user": user.name_user or "Usuario",
-            "community_name": community_name
+            "community_id": user.community_id,
+            "community_name": community_name,
         }
     }
 

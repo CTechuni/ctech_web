@@ -1,459 +1,337 @@
 ---
-// src/pages/explore/courses/[id].astro - Pixel Perfect v2
+// src/pages/explore/courses/[id].astro
 import UserLayout from "../../../layouts/UserLayout.astro";
-import { escapeHtml } from '../../../utils/escape.js';
 
-export function getStaticPaths() {
-  return [
-    { params: { id: '1' } }, // Mantenemos soporte para rutas estáticas si es necesario
-  ];
-}
+// En dev: Astro sirve cualquier [id] dinámicamente.
+// getStaticPaths vacío evita errores de build SSG (el script lee el ID del URL en runtime).
+export function getStaticPaths() { return []; }
 ---
 
-<UserLayout title="Contenido del Curso" subtitle="Visualiza lecciones, descarga recursos y domina nuevas tecnologías.">
-    <div class="course-detail-v2" id="courseDetailContent">
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <span>Preparando tu entorno de aprendizaje...</span>
+<UserLayout title="Detalle del Curso" subtitle="Explora los módulos y recursos de este curso.">
+    <div id="courseDetailRoot">
+        <div class="cd-loading">
+            <div class="cd-spinner"></div>
+            <span>Cargando curso...</span>
         </div>
     </div>
 </UserLayout>
 
 <style is:global>
-    :root {
-        --premium-blue: #007bff;
-        --soft-blue: rgba(0, 123, 255, 0.08);
-        --text-main: #0f172a;
-        --text-dim: #64748b;
-        --glass-bg: rgba(255, 255, 255, 0.8);
-    }
+/* ── Root ── */
+#courseDetailRoot { display: flex; flex-direction: column; gap: 2rem; }
 
-    .course-detail-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 3rem;
-        padding-bottom: 6rem;
-    }
+/* ── Loading ── */
+.cd-loading {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6rem 0; gap: 1.25rem; color: #94a3b8;
+}
+.cd-spinner {
+    width: 44px; height: 44px; border: 4px solid #f1f5f9;
+    border-top-color: #007bff; border-radius: 50%;
+    animation: cdSpin 1s linear infinite;
+}
+@keyframes cdSpin { to { transform: rotate(360deg); } }
 
-    /* ── Immersive Hero ────────────────────────── */
-    .hero-glass {
-        background: white;
-        border-radius: 32px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
-        padding: 3rem;
-        display: grid;
-        grid-template-columns: 1fr 400px;
-        gap: 4rem;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-    }
+/* ── Hero ── */
+.cd-hero {
+    background: #fff; border-radius: 24px; border: 1px solid #eef2f6;
+    padding: 2.5rem; display: grid;
+    grid-template-columns: 1fr 380px; gap: 3rem; align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+}
+.cd-hero-info { display: flex; flex-direction: column; gap: 1.25rem; }
+.cd-specialty-tag {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #eff6ff; color: #2563eb;
+    padding: 6px 14px; border-radius: 10px;
+    font-size: .75rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .05em; width: fit-content;
+}
+.cd-hero-info h1 {
+    font-size: 2.2rem; font-weight: 900; color: #0f172a; margin: 0;
+    line-height: 1.15; letter-spacing: -.02em;
+}
+.cd-mentor-chip {
+    display: flex; align-items: center; gap: 10px;
+    background: #f8fafc; border: 1px solid #eef2f6;
+    border-radius: 14px; padding: 10px 16px; width: fit-content;
+}
+.cd-mentor-av {
+    width: 32px; height: 32px; background: #007bff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: .75rem; flex-shrink: 0;
+}
+.cd-mentor-name { font-size: .9rem; font-weight: 700; color: #334155; }
+.cd-mentor-name span { color: #94a3b8; font-weight: 500; font-size: .82rem; }
+.cd-desc { font-size: 1rem; color: #64748b; line-height: 1.7; margin: 0; }
 
-    .hero-glass::before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        right: -100px;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(0, 123, 255, 0.05) 0%, transparent 70%);
-        pointer-events: none;
-    }
+.cd-meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.cd-badge {
+    padding: 5px 12px; border-radius: 8px; font-size: .72rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+}
+.cd-badge-level { background: #f0fdf4; color: #15803d; }
+.cd-badge-modules { background: #f5f3ff; color: #7c3aed; }
+.cd-badge-techs { background: #fffbeb; color: #d97706; }
 
-    .hero-info-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        z-index: 2;
-    }
+.cd-thumbnail {
+    border-radius: 20px; overflow: hidden;
+    aspect-ratio: 16/10; background: #f1f5f9;
+    border: 6px solid #fff;
+    box-shadow: 0 20px 40px rgba(0,0,0,.12);
+}
+.cd-thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cd-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; color: #c7d2fe;
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+}
 
-    .badge-specialty-v2 {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--soft-blue);
-        color: var(--premium-blue);
-        padding: 8px 16px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        width: fit-content;
-    }
+/* ── Modules section ── */
+.cd-modules-wrap {
+    background: #fff; border-radius: 24px; border: 1px solid #eef2f6;
+    padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,.04);
+}
+.cd-section-head {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem;
+}
+.cd-section-icon {
+    width: 42px; height: 42px; background: #eff6ff; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #2563eb; font-size: 1.1rem;
+}
+.cd-section-head h2 { font-size: 1.35rem; font-weight: 800; color: #0f172a; margin: 0; }
+.cd-section-head .cd-count {
+    background: #f1f5f9; color: #64748b; border-radius: 20px;
+    padding: 2px 10px; font-size: .78rem; font-weight: 700; margin-left: auto;
+}
 
-    .hero-info-v2 h1 {
-        font-size: 3rem;
-        font-weight: 900;
-        color: var(--text-main);
-        margin: 0;
-        line-height: 1.1;
-        letter-spacing: -0.02em;
-    }
+.cd-modules-list { display: flex; flex-direction: column; gap: 12px; }
 
-    .mentor-chip-v2 {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 18px;
-        background: #f8fafc;
-        border-radius: 16px;
-        border: 1px solid #eef2f6;
-        width: fit-content;
-    }
+.cd-module-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 14px;
+    border: 1px solid #f1f5f9; background: #fafbfc;
+    transition: all .2s;
+}
+.cd-module-card:hover { border-color: #bfdbfe; background: #fff; transform: translateX(4px); }
+.cd-module-card.has-link { cursor: pointer; }
 
-    .mentor-avatar-v2 {
-        width: 32px;
-        height: 32px;
-        background: var(--premium-blue);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 800;
-        font-size: 0.75rem;
-    }
+.cd-mod-num {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8rem; font-weight: 800; background: #eff6ff; color: #2563eb;
+}
+.cd-mod-icon {
+    width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.cd-mod-icon.video    { background: #1e293b; color: #fff; }
+.cd-mod-icon.pdf      { background: #fee2e2; color: #ef4444; }
+.cd-mod-icon.book     { background: #fef3c7; color: #d97706; }
+.cd-mod-icon.image    { background: #fdf4ff; color: #a855f7; }
+.cd-mod-icon.link     { background: #eff6ff; color: #3b82f6; }
 
-    .mentor-name-v2 {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #334155;
-    }
+.cd-mod-info { flex: 1; min-width: 0; }
+.cd-mod-info h4 { font-size: .95rem; font-weight: 700; color: #0f172a; margin: 0 0 3px; }
+.cd-mod-info p {
+    font-size: .8rem; color: #64748b; margin: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
-    .mentor-name-v2 span { color: #94a3b8; font-weight: 500; font-size: 0.85rem; }
+.cd-mod-btn {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 9px;
+    font-size: .8rem; font-weight: 700; text-decoration: none;
+    border: none; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+}
+.cd-mod-btn.video-btn { background: #1e293b; color: #fff; }
+.cd-mod-btn.video-btn:hover { background: #0f172a; }
+.cd-mod-btn.pdf-btn { background: #fee2e2; color: #dc2626; }
+.cd-mod-btn.pdf-btn:hover { background: #fecaca; }
+.cd-mod-btn.book-btn { background: #fef3c7; color: #b45309; }
+.cd-mod-btn.book-btn:hover { background: #fde68a; }
+.cd-mod-btn.image-btn { background: #fdf4ff; color: #9333ea; }
+.cd-mod-btn.image-btn:hover { background: #f3e8ff; }
+.cd-mod-btn.link-btn { background: #eff6ff; color: #2563eb; }
+.cd-mod-btn.link-btn:hover { background: #dbeafe; }
 
-    .hero-desc-v2 {
-        font-size: 1.15rem;
-        line-height: 1.7;
-        color: var(--text-dim);
-        margin: 0;
-    }
+.cd-mod-locked {
+    flex-shrink: 0; padding: 7px 14px; border-radius: 9px;
+    background: #f1f5f9; color: #94a3b8; font-size: .78rem; font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+}
 
-    .hero-visual-v2 {
-        width: 100%;
-        border-radius: 28px;
-        overflow: hidden;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-        aspect-ratio: 16/10;
-        border: 8px solid white;
-        background: #f1f5f9;
-    }
+.cd-empty-modules {
+    text-align: center; padding: 2.5rem 1rem; color: #94a3b8;
+    font-size: .9rem; font-weight: 600;
+}
+.cd-empty-modules i { font-size: 2rem; display: block; margin-bottom: .75rem; color: #e2e8f0; }
 
-    .hero-visual-v2 img { width: 100%; height: 100%; object-fit: cover; }
+/* ── Resources ── */
+.cd-resources-wrap {
+    background: #fff; border-radius: 24px; border: 1px solid #eef2f6;
+    padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,.04);
+}
+.cd-res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: .5rem; }
+.cd-res-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: #f8fafc;
+    border: 1px solid #eef2f6; border-radius: 14px;
+    text-decoration: none; transition: all .2s;
+}
+.cd-res-item:hover { border-color: #007bff; background: #eff6ff; transform: translateY(-2px); }
+.cd-res-ic { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.cd-res-ic.pdf  { background: #fee2e2; color: #ef4444; }
+.cd-res-ic.book { background: #fef3c7; color: #d97706; }
+.cd-res-ic.link { background: #eff6ff; color: #3b82f6; }
+.cd-res-tx .name { font-size: .88rem; font-weight: 700; color: #334155; display: block; }
+.cd-res-tx .meta { font-size: .7rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
 
-    /* ── Content Sections ──────────────────────── */
-    .content-grid-v2 {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 2.5rem;
-    }
+.cd-error {
+    text-align: center; padding: 3rem; background: #fff; border-radius: 20px;
+    border: 2px dashed #e2e8f0; color: #94a3b8; font-weight: 600;
+}
 
-    .section-title-v2 {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 2rem;
-    }
-
-    .section-title-v2 i {
-        width: 42px;
-        height: 42px;
-        background: white;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--premium-blue);
-        font-size: 1.25rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-
-    .section-title-v2 h2 {
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: var(--text-main);
-        margin: 0;
-    }
-
-    /* ── Video Player Area ─────────────────────── */
-    .video-playlist-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-    }
-
-    .video-card-v2 {
-        background: white;
-        border-radius: 20px;
-        padding: 1.25rem;
-        border: 1px solid #eef2f6;
-        display: grid;
-        grid-template-columns: 180px 1fr;
-        gap: 1.5rem;
-        align-items: center;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    .video-card-v2:hover {
-        transform: translateX(10px);
-        border-color: var(--premium-blue);
-        box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
-    }
-
-    .video-preview-v2 {
-        height: 100px;
-        background: #0f172a;
-        border-radius: 12px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-
-    .video-preview-v2::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(0deg, rgba(0,0,0,0.4) 0%, transparent 100%);
-    }
-
-    .play-btn-v2 {
-        width: 36px;
-        height: 36px;
-        background: var(--premium-blue);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 0.8rem;
-        z-index: 1;
-        box-shadow: 0 4px 10px rgba(0,123,255,0.4);
-    }
-
-    .video-info-v2 h4 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0 0 4px; }
-    .video-info-v2 p { font-size: 0.85rem; color: var(--text-dim); margin: 0; font-weight: 500; }
-
-    /* ── Resources Sidebar ─────────────────────── */
-    .sidebar-resources-v2 {
-        display: flex;
-        flex-direction: column;
-        gap: 2.5rem;
-        padding: 1.5rem;
-        background: rgba(248, 250, 252, 0.5);
-        border-radius: 28px;
-        border: 1px solid #eef2f6;
-        height: fit-content;
-    }
-
-    .resource-item-v2 {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 14px 16px;
-        background: white;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        text-decoration: none;
-        transition: all 0.2s;
-    }
-
-    .resource-item-v2:hover {
-        border-color: var(--premium-blue);
-        background: #f0f7ff;
-        transform: translateY(-2px);
-    }
-
-    .res-icon-v2 {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        border-radius: 12px;
-    }
-
-    .res-icon-v2.pdf { background: #fee2e2; color: #ef4444; }
-    .res-icon-v2.book { background: #fef3c7; color: #d97706; }
-
-    .res-text-v2 { display: flex; flex-direction: column; gap: 2px; }
-    .res-text-v2 .name { font-size: 0.88rem; font-weight: 700; color: #334155; }
-    .res-text-v2 .meta { font-size: 0.72rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
-
-    /* ── Loading & Empty ───────────────────────── */
-    .loading-state {
-        grid-column: 1 / -1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 8rem 0;
-        color: #94a3b8;
-        gap: 1.5rem;
-    }
-
-    .spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid #f1f5f9;
-        border-top-color: var(--premium-blue);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty-card-v2 {
-        padding: 3rem;
-        text-align: center;
-        background: white;
-        border-radius: 24px;
-        border: 2px dashed #e2e8f0;
-        color: #94a3b8;
-        font-weight: 600;
-    }
-
-    @media (max-width: 1200px) {
-        .hero-glass { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
-        .hero-visual-v2 { order: -1; max-width: 600px; }
-        .content-grid-v2 { grid-template-columns: 1fr; }
-    }
+@media (max-width: 1100px) {
+    .cd-hero { grid-template-columns: 1fr; gap: 2rem; padding: 1.75rem; }
+    .cd-thumbnail { order: -1; max-width: 500px; margin: 0 auto; }
+    .cd-hero-info h1 { font-size: 1.7rem; }
+}
+@media (max-width: 640px) {
+    .cd-module-card { flex-wrap: wrap; }
+}
 </style>
 
 <script>
-    import { authManager, AuthManager } from "../../../utils/auth.js";
-    import { escapeHtml } from "../../../utils/escape.js";
+import { AuthManager } from "../../../utils/auth.js";
 
-    async function initPage() {
-        const path = window.location.pathname;
-        const segments = path.split('/');
-        const id = segments[segments.length - 1];
-        const container = document.getElementById('courseDetailContent');
+const TYPE_META = {
+    video: { icon: '<i class="fas fa-play"></i>', cls: 'video', label: 'Ver video',    btnCls: 'video-btn' },
+    pdf:   { icon: '<i class="fas fa-file-pdf"></i>', cls: 'pdf', label: 'Abrir PDF',  btnCls: 'pdf-btn'   },
+    book:  { icon: '<i class="fas fa-book-open"></i>', cls: 'book', label: 'Leer',     btnCls: 'book-btn'  },
+    image: { icon: '<i class="fas fa-image"></i>', cls: 'image', label: 'Ver imagen',  btnCls: 'image-btn' },
+    link:  { icon: '<i class="fas fa-link"></i>', cls: 'link', label: 'Abrir enlace',  btnCls: 'link-btn'  },
+};
 
-        if (!id || isNaN(parseInt(id))) {
-            if (container) container.innerHTML = '<div class="empty-card-v2">Referencia de curso no válida.</div>';
-            return;
-        }
+function esc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-        try {
-            const course = await AuthManager.fetch(`/courses/${id}`);
-            if (!course) throw new Error('Curso no encontrado');
-            
-            renderCourseDetail(course, container);
-        } catch (err) {
-            console.error('[Detail] Error:', err);
-            if (container) container.innerHTML = '<div class="empty-card-v2">No pudimos conectar con el servidor para obtener los detalles de este curso.</div>';
-        }
+function renderModules(modules) {
+    if (!modules?.length) {
+        return `<div class="cd-empty-modules"><i class="fas fa-cube"></i>Este curso aún no tiene módulos publicados.</div>`;
     }
-
-    /**
-     * @param {{
-     *   title?: string,
-     *   specialty_name?: string,
-     *   mentor_name?: string,
-     *   description?: string,
-     *   thumbnail_url?: string,
-     *   content_links?: { videos?: string[], pdfs?: string[], books?: string[] }
-     * }} c
-     * @param {HTMLElement} container
-     */
-    function renderCourseDetail(c, container) {
-        /** @type {{videos?: string[], pdfs?: string[], books?: string[]}} */
-        const links = c.content_links || { videos: [], pdfs: [], books: [] };
-        const initial = c.mentor_name ? c.mentor_name[0] : 'U';
-
-        container.innerHTML = `
-            <!-- Premium Hero -->
-            <section class="hero-glass">
-                <div class="hero-info-v2">
-                    <span class="badge-specialty-v2">
-                        <i class="fas fa-tag"></i> ${escapeHtml(c.specialty_name || 'Especialidad')}
-                    </span>
-                    <h1>${escapeHtml(c.title)}</h1>
-                    <div class="mentor-chip-v2">
-                        <div class="mentor-avatar-v2">${initial}</div>
-                        <div class="mentor-name-v2"><span>Instructor</span> ${escapeHtml(c.mentor_name || 'Especialista CTech')}</div>
-                    </div>
-                    <p class="hero-desc-v2">${escapeHtml(c.description || 'Este programa no incluye una descripción detallada en este momento.')}</p>
-                </div>
-                <div class="hero-visual-v2">
-                    <img src="${c.thumbnail_url || 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=800&q=80'}" alt="${escapeHtml(c.title)}">
-                </div>
-            </section>
-
-            <!-- Content Grid -->
-            <div class="content-grid-v2">
-                <!-- Videos / Lessons -->
-                <section class="detail-section">
-                    <div class="section-title-v2">
-                        <i class="fas fa-play"></i>
-                        <h2>Módulos de Aprendizaje</h2>
-                    </div>
-                    
-                    <div class="video-playlist-v2">
-                        ${links.videos && links.videos.length > 0 
-                            ? links.videos.map((v, i) => `
-                                <a href="${v}" target="_blank" class="video-card-v2">
-                                    <div class="video-preview-v2">
-                                        <div class="play-btn-v2"><i class="fas fa-play"></i></div>
-                                    </div>
-                                    <div class="video-info-v2">
-                                        <h4>Módulo ${i+1}: Desarrollo y Conceptos Clave</h4>
-                                        <p>Haz clic para iniciar la reproducción en una pestaña nueva.</p>
-                                    </div>
-                                </a>
-                            `).join('')
-                            : '<div class="empty-card-v2">Próximamente estaremos subiendo las lecciones en video.</div>'
-                        }
-                    </div>
-                </section>
-
-                <!-- Sidebar: Resources -->
-                <aside class="sidebar-resources-v2">
-                    <div class="section-title-v2">
-                        <i class="fas fa-folder-open"></i>
-                        <h2>Recursos</h2>
-                    </div>
-
-                    <div class="resources-stack-v2">
-                        <!-- PDFs -->
-                        ${(links.pdfs || []).map(url => `
-                            <a href="${url}" target="_blank" class="resource-item-v2">
-                                <div class="res-icon-v2 pdf"><i class="fas fa-file-pdf"></i></div>
-                                <div class="res-text-v2">
-                                    <span class="name">Documentación Oficial</span>
-                                    <span class="meta">Guía PDF</span>
-                                </div>
-                            </a>
-                        `).join('')}
-
-                        <!-- Books -->
-                        ${(links.books || []).map(url => `
-                            <a href="${url}" target="_blank" class="resource-item-v2">
-                                <div class="res-icon-v2 book"><i class="fas fa-book-open"></i></div>
-                                <div class="res-text-v2">
-                                    <span class="name">Lectura Recomendada</span>
-                                    <span class="meta">E-Book / PDF</span>
-                                </div>
-                            </a>
-                        `).join('')}
-
-                        ${!(links.pdfs?.length || links.books?.length) 
-                            ? '<div class="empty-card-v2" style="border:none; padding:1rem; font-size:0.8rem;">Sin archivos adjuntos.</div>' 
-                            : ''
-                        }
-                    </div>
-                </aside>
+    return modules.map((m, i) => {
+        const type = (m.type || 'link').toLowerCase();
+        const meta = TYPE_META[type] || TYPE_META.link;
+        const hasUrl = !!m.url;
+        const btnHtml = hasUrl
+            ? `<a href="${esc(m.url)}" target="_blank" rel="noopener" class="cd-mod-btn ${meta.btnCls}">${meta.icon} ${meta.label}</a>`
+            : `<span class="cd-mod-locked"><i class="fas fa-lock"></i> Próximamente</span>`;
+        return `
+        <div class="cd-module-card ${hasUrl ? 'has-link' : ''}">
+            <div class="cd-mod-num">${i + 1}</div>
+            <div class="cd-mod-icon ${meta.cls}">${meta.icon}</div>
+            <div class="cd-mod-info">
+                <h4>${esc(m.title)}</h4>
+                ${m.description ? `<p>${esc(m.description)}</p>` : ''}
             </div>
-        `;
+            ${btnHtml}
+        </div>`;
+    }).join('');
+}
+
+function renderResources(links) {
+    const pdfs  = (links?.pdfs  || []).map(url => `<a href="${esc(url)}" target="_blank" class="cd-res-item"><div class="cd-res-ic pdf"><i class="fas fa-file-pdf"></i></div><div class="cd-res-tx"><span class="name">Documento PDF</span><span class="meta">Recurso</span></div></a>`);
+    const books = (links?.books || []).map(url => `<a href="${esc(url)}" target="_blank" class="cd-res-item"><div class="cd-res-ic book"><i class="fas fa-book-open"></i></div><div class="cd-res-tx"><span class="name">Lectura recomendada</span><span class="meta">E-Book</span></div></a>`);
+    const videos = (links?.videos || []).map(url => `<a href="${esc(url)}" target="_blank" class="cd-res-item"><div class="cd-res-ic link"><i class="fas fa-video"></i></div><div class="cd-res-tx"><span class="name">Video externo</span><span class="meta">Enlace</span></div></a>`);
+    const all = [...pdfs, ...books, ...videos];
+    return all.length ? all.join('') : '';
+}
+
+async function init() {
+    const root = document.getElementById('courseDetailRoot');
+    const segments = window.location.pathname.split('/');
+    const id = segments[segments.length - 1];
+
+    if (!id || isNaN(parseInt(id))) {
+        root.innerHTML = '<div class="cd-error">Referencia de curso no válida.</div>';
+        return;
     }
 
-    // Initialize after DOM is ready to avoid SSR/window issues
-    document.addEventListener('DOMContentLoaded', initPage);
-</script>
+    try {
+        const c = await AuthManager.fetch(`/courses/${id}`);
+        if (!c) throw new Error('no course');
 
+        const modules = Array.isArray(c.modules) ? c.modules : [];
+        const lvlMap  = { basico:'Básico', intermedio:'Intermedio', avanzado:'Avanzado' };
+        const lvl     = lvlMap[c.level] || 'Básico';
+        const techs   = (c.technologies || []).slice(0, 4).map(t => `<span class="cd-badge cd-badge-techs">${esc(t)}</span>`).join('');
+        const initial = (c.mentor_name || 'M')[0].toUpperCase();
+        const links   = c.content_links || {};
+        const hasResources = (links.pdfs?.length || links.books?.length || links.videos?.length);
+
+        root.innerHTML = `
+        <!-- Hero -->
+        <section class="cd-hero">
+            <div class="cd-hero-info">
+                <span class="cd-specialty-tag">
+                    <i class="fas fa-tag"></i> ${esc(c.specialty_name || 'General')}
+                </span>
+                <h1>${esc(c.title)}</h1>
+                <div class="cd-mentor-chip">
+                    <div class="cd-mentor-av">${initial}</div>
+                    <div class="cd-mentor-name"><span>Instructor · </span>${esc(c.mentor_name || 'CTech')}</div>
+                </div>
+                <p class="cd-desc">${esc(c.description || 'Sin descripción.')}</p>
+                <div class="cd-meta-row">
+                    <span class="cd-badge cd-badge-level"><i class="fas fa-signal"></i> ${lvl}</span>
+                    <span class="cd-badge cd-badge-modules"><i class="fas fa-cubes"></i> ${modules.length} módulo${modules.length !== 1 ? 's' : ''}</span>
+                    ${techs}
+                </div>
+            </div>
+            <div class="cd-thumbnail">
+                ${c.thumbnail_url
+                    ? `<img src="${esc(c.thumbnail_url)}" alt="${esc(c.title)}" loading="lazy">`
+                    : `<div class="cd-thumb-placeholder"><i class="fas fa-book-open"></i></div>`}
+            </div>
+        </section>
+
+        <!-- Módulos -->
+        <section class="cd-modules-wrap">
+            <div class="cd-section-head">
+                <div class="cd-section-icon"><i class="fas fa-layer-group"></i></div>
+                <h2>Módulos del curso</h2>
+                <span class="cd-count">${modules.length} módulo${modules.length !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="cd-modules-list">
+                ${renderModules(modules)}
+            </div>
+        </section>
+
+        <!-- Recursos adicionales (content_links legacy) -->
+        ${hasResources ? `
+        <section class="cd-resources-wrap">
+            <div class="cd-section-head">
+                <div class="cd-section-icon"><i class="fas fa-folder-open"></i></div>
+                <h2>Recursos adicionales</h2>
+            </div>
+            <div class="cd-res-grid">
+                ${renderResources(links)}
+            </div>
+        </section>` : ''}
+        `;
+    } catch (err) {
+        console.error('[CourseDetail]', err);
+        root.innerHTML = '<div class="cd-error">No se pudo cargar el curso. Intenta de nuevo.</div>';
+    }
+}
+
+if (document.readyState !== 'loading') {
+    init();
+} else {
+    document.addEventListener('DOMContentLoaded', init);
+}
+</script>

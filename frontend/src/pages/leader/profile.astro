@@ -124,23 +124,32 @@ async function init() {
     const user = authManager.getUser();
     if (!user) return;
 
-    // Avatar
+    // Avatar + name + email desde localStorage
     const initials = (user.name_user || '?').substring(0, 2).toUpperCase();
     document.getElementById('profileAvatar').textContent = initials;
     document.getElementById('profileName').textContent   = user.name_user || '—';
     document.getElementById('profileEmail').textContent  = user.email || '—';
 
-    // Comunidad
+    // Obtener datos frescos del servidor
     const me = await AuthManager.fetch('/users/me').catch(() => null);
-    if (me?.created_at) {
+    if (!me) return;
+
+    // Fecha de registro
+    if (me.created_at) {
         const d = new Date(me.created_at).toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
         document.getElementById('profileDate').textContent = d;
     }
 
+    // Nombre de comunidad — viene directo en /users/me gracias al join en get_by_id
+    if (me.community_name) {
+        document.getElementById('profileCommunity').textContent = me.community_name;
+    }
+
     // Cargar métricas de comunidad
-    if (user.community_id) {
+    const communityId = me.community_id || user.community_id;
+    if (communityId) {
         try {
-            const metrics = await AuthManager.fetch(`/metrics/community/${user.community_id}`);
+            const metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
             if (metrics) {
                 document.getElementById('csMentors').textContent = metrics.total_mentors ?? '—';
                 document.getElementById('csUsers').textContent   = metrics.total_users ?? '—';
@@ -148,15 +157,6 @@ async function init() {
                 document.getElementById('csEvents').textContent  = metrics.active_events ?? '—';
             }
         } catch(e) { console.warn('Error cargando métricas:', e); }
-
-        // Nombre de comunidad
-        try {
-            const communities = await fetch('http://localhost:8000/api/v1/communities/').then(r => r.json());
-            const comm = Array.isArray(communities)
-                ? communities.find(c => c.id_community === user.community_id)
-                : null;
-            if (comm) document.getElementById('profileCommunity').textContent = comm.name_community;
-        } catch(e) {}
     }
 }
 

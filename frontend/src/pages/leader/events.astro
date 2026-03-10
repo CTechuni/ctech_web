@@ -15,9 +15,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 <span class="count-badge" id="pendingCount">0</span>
             </h2>
         </div>
-        <div class="pending-list" id="pendingList">
-            <p class="empty-pending">No hay eventos pendientes.</p>
-        </div>
+        <div class="pending-list" id="pendingList"></div>
     </div>
 
     <!-- ── Eventos aprobados ────────────────────────────────────────── -->
@@ -28,12 +26,10 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 <p class="section-sub">Eventos aprobados de tu comunidad</p>
             </div>
             <button class="btn-create-event" id="btnNewEvent">
-                <i class="fa-solid fa-plus"></i>
-                Crear Evento
+                <i class="fa-solid fa-plus"></i> Crear Evento
             </button>
         </div>
 
-        <!-- Filters & Search -->
         <div class="filters-row">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -46,7 +42,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             </div>
         </div>
 
-        <!-- Events Grid -->
         <div class="events-grid" id="eventsGrid">
             <div class="loading-placeholder">
                 <div class="spinner"></div>
@@ -66,6 +61,33 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
         <form id="eventForm" class="m-body">
             <input type="hidden" id="fId" />
+            <input type="hidden" id="fImageUrl" />
+
+            <!-- Imagen informativa -->
+            <div class="fg">
+                <label>Imagen informativa del evento</label>
+                <div class="img-upload-area" id="imgUploadArea">
+                    <div class="img-placeholder" id="imgPlaceholder">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Arrastra una imagen o haz clic para seleccionar</span>
+                        <small>JPG, PNG o WebP — máx. 5 MB</small>
+                    </div>
+                    <img id="imgPreview" class="img-preview" src="" alt="Vista previa" style="display:none" />
+                    <div class="img-actions" id="imgActions" style="display:none">
+                        <button type="button" class="btn-img-change" id="btnChangeImg">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i> Cambiar
+                        </button>
+                        <button type="button" class="btn-img-remove" id="btnRemoveImg">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    <input type="file" id="fImage" accept="image/*" style="display:none" />
+                </div>
+                <div class="upload-progress" id="uploadProgress" style="display:none">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span id="uploadStatus">Subiendo imagen...</span>
+                </div>
+            </div>
 
             <div class="fg">
                 <label>Título del evento <span class="req">*</span></label>
@@ -74,7 +96,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
             <div class="fg">
                 <label>Descripción</label>
-                <textarea id="fDesc" class="fi" rows="3" placeholder="¿De qué trata el evento?..."></textarea>
+                <textarea id="fDesc" class="fi" rows="3" placeholder="¿De qué trata el evento?"></textarea>
             </div>
 
             <div class="row2">
@@ -107,9 +129,16 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 </div>
             </div>
 
-            <div class="fg">
-                <label id="locationLabel">Link de la reunión</label>
-                <input type="text" id="fLocation" class="fi" placeholder="https://meet.google.com/..." />
+            <!-- Link / Dirección (campo dinámico) -->
+            <div class="fg" id="locationGroup">
+                <label id="locationLabel">Link de la reunión <span class="req">*</span></label>
+                <div class="fi-icon-wrap">
+                    <i class="fa-solid fa-link fi-icon" id="locationIcon"></i>
+                    <input type="text" id="fLocation" class="fi fi-with-icon"
+                        placeholder="https://meet.google.com/..." />
+                </div>
+                <span class="field-hint" id="locationHint">Debe ser una URL válida (https://...)</span>
+                <span class="field-error" id="locationError" style="display:none"></span>
             </div>
 
             <div class="fg">
@@ -146,54 +175,41 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 </LeaderLayout>
 
 <style>
+/* ── Layout ── */
 .events-section { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
-
-/* Section block */
-.section-block { display: flex; flex-direction: column; gap: 20px; }
-
-.section-header {
-    display: flex; justify-content: space-between; align-items: flex-start;
-}
-.section-title {
-    font-size: 1.3rem; font-weight: 800; color: #1e293b; margin: 0;
-    display: flex; align-items: center; gap: 10px;
-}
+.section-block  { display: flex; flex-direction: column; gap: 20px; }
+.section-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.section-title  { font-size: 1.3rem; font-weight: 800; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 10px; }
 .section-title i { color: #3b82f6; }
-.section-sub { font-size: .85rem; color: #64748b; margin: 4px 0 0 0; }
+.section-sub    { font-size: .85rem; color: #64748b; margin: 4px 0 0 0; }
+.count-badge    { background: #fef3c7; color: #d97706; font-size: .72rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
 
-.count-badge {
-    background: #fef3c7; color: #d97706; font-size: .72rem;
-    font-weight: 800; padding: 2px 9px; border-radius: 20px; min-width: 22px; text-align: center;
-}
-
-/* Pending list */
+/* ── Pending cards ── */
 .pending-list { display: flex; flex-direction: column; gap: 12px; }
-.empty-pending { color: #94a3b8; font-size: .88rem; text-align: center; padding: 20px 0; }
-
 .pending-card {
     background: #fff; border-radius: 14px; border: 1.5px solid #fde68a;
     padding: 18px 20px; display: flex; align-items: flex-start; gap: 16px;
+    box-shadow: 0 2px 8px rgba(217,119,6,.06);
+    transition: box-shadow .2s;
 }
+.pending-card:hover { box-shadow: 0 6px 20px rgba(217,119,6,.1); }
 .pending-date {
     background: #fef3c7; border-radius: 10px; padding: 10px 14px;
     text-align: center; flex-shrink: 0; line-height: 1.1;
 }
 .pd-day { font-size: 1.6rem; font-weight: 800; color: #d97706; display: block; }
 .pd-mon { font-size: .65rem; font-weight: 700; color: #92400e; text-transform: uppercase; }
-
 .pending-info { flex: 1; min-width: 0; }
 .pending-info h4 { margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a; }
 .pending-info p  { margin: 0 0 8px; font-size: .82rem; color: #64748b; line-height: 1.5;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pending-meta { display: flex; flex-wrap: wrap; gap: 12px; }
 .pm-it { display: flex; align-items: center; gap: 5px; font-size: .77rem; color: #94a3b8; font-weight: 500; }
-.pm-it i { font-size: .8rem; }
-
 .pending-actions { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
 .btn-approve {
-    background: #22c55e; color: #fff; border: none;
-    padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem;
-    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .2s;
+    background: #22c55e; color: #fff; border: none; padding: 8px 16px;
+    border-radius: 8px; font-weight: 700; font-size: .82rem; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: background .2s;
 }
 .btn-approve:hover { background: #16a34a; }
 .btn-reject {
@@ -203,185 +219,226 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 }
 .btn-reject:hover { background: #fee2e2; border-color: #ef4444; }
 
-/* Create event button */
+/* ── Create button ── */
 .btn-create-event {
-    background: #3b82f6; color: white; border: none;
+    background: #3b82f6; color: #fff; border: none;
     padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: .9rem;
     display: flex; align-items: center; gap: 8px; transition: all .2s;
     cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,.25); white-space: nowrap;
 }
 .btn-create-event:hover { background: #2563eb; transform: translateY(-1px); }
 
-/* Filters */
+/* ── Filters ── */
 .filters-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-.search-box { position: relative; flex: 1; max-width: 400px; }
-.search-icon {
-    position: absolute; left: 14px; top: 50%;
-    transform: translateY(-50%); color: #94a3b8; font-size: .9rem;
-}
+.search-box  { position: relative; flex: 1; max-width: 400px; }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .9rem; }
 .search-input {
     width: 100%; padding: 10px 14px 10px 40px; box-sizing: border-box;
     border: 1.5px solid #e2e8f0; border-radius: 50px; font-size: .9rem;
-    color: #1e293b; outline: none; transition: all .2s; background: white;
+    color: #1e293b; outline: none; transition: all .2s; background: #fff;
 }
 .search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,.08); }
 .filter-buttons { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
-.filter-btn {
-    border: none; background: transparent; padding: 8px 16px;
-    border-radius: 8px; font-size: .85rem; font-weight: 600; color: #64748b; cursor: pointer;
-}
+.filter-btn { border: none; background: transparent; padding: 8px 16px; border-radius: 8px; font-size: .85rem; font-weight: 600; color: #64748b; cursor: pointer; }
 .filter-btn:hover { color: #1e293b; }
-.filter-btn.active { background: white; color: #3b82f6; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+.filter-btn.active { background: #fff; color: #3b82f6; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
 
-/* Events Grid */
-.events-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-}
-.loading-placeholder {
-    grid-column: 1/-1; display: flex; flex-direction: column;
-    align-items: center; gap: 1rem; padding: 80px 0; color: #94a3b8;
-}
-.spinner {
-    width: 32px; height: 32px; border: 4px solid #f1f5f9;
-    border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;
-}
+/* ── Events grid ── */
+.events-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.loading-placeholder { grid-column: 1/-1; display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 80px 0; color: #94a3b8; }
+.spinner { width: 32px; height: 32px; border: 4px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .empty-grid { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #94a3b8; }
 .empty-grid i { font-size: 2rem; margin-bottom: .75rem; display: block; color: #cbd5e1; }
 
-/* Event Card (approved) */
+/* ── Event card (estilo comm-card) ── */
 .ev-card {
-    background: white; border-radius: 16px; border: 1px solid #e2e8f0;
-    padding: 24px; display: flex; flex-direction: column; gap: 16px;
-    transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.02); position: relative;
+    background: #fff; border-radius: 16px; border: 1px solid #f1f5f9;
+    padding: 1.25rem; display: flex; flex-direction: column;
+    transition: box-shadow .2s, transform .2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
 }
-.ev-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.06); border-color: #cbd5e1; }
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.ev-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.07); }
+
+/* Header: date-box + identity + actions */
+.ev-card-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px; margin-bottom: 12px;
+}
+.ev-date-box {
+    background: #eff6ff; border-radius: 12px;
+    padding: 8px 12px; text-align: center; flex-shrink: 0; line-height: 1.1;
+    min-width: 48px;
+}
+.ev-day { font-size: 1.35rem; font-weight: 800; color: #2563eb; display: block; }
+.ev-mon { font-size: .62rem; font-weight: 700; color: #93c5fd; text-transform: uppercase; }
+.ev-identity { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.ev-title { font-size: .95rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.4; }
+
+.badges { display: flex; gap: 5px; flex-wrap: wrap; }
 .badge {
-    padding: 4px 10px; border-radius: 6px; font-size: .68rem;
-    font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+    padding: 2px 8px; border-radius: 5px; font-size: .62rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
 }
-.badge-virtual  { background: #eff6ff; color: #3b82f6; }
+.badge-virtual    { background: #eff6ff; color: #3b82f6; }
 .badge-presencial { background: #fdf4ff; color: #a855f7; }
-.badge-publico  { background: #dcfce7; color: #15803d; }
-.badge-privado  { background: #f1f5f9; color: #64748b; }
-.ev-date { font-size: .8rem; font-weight: 500; color: #64748b; }
-.card-body { flex: 1; }
-.ev-title { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0 0 8px; line-height: 1.4; }
-.ev-desc  { font-size: .88rem; color: #64748b; margin: 0; line-height: 1.6;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-footer {
-    display: flex; align-items: center; gap: 12px;
-    padding-top: 14px; border-top: 1.5px dashed #f1f5f9; margin-top: auto;
+.badge-publico    { background: #dcfce7; color: #15803d; }
+.badge-privado    { background: #f1f5f9; color: #64748b; }
+
+/* Card actions: visible on hover */
+.card-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .2s; flex-shrink: 0; }
+.ev-card:hover .card-actions { opacity: 1; }
+.btn-ic {
+    width: 28px; height: 28px; border-radius: 7px; border: none;
+    background: #f1f5f9; cursor: pointer; font-size: .73rem; color: #64748b;
+    display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
-.meta-item { display: flex; align-items: center; gap: 6px; font-size: .76rem; font-weight: 600; color: #94a3b8; }
-.meta-item i { font-size: .82rem; }
-.meta-link { font-size: .76rem; font-weight: 600; color: #3b82f6; text-decoration: none; margin-left: auto; }
+.btn-ic:hover     { background: #e0f2fe; color: #3b82f6; }
+.btn-ic.del:hover { background: #fee2e2; color: #ef4444; }
+
+/* Optional event image */
+.ev-img {
+    width: 100%; height: 130px; object-fit: cover; display: block;
+    border-radius: 10px; margin-bottom: 10px;
+}
+
+/* Description */
+.ev-desc {
+    font-size: .82rem; color: #64748b; margin: 0 0 auto 0; line-height: 1.6; flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Footer */
+.ev-footer {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding-top: 10px; margin-top: 12px; border-top: 1px solid #f1f5f9;
+}
+.meta-item { display: flex; align-items: center; gap: 4px; font-size: .74rem; font-weight: 600; color: #94a3b8; }
+.meta-item i { font-size: .75rem; }
+.meta-link { font-size: .75rem; font-weight: 700; color: #3b82f6; text-decoration: none; margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .meta-link:hover { text-decoration: underline; }
 
-.card-actions {
-    position: absolute; top: 12px; right: 12px;
-    display: flex; gap: 6px;
-}
-.btn-ic {
-    width: 28px; height: 28px; border-radius: 7px;
-    border: 1px solid #e2e8f0; background: #fff; cursor: pointer;
-    font-size: .72rem; color: #94a3b8;
-    display: flex; align-items: center; justify-content: center; transition: all .2s;
-}
-.btn-ic:hover { color: #3b82f6; border-color: #3b82f6; }
-.btn-ic.del:hover { color: #ef4444; border-color: #ef4444; }
-
-/* Modal */
+/* ── Modal ── */
 .m-overlay {
     position: fixed; inset: 0;
-    background: rgba(15,23,42,.55); backdrop-filter: blur(4px);
+    background: rgba(15,23,42,.6); backdrop-filter: blur(6px);
     display: none; align-items: center; justify-content: center;
     z-index: 3000; padding: 20px;
 }
 .m-overlay.open { display: flex; }
 .m-card {
-    background: #fff; border-radius: 20px;
-    width: 100%; max-width: 580px; max-height: 92vh; overflow-y: auto;
-    box-shadow: 0 25px 50px rgba(0,0,0,.15);
+    background: #fff; border-radius: 22px;
+    width: 100%; max-width: 600px; max-height: 94vh; overflow-y: auto;
+    box-shadow: 0 30px 60px rgba(0,0,0,.18);
 }
 .m-header {
     display: flex; justify-content: space-between; align-items: center;
     padding: 22px 28px 18px; border-bottom: 1px solid #f1f5f9;
-    position: sticky; top: 0; background: #fff; z-index: 1;
+    position: sticky; top: 0; background: #fff; z-index: 1; border-radius: 22px 22px 0 0;
 }
 .m-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-.m-close {
-    background: #f1f5f9; border: none; width: 32px; height: 32px;
-    border-radius: 8px; cursor: pointer; color: #64748b;
-    display: flex; align-items: center; justify-content: center;
-}
+.m-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; }
 .m-close:hover { background: #e2e8f0; }
-.m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; }
+.m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 18px; }
 .fg { display: flex; flex-direction: column; gap: 6px; }
 .fg label { font-size: .8rem; font-weight: 700; color: #475569; }
 .fi {
-    border: 1px solid #e2e8f0; border-radius: 10px;
+    border: 1.5px solid #e2e8f0; border-radius: 10px;
     padding: 10px 13px; font-size: .88rem; color: #1e293b;
     font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: border-color .2s;
 }
 .fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+.fi.error { border-color: #ef4444; }
+.fi.error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
 textarea.fi { resize: vertical; }
 .req { color: #ef4444; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.type-toggle { display: flex; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
-.type-btn {
-    flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600;
-    background: #fff; border: none; color: #64748b; cursor: pointer; transition: all .2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.type-btn:not(:last-child) { border-right: 1px solid #e2e8f0; }
+
+/* Icon wrap for link field */
+.fi-icon-wrap { position: relative; }
+.fi-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .82rem; pointer-events: none; }
+.fi-with-icon { padding-left: 36px; }
+
+.field-hint  { font-size: .72rem; color: #94a3b8; }
+.field-error { font-size: .72rem; color: #ef4444; font-weight: 600; }
+
+/* Type toggle */
+.type-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.type-btn { flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600; background: #fff; border: none; color: #64748b; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.type-btn:not(:last-child) { border-right: 1.5px solid #e2e8f0; }
 .type-btn.active { background: #3b82f6; color: #fff; }
+
+/* Visibility */
 .vis-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .vis-opt { cursor: pointer; }
 .vis-opt input[type="radio"] { display: none; }
-.vis-card {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 10px;
-    text-align: center; transition: all .2s;
-}
+.vis-card { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 10px; text-align: center; transition: all .2s; }
 .vis-card i { font-size: 1.2rem; color: #94a3b8; }
 .vis-card strong { font-size: .85rem; color: #475569; font-weight: 700; }
 .vis-card small  { font-size: .7rem; color: #94a3b8; }
 .vis-opt input:checked + .vis-card { border-color: #3b82f6; background: #f0f7ff; }
-.vis-opt input:checked + .vis-card i      { color: #3b82f6; }
+.vis-opt input:checked + .vis-card i,
 .vis-opt input:checked + .vis-card strong { color: #3b82f6; }
+
+/* Image upload */
+.img-upload-area {
+    border: 2px dashed #e2e8f0; border-radius: 14px; overflow: hidden;
+    cursor: pointer; transition: border-color .2s; position: relative; min-height: 130px;
+    display: flex; align-items: center; justify-content: center;
+}
+.img-upload-area:hover { border-color: #3b82f6; background: #f8fbff; }
+.img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px; color: #94a3b8; text-align: center; }
+.img-placeholder i { font-size: 2rem; color: #cbd5e1; }
+.img-placeholder span { font-size: .83rem; font-weight: 600; color: #64748b; }
+.img-placeholder small { font-size: .72rem; color: #94a3b8; }
+.img-preview { width: 100%; height: 180px; object-fit: cover; display: block; }
+.img-actions {
+    position: absolute; bottom: 10px; right: 10px; display: flex; gap: 6px;
+}
+.btn-img-change {
+    background: rgba(255,255,255,.95); border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 6px 12px; font-size: .75rem; font-weight: 700;
+    color: #475569; cursor: pointer; display: flex; align-items: center; gap: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.btn-img-change:hover { background: #fff; color: #3b82f6; }
+.btn-img-remove {
+    background: rgba(255,255,255,.95); border: 1px solid #fca5a5;
+    border-radius: 8px; width: 30px; height: 30px; font-size: .75rem;
+    color: #ef4444; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.btn-img-remove:hover { background: #fee2e2; }
+
+.upload-progress { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #eff6ff; border-radius: 8px; }
+.progress-bar-track { flex: 1; height: 6px; background: #dbeafe; border-radius: 6px; overflow: hidden; }
+.progress-bar { height: 100%; background: #3b82f6; border-radius: 6px; width: 0%; transition: width .3s; }
+#uploadStatus { font-size: .75rem; font-weight: 600; color: #1d4ed8; white-space: nowrap; }
+
+/* Footer */
 .m-footer {
     display: flex; justify-content: flex-end; gap: 10px;
     padding: 16px 28px 22px; border-top: 1px solid #f1f5f9;
-    position: sticky; bottom: 0; background: #fff;
+    position: sticky; bottom: 0; background: #fff; border-radius: 0 0 22px 22px;
 }
-.btn-ghost {
-    background: #f1f5f9; border: none; padding: 10px 20px;
-    border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b;
-}
-.btn-save {
-    background: #3b82f6; color: white; border: none;
-    padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: .88rem;
-    cursor: pointer; display: flex; align-items: center; gap: 7px;
-}
-.btn-save:hover { background: #2563eb; }
+.btn-ghost { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b; }
+.btn-save  { background: #3b82f6; color: #fff; border: none; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+.btn-save:hover    { background: #2563eb; }
 .btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
 
+/* Responsive */
 @media(max-width: 1024px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
 @media(max-width: 768px)  {
-    .events-grid { grid-template-columns: 1fr; }
-    .filters-row { flex-direction: column; align-items: stretch; }
-    .search-box { max-width: 100%; }
-    .pending-card { flex-direction: column; }
-    .pending-actions { flex-direction: row; }
-    .row2 { grid-template-columns: 1fr; }
+    .events-grid    { grid-template-columns: 1fr; }
+    .filters-row    { flex-direction: column; align-items: stretch; }
+    .search-box     { max-width: 100%; }
+    .pending-card   { flex-direction: column; }
+    .row2           { grid-template-columns: 1fr; }
 }
 </style>
 
 <script>
-import { authManager as auth } from '../../utils/auth.js';
+import { AuthManager } from '../../utils/auth.js';
 
 let allEvents     = [];
 let pendingEvents = [];
@@ -390,6 +447,150 @@ let editingId     = null;
 
 const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
+// ── Validaciones ──────────────────────────────────────────────────────────────
+function isValidUrl(str) {
+    try {
+        const url = new URL(str);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch { return false; }
+}
+
+function isGoogleMapsUrl(str) {
+    if (!isValidUrl(str)) return false;
+    const mapsPatterns = [
+        /maps\.google\./i,
+        /google\.[a-z]+\/maps/i,
+        /goo\.gl\/maps/i,
+        /maps\.app\.goo\.gl/i,
+        /g\.page/i,
+    ];
+    return mapsPatterns.some(p => p.test(str));
+}
+
+function validateLocation() {
+    const type  = (document.getElementById('fType') as HTMLInputElement).value;
+    const val   = (document.getElementById('fLocation') as HTMLInputElement).value.trim();
+    const input = document.getElementById('fLocation') as HTMLInputElement;
+    const err   = document.getElementById('locationError');
+
+    if (!val) {
+        input.classList.remove('error');
+        if (err) err.style.display = 'none';
+        return true; // Permitir vacío
+    }
+
+    let valid = true;
+    let msg   = '';
+
+    if (type === 'virtual') {
+        valid = isValidUrl(val);
+        msg   = valid ? '' : 'Ingresa una URL válida, ej: https://meet.google.com/abc-xyz';
+    } else {
+        valid = isGoogleMapsUrl(val);
+        msg   = valid ? '' : 'Ingresa un link de Google Maps, ej: https://maps.google.com/... o https://goo.gl/maps/...';
+    }
+
+    input.classList.toggle('error', !valid);
+    if (err) {
+        err.textContent    = msg;
+        err.style.display  = valid ? 'none' : 'block';
+    }
+    return valid;
+}
+
+// ── Image upload ──────────────────────────────────────────────────────────────
+let pendingImageFile = null;
+
+function setupImageUpload() {
+    const area        = document.getElementById('imgUploadArea');
+    const fileInput   = document.getElementById('fImage') as HTMLInputElement;
+    const placeholder = document.getElementById('imgPlaceholder');
+    const preview     = document.getElementById('imgPreview') as HTMLImageElement;
+    const actions     = document.getElementById('imgActions');
+    const changeBtn   = document.getElementById('btnChangeImg');
+    const removeBtn   = document.getElementById('btnRemoveImg');
+
+    function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            preview.src     = e.target.result as string;
+            preview.style.display  = 'block';
+            placeholder.style.display = 'none';
+            actions.style.display  = 'flex';
+        };
+        reader.readAsDataURL(file);
+        pendingImageFile = file;
+    }
+
+    function clearImage() {
+        pendingImageFile = null;
+        fileInput.value  = '';
+        preview.src      = '';
+        preview.style.display  = 'none';
+        placeholder.style.display = 'flex';
+        actions.style.display  = 'none';
+        (document.getElementById('fImageUrl') as HTMLInputElement).value = '';
+    }
+
+    area?.addEventListener('click', e => {
+        if ((e.target as HTMLElement).closest('.img-actions')) return;
+        fileInput.click();
+    });
+
+    // Drag & drop
+    area?.addEventListener('dragover', e => { e.preventDefault(); area.style.borderColor = '#3b82f6'; });
+    area?.addEventListener('dragleave', () => { area.style.borderColor = ''; });
+    area?.addEventListener('drop', e => {
+        e.preventDefault();
+        area.style.borderColor = '';
+        const file = e.dataTransfer?.files[0];
+        if (file && file.type.startsWith('image/')) showPreview(file);
+    });
+
+    fileInput?.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (file) showPreview(file);
+    });
+
+    changeBtn?.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+    removeBtn?.addEventListener('click', e => { e.stopPropagation(); clearImage(); });
+
+    return clearImage;
+}
+
+async function uploadImageIfNeeded() {
+    if (!pendingImageFile) return null;
+
+    const progress   = document.getElementById('uploadProgress');
+    const progressBar = document.getElementById('progressBar');
+    const statusTxt  = document.getElementById('uploadStatus');
+
+    progress.style.display = 'flex';
+    progressBar.style.width = '30%';
+    statusTxt.textContent   = 'Subiendo imagen...';
+
+    const form = new FormData();
+    form.append('file', pendingImageFile);
+
+    try {
+        const token = (await import('../../utils/auth.js')).authManager.getToken();
+        const res   = await fetch('http://localhost:8000/api/v1/events/upload-image', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: form,
+        });
+        progressBar.style.width = '100%';
+        if (!res.ok) throw new Error('Error al subir imagen');
+        const data = await res.json();
+        statusTxt.textContent = '¡Imagen subida!';
+        setTimeout(() => { progress.style.display = 'none'; progressBar.style.width = '0'; }, 1200);
+        return data.url;
+    } catch (e) {
+        progress.style.display = 'none';
+        throw e;
+    }
+}
+
 // ── Carga ─────────────────────────────────────────────────────────────────────
 async function init() {
     await Promise.all([loadPending(), loadEvents()]);
@@ -397,22 +598,17 @@ async function init() {
 
 async function loadPending() {
     try {
-        const data = await auth.fetch('/events/pending');
+        const data = await AuthManager.fetch('/events/pending');
         pendingEvents = Array.isArray(data) ? data : [];
-    } catch(e) {
-        pendingEvents = [];
-    }
+    } catch(e) { pendingEvents = []; }
     renderPending();
 }
 
 async function loadEvents() {
     try {
-        const data = await auth.fetch('/events/');
-        // El líder recibe todos los de su comunidad; filtramos los aprobados para esta sección
+        const data = await AuthManager.fetch('/events/');
         allEvents = (Array.isArray(data) ? data : []).filter(ev => ev.status === 'approved');
-    } catch(e) {
-        allEvents = [];
-    }
+    } catch(e) { allEvents = []; }
     renderGrid();
 }
 
@@ -422,12 +618,8 @@ function renderPending() {
     const list    = document.getElementById('pendingList');
     const count   = document.getElementById('pendingCount');
 
-    count.textContent = pendingEvents.length;
-
-    if (pendingEvents.length === 0) {
-        section.style.display = 'none';
-        return;
-    }
+    count.textContent = String(pendingEvents.length);
+    if (!pendingEvents.length) { section.style.display = 'none'; return; }
     section.style.display = 'block';
 
     list.innerHTML = pendingEvents.map(ev => {
@@ -437,10 +629,7 @@ function renderPending() {
         const type = (ev.event_type || 'virtual').toLowerCase();
         return `
         <div class="pending-card" id="pc-${ev.id}">
-            <div class="pending-date">
-                <span class="pd-day">${day}</span>
-                <span class="pd-mon">${mon}</span>
-            </div>
+            <div class="pending-date"><span class="pd-day">${day}</span><span class="pd-mon">${mon}</span></div>
             <div class="pending-info">
                 <h4>${ev.title}</h4>
                 <p>${ev.description || 'Sin descripción.'}</p>
@@ -448,16 +637,12 @@ function renderPending() {
                     <span class="pm-it"><i class="fa-solid fa-${type === 'presencial' ? 'map-marker-alt' : 'video'}"></i> ${type === 'presencial' ? 'Presencial' : 'Virtual'}</span>
                     ${ev.event_time ? `<span class="pm-it"><i class="fa-regular fa-clock"></i> ${String(ev.event_time).substring(0,5)}h</span>` : ''}
                     ${ev.capacity  ? `<span class="pm-it"><i class="fa-solid fa-users"></i> ${ev.capacity} personas</span>` : ''}
-                    ${ev.visibility === 'privado' ? `<span class="pm-it"><i class="fa-solid fa-lock"></i> Privado</span>` : `<span class="pm-it"><i class="fa-solid fa-globe"></i> Público</span>`}
+                    <span class="pm-it"><i class="fa-solid fa-${ev.visibility === 'privado' ? 'lock' : 'globe'}"></i> ${ev.visibility === 'privado' ? 'Privado' : 'Público'}</span>
                 </div>
             </div>
             <div class="pending-actions">
-                <button class="btn-approve" onclick="approveEvent(${ev.id})">
-                    <i class="fa-solid fa-check"></i> Aprobar
-                </button>
-                <button class="btn-reject" onclick="rejectEvent(${ev.id})">
-                    <i class="fa-solid fa-times"></i> Rechazar
-                </button>
+                <button class="btn-approve" onclick="approveEvent(${ev.id})"><i class="fa-solid fa-check"></i> Aprobar</button>
+                <button class="btn-reject"  onclick="rejectEvent(${ev.id})"><i class="fa-solid fa-times"></i> Rechazar</button>
             </div>
         </div>`;
     }).join('');
@@ -466,42 +651,28 @@ function renderPending() {
 window.approveEvent = async function(id) {
     if (!confirm('¿Aprobar este evento? Se publicará en la comunidad.')) return;
     try {
-        const result = await auth.fetch(`/events/${id}/approve`, { method: 'PATCH' });
-        if (result) {
-            pendingEvents = pendingEvents.filter(e => e.id !== id);
-            allEvents.push(result);
-            renderPending();
-            renderGrid();
-        }
-    } catch(e) {
-        alert('Error al aprobar: ' + e.message);
-    }
+        const result = await AuthManager.fetch(`/events/${id}/approve`, { method: 'PATCH' });
+        if (result) { pendingEvents = pendingEvents.filter(e => e.id !== id); allEvents.push(result); renderPending(); renderGrid(); }
+    } catch(e) { alert('Error al aprobar: ' + e.message); }
 };
 
 window.rejectEvent = async function(id) {
     if (!confirm('¿Rechazar este evento? Se notificará al mentor.')) return;
     try {
-        const result = await auth.fetch(`/events/${id}/reject`, { method: 'PATCH' });
-        if (result) {
-            pendingEvents = pendingEvents.filter(e => e.id !== id);
-            renderPending();
-        }
-    } catch(e) {
-        alert('Error al rechazar: ' + e.message);
-    }
+        const result = await AuthManager.fetch(`/events/${id}/reject`, { method: 'PATCH' });
+        if (result) { pendingEvents = pendingEvents.filter(e => e.id !== id); renderPending(); }
+    } catch(e) { alert('Error al rechazar: ' + e.message); }
 };
 
-// ── Grid (aprobados) ──────────────────────────────────────────────────────────
+// ── Grid ──────────────────────────────────────────────────────────────────────
 function renderGrid() {
     const grid = document.getElementById('eventsGrid');
     const term = (document.getElementById('eventSearch') as HTMLInputElement)?.value.toLowerCase() || '';
 
     const filtered = allEvents.filter(ev => {
-        const matchSearch = ev.title.toLowerCase().includes(term) ||
-                            (ev.location || '').toLowerCase().includes(term);
+        const matchSearch = ev.title.toLowerCase().includes(term) || (ev.location || '').toLowerCase().includes(term);
         const type = (ev.event_type || '').toLowerCase();
-        const matchFilter = currentFilter === 'all' || type === currentFilter;
-        return matchSearch && matchFilter;
+        return (currentFilter === 'all' || type === currentFilter) && matchSearch;
     });
 
     if (!filtered.length) {
@@ -510,38 +681,47 @@ function renderGrid() {
     }
 
     grid.innerHTML = filtered.map(ev => {
-        const d       = new Date((ev.event_date || '') + 'T00:00:00');
-        const dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        const d    = new Date((ev.event_date || '') + 'T00:00:00');
+        const day  = d.getDate();
+        const mon  = MONTHS[d.getMonth()] || '';
         const type    = (ev.event_type || 'virtual').toLowerCase();
         const typeLbl = type === 'presencial' ? 'Presencial' : 'Virtual';
         const typeCls = type === 'presencial' ? 'badge-presencial' : 'badge-virtual';
         const visCls  = ev.visibility === 'privado' ? 'badge-privado' : 'badge-publico';
-        const visLbl  = ev.visibility === 'privado' ? '🔒 Privado' : '🌐 Público';
+        const visLbl  = ev.visibility === 'privado' ? 'Privado' : 'Público';
+
+        const imgHtml = ev.image_url
+            ? `<img class="ev-img" src="${ev.image_url}" alt="${ev.title}" loading="lazy" />`
+            : '';
 
         const locationHtml = ev.location
             ? (type === 'virtual'
-                ? `<a class="meta-link" href="${ev.location}" target="_blank">Unirse →</a>`
-                : `<span class="meta-item"><i class="fa-solid fa-location-dot"></i>${ev.location.substring(0,25)}${ev.location.length > 25 ? '…' : ''}</span>`)
+                ? `<a class="meta-link" href="${ev.location}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Unirse</a>`
+                : `<a class="meta-link" href="${ev.location}" target="_blank" rel="noopener"><i class="fa-solid fa-map-location-dot"></i> Ver mapa</a>`)
             : '';
 
         return `
         <div class="ev-card">
-            <div class="card-actions">
-                <button class="btn-ic" onclick="openEdit(${ev.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-ic del" onclick="deleteEvent(${ev.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            <div class="card-header">
-                <div class="badges">
-                    <span class="badge ${typeCls}">${typeLbl}</span>
-                    <span class="badge ${visCls}">${visLbl}</span>
+            <div class="ev-card-header">
+                <div class="ev-date-box">
+                    <span class="ev-day">${day}</span>
+                    <span class="ev-mon">${mon}</span>
                 </div>
-                <span class="ev-date">${dateStr}</span>
+                <div class="ev-identity">
+                    <div class="badges">
+                        <span class="badge ${typeCls}">${typeLbl}</span>
+                        <span class="badge ${visCls}">${visLbl}</span>
+                    </div>
+                    <h3 class="ev-title">${ev.title}</h3>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-ic" onclick="openEdit(${ev.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-ic del" onclick="deleteEvent(${ev.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                </div>
             </div>
-            <div class="card-body">
-                <h3 class="ev-title">${ev.title}</h3>
-                <p class="ev-desc">${ev.description || ''}</p>
-            </div>
-            <div class="card-footer">
+            ${imgHtml}
+            <p class="ev-desc">${ev.description || ''}</p>
+            <div class="ev-footer">
                 <span class="meta-item"><i class="fa-regular fa-clock"></i>${ev.event_time ? String(ev.event_time).substring(0,5) + 'h' : 'TBD'}</span>
                 ${ev.capacity ? `<span class="meta-item"><i class="fa-solid fa-users"></i>${ev.capacity}</span>` : ''}
                 ${locationHtml}
@@ -550,39 +730,64 @@ function renderGrid() {
     }).join('');
 }
 
-// ── CRUD ──────────────────────────────────────────────────────────────────────
+// ── Delete ────────────────────────────────────────────────────────────────────
 window.deleteEvent = async function(id) {
     if (!confirm('¿Eliminar este evento?')) return;
-    const res = await auth.fetch(`/events/${id}`, { method: 'DELETE' });
-    if (res !== null) {
+    try {
+        await AuthManager.fetch(`/events/${id}`, { method: 'DELETE' });
         allEvents = allEvents.filter(e => e.id !== id);
         renderGrid();
-    }
+    } catch(e) { alert('Error al eliminar: ' + e.message); }
 };
 
 // ── Modal ──────────────────────────────────────────────────────────────────────
+let clearImageFn = () => {};
+
 function openModal(ev = null) {
     editingId = ev?.id || null;
-    document.getElementById('mTitle').textContent = ev ? 'Editar Evento' : 'Nuevo Evento';
-    document.getElementById('btnTxt').textContent = ev ? 'Guardar Cambios' : 'Crear Evento';
-    document.getElementById('fId').value       = ev?.id || '';
-    document.getElementById('fTitle').value    = ev?.title || '';
-    document.getElementById('fDesc').value     = ev?.description || '';
-    document.getElementById('fDate').value     = ev?.event_date || '';
-    document.getElementById('fTime').value     = ev?.event_time ? String(ev.event_time).substring(0,5) : '';
-    document.getElementById('fLocation').value = ev?.location || '';
-    document.getElementById('fCapacity').value = ev?.capacity || '';
+    document.getElementById('mTitle').textContent  = ev ? 'Editar Evento' : 'Nuevo Evento';
+    document.getElementById('btnTxt').textContent  = ev ? 'Guardar Cambios' : 'Crear Evento';
+    document.getElementById('fId').value           = String(ev?.id || '');
+    document.getElementById('fTitle').value        = ev?.title || '';
+    document.getElementById('fDesc').value         = ev?.description || '';
+    (document.getElementById('fDate') as HTMLInputElement).value    = ev?.event_date || '';
+    (document.getElementById('fTime') as HTMLInputElement).value    = ev?.event_time ? String(ev.event_time).substring(0,5) : '';
+    (document.getElementById('fLocation') as HTMLInputElement).value = ev?.location || '';
+    (document.getElementById('fCapacity') as HTMLInputElement).value = String(ev?.capacity || '');
+    (document.getElementById('fImageUrl') as HTMLInputElement).value = ev?.image_url || '';
+
+    // Image preview cuando editamos
+    const preview     = document.getElementById('imgPreview') as HTMLImageElement;
+    const placeholder = document.getElementById('imgPlaceholder');
+    const actions     = document.getElementById('imgActions');
+    pendingImageFile  = null;
+
+    if (ev?.image_url) {
+        preview.src           = ev.image_url;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+        actions.style.display = 'flex';
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'flex';
+        actions.style.display = 'none';
+    }
 
     const type = (ev?.event_type || 'virtual').toLowerCase();
-    document.getElementById('fType').value = type;
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === type));
-    updateLocationLabel(type);
+    (document.getElementById('fType') as HTMLInputElement).value = type;
+    document.querySelectorAll('.type-btn').forEach(b => (b as HTMLElement).classList.toggle('active', (b as HTMLElement).dataset.val === type));
+    updateLocationUI(type);
 
     const vis = ev?.visibility || 'publico';
-    document.querySelectorAll('input[name="fVisibility"]').forEach(r => { r.checked = r.value === vis; });
+    document.querySelectorAll('input[name="fVisibility"]').forEach((r: HTMLInputElement) => { r.checked = r.value === vis; });
+
+    // Limpiar errores
+    (document.getElementById('fLocation') as HTMLInputElement).classList.remove('error');
+    const err = document.getElementById('locationError');
+    if (err) err.style.display = 'none';
 
     document.getElementById('eventModal').classList.add('open');
-    document.getElementById('fTitle').focus();
+    (document.getElementById('fTitle') as HTMLInputElement).focus();
 }
 
 window.openEdit = function(id) {
@@ -594,57 +799,95 @@ function closeModal() {
     document.getElementById('eventModal').classList.remove('open');
     document.getElementById('eventForm').reset();
     editingId = null;
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'virtual'));
-    document.getElementById('fType').value = 'virtual';
-    updateLocationLabel('virtual');
+    pendingImageFile = null;
+    document.querySelectorAll('.type-btn').forEach(b => (b as HTMLElement).classList.toggle('active', (b as HTMLElement).dataset.val === 'virtual'));
+    (document.getElementById('fType') as HTMLInputElement).value = 'virtual';
+    updateLocationUI('virtual');
+    (document.getElementById('fLocation') as HTMLInputElement).classList.remove('error');
+    const err = document.getElementById('locationError');
+    if (err) err.style.display = 'none';
+    // Limpiar imagen
+    const preview     = document.getElementById('imgPreview') as HTMLImageElement;
+    const placeholder = document.getElementById('imgPlaceholder');
+    const actions     = document.getElementById('imgActions');
+    preview.style.display = 'none'; placeholder.style.display = 'flex'; actions.style.display = 'none';
 }
 
-function updateLocationLabel(type) {
-    document.getElementById('locationLabel').textContent =
-        type === 'virtual' ? 'Link de la reunión' : 'Dirección del lugar';
-    document.getElementById('fLocation').placeholder =
-        type === 'virtual' ? 'https://meet.google.com/...' : 'Calle 123, Ciudad...';
+function updateLocationUI(type) {
+    const label    = document.getElementById('locationLabel');
+    const hint     = document.getElementById('locationHint');
+    const icon     = document.getElementById('locationIcon');
+    const input    = document.getElementById('fLocation') as HTMLInputElement;
+
+    if (type === 'virtual') {
+        label.innerHTML = 'Link de la reunión <span class="req">*</span>';
+        hint.textContent = 'Debe ser una URL válida (https://...)';
+        icon.className   = 'fa-solid fa-link fi-icon';
+        input.placeholder = 'https://meet.google.com/...';
+    } else {
+        label.innerHTML = 'Ubicación en Google Maps <span class="req">*</span>';
+        hint.textContent = 'Pega el link de Google Maps (maps.google.com / goo.gl/maps)';
+        icon.className   = 'fa-solid fa-map-location-dot fi-icon';
+        input.placeholder = 'https://maps.google.com/...';
+    }
 }
 
+// ── Events ────────────────────────────────────────────────────────────────────
 document.getElementById('typeToggle').addEventListener('click', e => {
-    const btn = e.target.closest('.type-btn');
+    const btn = (e.target as HTMLElement).closest('.type-btn') as HTMLElement;
     if (!btn) return;
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.type-btn').forEach(b => (b as HTMLElement).classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('fType').value = btn.dataset.val;
-    updateLocationLabel(btn.dataset.val);
+    (document.getElementById('fType') as HTMLInputElement).value = btn.dataset.val;
+    updateLocationUI(btn.dataset.val);
+    validateLocation();
+});
+
+document.getElementById('fLocation').addEventListener('blur', validateLocation);
+document.getElementById('fLocation').addEventListener('input', () => {
+    const input = document.getElementById('fLocation') as HTMLInputElement;
+    if (input.classList.contains('error')) validateLocation();
 });
 
 document.getElementById('eventForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = document.getElementById('btnSubmit');
+
+    // Validar ubicación
+    if (!(document.getElementById('fLocation') as HTMLInputElement).value.trim() === false) {
+        if (!validateLocation()) return;
+    }
+    const locVal = (document.getElementById('fLocation') as HTMLInputElement).value.trim();
+    if (locVal && !validateLocation()) return;
+
+    const btn = document.getElementById('btnSubmit') as HTMLButtonElement;
     btn.disabled = true;
 
-    const payload = {
-        title:       (document.getElementById('fTitle') as HTMLInputElement).value.trim(),
-        description: (document.getElementById('fDesc') as HTMLTextAreaElement).value.trim() || null,
-        event_date:  (document.getElementById('fDate') as HTMLInputElement).value,
-        event_time:  (document.getElementById('fTime') as HTMLInputElement).value || null,
-        event_type:  (document.getElementById('fType') as HTMLInputElement).value,
-        location:    (document.getElementById('fLocation') as HTMLInputElement).value.trim() || null,
-        capacity:    parseInt((document.getElementById('fCapacity') as HTMLInputElement).value) || null,
-        visibility:  (document.querySelector('input[name="fVisibility"]:checked') as HTMLInputElement)?.value || 'publico',
-    };
-
     try {
+        // 1. Subir imagen si hay una nueva
+        let imageUrl = (document.getElementById('fImageUrl') as HTMLInputElement).value || null;
+        if (pendingImageFile) {
+            imageUrl = await uploadImageIfNeeded();
+        }
+
+        // 2. Construir payload
+        const payload: any = {
+            title:       (document.getElementById('fTitle') as HTMLInputElement).value.trim(),
+            description: (document.getElementById('fDesc') as HTMLTextAreaElement).value.trim() || null,
+            event_date:  (document.getElementById('fDate') as HTMLInputElement).value,
+            event_time:  (document.getElementById('fTime') as HTMLInputElement).value || null,
+            event_type:  (document.getElementById('fType') as HTMLInputElement).value,
+            location:    locVal || null,
+            capacity:    parseInt((document.getElementById('fCapacity') as HTMLInputElement).value) || null,
+            visibility:  (document.querySelector('input[name="fVisibility"]:checked') as HTMLInputElement)?.value || 'publico',
+        };
+        if (imageUrl) payload.image_url = imageUrl;
+
         let result;
         if (editingId) {
-            result = await auth.fetch(`/events/${editingId}`, {
-                method: 'PUT', body: JSON.stringify(payload),
-            });
-            if (result) {
-                const idx = allEvents.findIndex(e => e.id === editingId);
-                if (idx !== -1) allEvents[idx] = result;
-            }
+            result = await AuthManager.fetch(`/events/${editingId}`, { method: 'PUT', body: JSON.stringify(payload) });
+            if (result) { const idx = allEvents.findIndex(e => e.id === editingId); if (idx !== -1) allEvents[idx] = result; }
         } else {
-            result = await auth.fetch('/events/', {
-                method: 'POST', body: JSON.stringify(payload),
-            });
+            result = await AuthManager.fetch('/events/', { method: 'POST', body: JSON.stringify(payload) });
             if (result) allEvents.unshift(result);
         }
         if (result) { renderGrid(); closeModal(); }
@@ -662,7 +905,6 @@ document.getElementById('eventModal').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
 });
 document.getElementById('eventSearch').addEventListener('input', renderGrid);
-
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -672,5 +914,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
+// ── Init ──────────────────────────────────────────────────────────────────────
+clearImageFn = setupImageUpload();
 init();
 </script>

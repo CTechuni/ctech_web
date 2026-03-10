@@ -341,14 +341,23 @@ import UserLayout from '../../layouts/UserLayout.astro';
         const user = authManager.getUser();
         if (!user) return;
 
+        // community_id puede estar ausente en sesiones antiguas → obtenerlo del servidor
+        let communityId = user.community_id;
+        if (!communityId) {
+            const me = await AuthManager.fetch('/users/me').catch(() => null);
+            communityId = me?.community_id;
+        }
+
         try {
             const [courses, metrics] = await Promise.all([
                 AuthManager.fetch('/courses/'),
-                user.community_id ? AuthManager.fetch(`/metrics/community/${user.community_id}`) : Promise.resolve(null),
+                communityId ? AuthManager.fetch(`/metrics/community/${communityId}`) : Promise.resolve(null),
             ]);
 
             // Actualizar stat de cursos
-            const commCourses = Array.isArray(courses) ? courses.filter(c => c.community_id === user.community_id) : [];
+            const commCourses = Array.isArray(courses)
+                ? (communityId ? courses.filter(c => c.community_id === communityId) : courses)
+                : [];
             const coursesStat = document.querySelector('.stat-card:first-child .stat-value');
             if (coursesStat) coursesStat.textContent = commCourses.length;
 

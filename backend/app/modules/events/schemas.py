@@ -12,6 +12,7 @@ class EventBase(BaseModel):
     capacity: Optional[int] = None
     visibility: str = "publico"        # "publico" | "privado"
     community_id: Optional[int] = None
+    image_url: Optional[str] = None
 
 class EventCreate(EventBase):
     status: str = "pending"            # "draft" | "pending"
@@ -26,6 +27,7 @@ class EventUpdate(BaseModel):
     capacity: Optional[int] = None
     visibility: Optional[str] = None
     status: Optional[str] = None       # draft | pending (mentor puede cambiar)
+    image_url: Optional[str] = None
 
 class EventResponse(EventBase):
     id: int

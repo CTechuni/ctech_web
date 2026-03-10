@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, File, UploadFile
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -57,6 +57,17 @@ def get_pending_events(db: Session = Depends(get_db), current=Depends(get_curren
 def get_upcoming_events(db: Session = Depends(get_db), current=Depends(get_optional_user)):
     public_only = current is None
     return service.get_upcoming_events(db, limit=5, public_only=public_only)
+
+# ── POST subir imagen de evento ────────────────────────────────────────────────
+@router.post("/upload-image")
+async def upload_event_image(file: UploadFile = File(...), current=Depends(get_current_user)):
+    from app.core.cloudinary_service import upload_image
+    if current.rol_id not in [1, 2, 3]:
+        raise HTTPException(status_code=403, detail="No tienes permisos para subir imágenes")
+    url = upload_image(file.file, folder="events")
+    if not url:
+        raise HTTPException(status_code=500, detail="Error al subir la imagen a Cloudinary")
+    return {"url": url}
 
 # ── POST crear evento ──────────────────────────────────────────────────────────
 # Admin(1), líder(3), mentor(2) pueden crear eventos

@@ -222,7 +222,12 @@ export class AuthManager {
 
     isTokenExpired(token) {
         try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            // JWT usa base64URL (usa - y _ en lugar de + y /, sin padding =)
+            // atob() solo acepta base64 estándar, hay que convertir primero
+            const base64url = token.split('.')[1];
+            const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+            const padded  = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+            const payload = JSON.parse(atob(padded));
             return payload.exp ? payload.exp < Date.now() / 1000 : false;
         } catch {
             return true;

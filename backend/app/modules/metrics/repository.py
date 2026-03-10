@@ -59,15 +59,46 @@ def get_mentor_counts(db: Session, mentor_id: int, community_id: int):
     }
 
 def get_community_counts(db: Session, community_id: int):
+    from datetime import datetime
+    from sqlalchemy import extract
+
     # Conteos filtrados por comunidad
-    total_users = db.query(User).filter(User.rol_id == 4, User.community_id == community_id).count()
+    total_users = db.query(User).filter(User.community_id == community_id).count()
     total_courses = db.query(Course).filter(Course.community_id == community_id).count()
     active_events = db.query(Event).filter(Event.community_id == community_id).count()
     total_mentors = db.query(User).filter(User.rol_id == 2, User.community_id == community_id).count()
+
+    # Crecimiento acumulado: total de miembros registrados hasta el fin de cada uno de los últimos 7 meses
+    from datetime import date, timedelta
+    import calendar
+
+    month_names = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+    now = datetime.now()
+    growth_labels = []
+    growth_data = []
+
+    for i in range(6, -1, -1):
+        year = now.year
+        month = now.month - i
+        while month <= 0:
+            month += 12
+            year -= 1
+        # Último día del mes
+        last_day = calendar.monthrange(year, month)[1]
+        end_of_month = datetime(year, month, last_day, 23, 59, 59)
+        count = db.query(func.count(User.id)).filter(
+            User.community_id == community_id,
+            User.created_at <= end_of_month
+        ).scalar() or 0
+        growth_labels.append(month_names[month - 1])
+        growth_data.append(count)
 
     return {
         "total_users": total_users,
         "total_courses": total_courses,
         "active_events": active_events,
-        "total_mentors": total_mentors
+        "total_mentors": total_mentors,
+        "growth_labels": growth_labels,
+        "growth_data": growth_data,
     }

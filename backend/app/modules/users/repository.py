@@ -54,7 +54,21 @@ def get_count(db: Session, role_id: int = None, search: str = None):
     return query.scalar()
 
 def get_by_id(db: Session, user_id: int):
-    return db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.id == user_id).first()
+    result = db.query(
+        models.User,
+        Community.name_community,
+        Specialty.name.label('spec_name')
+    ).options(joinedload(models.User.profile))\
+     .outerjoin(Community, models.User.community_id == Community.id_community)\
+     .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
+     .filter(models.User.id == user_id).first()
+
+    if result is None:
+        return None
+    user, comm_name, spec_name = result
+    user.community_name = comm_name
+    user.specialty_name = spec_name
+    return user
 
 def get_by_role(db: Session, role_id: int):
     return db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.rol_id == role_id).all()
