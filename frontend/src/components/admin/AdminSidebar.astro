@@ -346,14 +346,20 @@ const menuItems = [
 <script>
     import { authManager as auth } from "../../utils/auth.js";
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Populate profile name if available
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Populate profile name — siempre refrescar desde el servidor
         try {
-            const user = (typeof auth !== 'undefined' && auth.getUser) ? auth.getUser() : null;
+            const cached = auth.getUser();
             const nameEl = document.getElementById('userNameSide');
-            if (user && nameEl) nameEl.textContent = user.name_user || 'Admin';
+            if (cached && nameEl) nameEl.textContent = cached.name_user || 'Admin';
+            // Refrescar desde API
+            const { AuthManager } = await import("../../utils/auth.js");
+            const fresh = await AuthManager.fetch('/users/me').catch(() => null);
+            if (fresh && nameEl) {
+                nameEl.textContent = fresh.name_user || 'Admin';
+                auth.setAuthData(auth.getToken(), { ...fresh, role: 'admin' });
+            }
         } catch (e) {
-            // fail silently in non-browser environments
             console.warn('Could not read user info in AdminSidebar:', e);
         }
 

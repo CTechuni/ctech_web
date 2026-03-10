@@ -46,6 +46,7 @@ class CourseResponse(CourseBase):
     created_at: datetime
     mentor_name: Optional[str] = None
     specialty_name: Optional[str] = None
+    enrolled_count: Optional[int] = None
 
     class Config:
         from_attributes = True

@@ -1,0 +1,223 @@
+---
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+---
+
+<LeaderLayout title="Cursos" subtitle="Revisión y aprobación de cursos">
+<div class="page-wrap">
+
+    <!-- Pending section -->
+    <div id="pendingSection" style="display:none">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fa-solid fa-hourglass-half"></i>
+                Pendientes de aprobación
+                <span class="count-badge" id="pendingCount">0</span>
+            </h2>
+        </div>
+        <div id="pendingList" class="course-list"></div>
+    </div>
+
+    <!-- Approved section -->
+    <div>
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fa-solid fa-circle-check"></i>
+                Cursos aprobados de tu comunidad
+            </h2>
+        </div>
+
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="courseSearch" placeholder="Buscar curso..." />
+        </div>
+
+        <div id="approvedList" class="course-grid">
+            <div class="loading-state">
+                <div class="spinner"></div> Cargando cursos...
+            </div>
+        </div>
+    </div>
+</div>
+</LeaderLayout>
+
+<style>
+.page-wrap { max-width: 1100px; display: flex; flex-direction: column; gap: 36px; }
+
+.section-header { margin-bottom: 16px; }
+.section-title {
+    font-size: 1.2rem; font-weight: 800; color: #1e293b;
+    margin: 0; display: flex; align-items: center; gap: 10px;
+}
+.section-title i { color: #3b82f6; }
+.count-badge { background: #fef3c7; color: #d97706; font-size: .72rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+
+.search-bar { position: relative; max-width: 420px; margin-bottom: 16px; }
+.search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+.search-bar input {
+    width: 100%; box-sizing: border-box; padding: 10px 14px 10px 40px;
+    border: 1.5px solid #e2e8f0; border-radius: 50px; font-size: .88rem; outline: none;
+}
+.search-bar input:focus { border-color: #3b82f6; }
+
+/* Pending list */
+.course-list { display: flex; flex-direction: column; gap: 12px; }
+
+.pending-card {
+    background: #fff; border-radius: 14px; border: 1.5px solid #fde68a;
+    padding: 18px 20px; display: flex; align-items: flex-start; gap: 16px;
+}
+.pcard-info { flex: 1; min-width: 0; }
+.pcard-info h4 { margin: 0 0 4px; font-size: .98rem; font-weight: 700; color: #0f172a; }
+.pcard-info p  { margin: 0 0 8px; font-size: .82rem; color: #64748b; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pcard-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.pm { display: flex; align-items: center; gap: 4px; font-size: .77rem; color: #94a3b8; font-weight: 500; }
+.pcard-actions { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
+.btn-approve {
+    background: #22c55e; color: #fff; border: none;
+    padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem;
+    cursor: pointer; display: flex; align-items: center; gap: 6px;
+}
+.btn-approve:hover { background: #16a34a; }
+.btn-reject {
+    background: #fff; color: #ef4444; border: 1.5px solid #fca5a5;
+    padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem; cursor: pointer;
+}
+.btn-reject:hover { background: #fee2e2; }
+
+/* Approved grid */
+.course-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.course-card {
+    background: #fff; border-radius: 16px; border: 1px solid #e2e8f0;
+    padding: 22px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.02);
+}
+.cc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+    font-size: .65rem; font-weight: 800; padding: 3px 10px;
+    border-radius: 20px; text-transform: uppercase;
+}
+.badge-level-basico    { background: #dcfce7; color: #15803d; }
+.badge-level-intermedio { background: #fef3c7; color: #d97706; }
+.badge-level-avanzado  { background: #fee2e2; color: #dc2626; }
+.badge-status  { background: #eff6ff; color: #3b82f6; }
+.cc-title { font-size: .98rem; font-weight: 700; color: #0f172a; margin: 0; }
+.cc-desc  { font-size: .82rem; color: #64748b; margin: 0; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cc-meta  { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px dashed #f1f5f9; margin-top: auto; }
+.meta-it  { display: flex; align-items: center; gap: 4px; font-size: .77rem; color: #94a3b8; font-weight: 500; }
+
+.loading-state { grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8; }
+
+@media(max-width: 1024px) { .course-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width: 640px)  { .course-grid { grid-template-columns: 1fr; } .pending-card { flex-direction: column; } }
+</style>
+
+<script>
+import { AuthManager } from '../../utils/auth.js';
+
+let pendingCourses  = [];
+let approvedCourses = [];
+
+async function init() {
+    const [pending, approved] = await Promise.all([
+        AuthManager.fetch('/courses/pending'),
+        AuthManager.fetch('/courses/'),
+    ]);
+    pendingCourses  = Array.isArray(pending)  ? pending  : [];
+    approvedCourses = Array.isArray(approved) ? approved : [];
+    renderPending();
+    renderApproved(approvedCourses);
+}
+
+function renderPending() {
+    const section = document.getElementById('pendingSection');
+    const list    = document.getElementById('pendingList');
+    const badge   = document.getElementById('pendingCount');
+    badge.textContent = pendingCourses.length;
+
+    if (!pendingCourses.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+
+    list.innerHTML = pendingCourses.map(c => `
+    <div class="pending-card" id="pc-${c.id}">
+        <div class="pcard-info">
+            <h4>${c.title}</h4>
+            <p>${c.description || 'Sin descripción.'}</p>
+            <div class="pcard-meta">
+                <span class="pm"><i class="fa-solid fa-layer-group" style="font-size:.75rem"></i> ${(c.modules||[]).length} módulos</span>
+                <span class="pm"><i class="fa-solid fa-signal" style="font-size:.75rem"></i> ${c.level || 'básico'}</span>
+                ${c.start_date ? `<span class="pm"><i class="fa-regular fa-calendar" style="font-size:.75rem"></i> ${c.start_date}</span>` : ''}
+            </div>
+        </div>
+        <div class="pcard-actions">
+            <button class="btn-approve" onclick="approveCourse(${c.id})">
+                <i class="fa-solid fa-check"></i> Aprobar
+            </button>
+            <button class="btn-reject" onclick="rejectCourse(${c.id})">
+                <i class="fa-solid fa-times"></i> Rechazar
+            </button>
+        </div>
+    </div>`).join('');
+}
+
+window.approveCourse = async function(id) {
+    if (!confirm('¿Aprobar este curso? Será visible para los estudiantes.')) return;
+    try {
+        const res = await AuthManager.fetch(`/courses/${id}/approve`, { method: 'PATCH' });
+        if (res) {
+            pendingCourses = pendingCourses.filter(c => c.id !== id);
+            approvedCourses.unshift(res);
+            renderPending();
+            renderApproved(approvedCourses);
+        }
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.rejectCourse = async function(id) {
+    if (!confirm('¿Rechazar este curso? Se notificará al mentor.')) return;
+    try {
+        const res = await AuthManager.fetch(`/courses/${id}/reject`, { method: 'PATCH' });
+        if (res) {
+            pendingCourses = pendingCourses.filter(c => c.id !== id);
+            renderPending();
+        }
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+function renderApproved(list) {
+    const grid = document.getElementById('approvedList');
+    if (!list.length) {
+        grid.innerHTML = '<div class="empty">No hay cursos aprobados aún.</div>';
+        return;
+    }
+    const levelCls = { basico:'badge-level-basico', intermedio:'badge-level-intermedio', avanzado:'badge-level-avanzado' };
+    grid.innerHTML = list.map(c => `
+    <div class="course-card">
+        <div class="cc-badges">
+            <span class="badge ${levelCls[c.level] || 'badge-level-basico'}">${c.level || 'básico'}</span>
+            <span class="badge badge-status">Aprobado</span>
+        </div>
+        <h3 class="cc-title">${c.title}</h3>
+        <p class="cc-desc">${c.description || ''}</p>
+        <div class="cc-meta">
+            <span class="meta-it"><i class="fa-solid fa-layer-group"></i> ${(c.modules||[]).length} módulos</span>
+            ${c.start_date ? `<span class="meta-it"><i class="fa-regular fa-calendar"></i> ${c.start_date}</span>` : ''}
+        </div>
+    </div>`).join('');
+}
+
+document.getElementById('courseSearch').addEventListener('input', function() {
+    const term = this.value.toLowerCase();
+    renderApproved(approvedCourses.filter(c =>
+        c.title.toLowerCase().includes(term) ||
+        (c.description || '').toLowerCase().includes(term)
+    ));
+});
+
+init();
+</script>

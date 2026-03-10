@@ -1,5 +1,5 @@
 ---
-// MentorHeader.astro
+// MentorHeader.astro - con notificaciones funcionales
 interface Props {
     title: string;
     subtitle?: string;
@@ -9,7 +9,7 @@ const { title, subtitle = 'Portal de Mentoría' } = Astro.props;
 ---
 
 <header class="mentor-header">
-    <!-- Left: Title block -->
+    <!-- Left -->
     <div class="header-left-group">
         <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -22,8 +22,38 @@ const { title, subtitle = 'Portal de Mentoría' } = Astro.props;
         </div>
     </div>
 
-    <!-- Right: Profile -->
+    <!-- Right -->
     <div class="header-actions">
+        <!-- Notification Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" id="notifBtn" aria-label="Notificaciones" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span class="notif-badge" id="notifBadge" style="display:none"></span>
+            </button>
+
+            <!-- Dropdown -->
+            <div class="notif-dropdown" id="notifDropdown" aria-hidden="true">
+                <div class="notif-dropdown-header">
+                    <span class="notif-dropdown-title">Notificaciones</span>
+                    <button class="notif-mark-all" id="notifMarkAll">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        Leído todo
+                    </button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-loading">
+                        <div class="notif-ph"></div>
+                        <div class="notif-ph"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User chip -->
         <div class="user-chip">
             <div class="user-avatar" id="headerAvatarContainer">
                 <span id="headerInitial">M</span>
@@ -35,116 +65,361 @@ const { title, subtitle = 'Portal de Mentoría' } = Astro.props;
 
 <style>
     .mentor-header {
-        position: sticky;
-        top: 0;
-        z-index: 990;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 70px;
-        padding: 0 32px;
-        background: #ffffff;
-        border-bottom: 1px solid #e8ecf0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        margin-bottom: 2rem;
+        position: sticky; top: 0; z-index: 200;
+        display: flex; align-items: center; justify-content: space-between;
+        height: 70px; padding: 0 32px;
+        background: #ffffff; border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 2rem;
     }
 
-    .header-left-group {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
+    .header-left-group { display: flex; align-items: center; gap: 16px; }
 
     .menu-toggle-btn {
-        width: 40px;
-        height: 40px;
-        background: #f1f5f9;
-        border: none;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        cursor: pointer;
-        display: none;
+        width: 40px; height: 40px; background: #f1f5f9;
+        border: none; border-radius: 10px;
+        display: none; align-items: center; justify-content: center;
+        color: #64748b; cursor: pointer; transition: all 0.2s;
     }
-    
-    @media (max-width: 1024px) {
-        .menu-toggle-btn { display: flex; }
+    .menu-toggle-btn svg { width: 22px; height: 22px; }
+    @media (max-width: 1024px) { .menu-toggle-btn { display: flex; } }
+
+    .header-title-block { display: flex; flex-direction: column; }
+    .header-title { margin: 0; font-size: 1rem; font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .header-subtitle { font-size: 0.78rem; color: #94a3b8; }
+
+    .header-actions { display: flex; align-items: center; gap: 14px; }
+
+    /* Bell */
+    .notif-wrapper { position: relative; }
+
+    .notif-btn {
+        width: 36px; height: 36px; background: transparent;
+        border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; border-radius: 8px;
+        transition: background 0.15s; position: relative;
+    }
+    .notif-btn:hover { background: #f1f5f9; }
+    .notif-btn.active { background: #eff6ff; color: #2563eb; }
+    .notif-btn svg { width: 20px; height: 20px; }
+
+    .notif-badge {
+        position: absolute; top: 3px; right: 3px;
+        min-width: 16px; height: 16px;
+        background: #ef4444; color: white;
+        font-size: 0.6rem; font-weight: 700; border-radius: 9999px;
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid white; padding: 0 3px;
     }
 
-    .header-title-block {
-        display: flex;
-        flex-direction: column;
+    /* Dropdown */
+    .notif-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0;
+        width: 340px; background: #fff;
+        border: 1px solid #e8ecf0; border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12); z-index: 500;
+        overflow: hidden;
+        opacity: 0; transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .notif-dropdown.open {
+        opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
     }
 
-    .header-title {
-        margin: 0;
-        font-size: 1rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.2;
+    .notif-dropdown-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px 12px; border-bottom: 1px solid #f1f5f9;
+    }
+    .notif-dropdown-title { font-size: 0.88rem; font-weight: 700; color: #0f172a; }
+
+    .notif-mark-all {
+        display: flex; align-items: center; gap: 4px;
+        background: none; border: none; cursor: pointer;
+        font-size: 0.75rem; font-weight: 600; color: #2563eb;
+        padding: 4px 8px; border-radius: 6px; transition: background 0.15s;
+    }
+    .notif-mark-all:hover { background: #eff6ff; }
+
+    .notif-list { max-height: 340px; overflow-y: auto; }
+    .notif-list::-webkit-scrollbar { width: 4px; }
+    .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+    .notif-item {
+        display: flex; align-items: flex-start; gap: 11px;
+        padding: 12px 16px; border-bottom: 1px solid #f8fafc;
+        transition: background 0.12s;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: #f8fafc; }
+    .notif-item.unread { background: #f0f7ff; }
+    .notif-item.unread:hover { background: #e8f1fd; }
+
+    .notif-icon {
+        width: 34px; height: 34px; border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0; margin-top: 1px;
+    }
+    .notif-icon.approved  { background: #dcfce7; }
+    .notif-icon.rejected  { background: #fee2e2; }
+    .notif-icon.students  { background: #eff6ff; }
+
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-item-title {
+        font-size: 0.8rem; font-weight: 700; color: #0f172a;
+        margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notif-item-msg {
+        font-size: 0.78rem; color: #475569; margin: 0 0 4px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notif-item-time { font-size: 0.7rem; color: #94a3b8; }
+
+    .notif-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #2563eb; flex-shrink: 0; margin-top: 5px;
     }
 
-    .header-subtitle {
-        font-size: 0.78rem;
-        color: #94a3b8;
+    @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:.45} }
+    .notif-ph {
+        height: 56px; margin: 8px 16px; border-radius: 10px;
+        background: #f1f5f9; animation: shimmer 1.4s infinite;
     }
 
-    .header-actions {
-        display: flex;
-        align-items: center;
+    .notif-empty {
+        padding: 32px 16px; text-align: center;
+        color: #94a3b8; font-size: 0.83rem;
     }
+    .notif-empty-icon { font-size: 2rem; margin-bottom: 8px; }
 
+    /* User chip */
     .user-chip {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 6px 12px;
-        background: #f8fafc;
-        border-radius: 40px;
-        border: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 10px;
+        padding: 6px 12px; background: #f8fafc;
+        border-radius: 40px; border: 1px solid #e2e8f0;
     }
-
     .user-avatar {
-        width: 30px;
-        height: 30px;
+        width: 30px; height: 30px;
         background: var(--color-azure-radiant, #007bff);
-        border-radius: 50%;
-        color: white;
-        font-weight: 700;
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 50%; color: white; font-weight: 700;
+        font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
     }
-
-    .user-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #334155;
-    }
+    .user-name { font-size: 0.85rem; font-weight: 600; color: #334155; }
 </style>
 
 <script>
-    import { authManager as auth } from "../../utils/auth.js";
-    
-    const currentUser = auth.getUser();
-    if (currentUser) {
-        const nameHeader = document.getElementById('userNameHeader');
-        if (nameHeader) {
-            nameHeader.textContent = (currentUser.name_user || 'Mentor').split(' ')[0];
-        }
-        
-        const headerInitial = document.getElementById('headerInitial');
-        if (headerInitial) {
-            const fullName = currentUser.name_user || 'Mentor';
-            headerInitial.textContent = fullName.charAt(0).toUpperCase();
+    import { authManager as auth, AuthManager } from "../../utils/auth.js";
+
+    // ── Perfil ────────────────────────────────────────────────────────────────
+    function applyUser(user) {
+        if (!user) return;
+        const nameEl    = document.getElementById('userNameHeader');
+        const initialEl = document.getElementById('headerInitial');
+        if (nameEl)    nameEl.textContent    = (user.name_user || 'Mentor').split(' ')[0];
+        if (initialEl) initialEl.textContent = (user.name_user || 'M').charAt(0).toUpperCase();
+    }
+
+    async function loadHeaderProfile() {
+        applyUser(auth.getUser());
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                auth.setAuthData(auth.getToken(), { ...fresh, role: 'mentor' });
+                applyUser(fresh);
+            }
+        } catch (_) {}
+    }
+
+    // ── Notificaciones ────────────────────────────────────────────────────────
+    const STORAGE_KEY_PREFIX = 'mentor_notif_';
+
+    function getStorageKey() {
+        const user = auth.getUser();
+        return user?.id ? `${STORAGE_KEY_PREFIX}${user.id}` : null;
+    }
+
+    function loadState() {
+        const key = getStorageKey();
+        if (!key) return null;
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : {
+                seen: { courseStatuses: {}, eventStatuses: {}, courseEnrolled: {} },
+                unread: []
+            };
+        } catch {
+            return { seen: { courseStatuses: {}, eventStatuses: {}, courseEnrolled: {} }, unread: [] };
         }
     }
 
+    function saveState(state) {
+        const key = getStorageKey();
+        if (key) localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function renderBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+        if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : String(count);
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function renderList(unread) {
+        const list = document.getElementById('notifList');
+        if (!list) return;
+
+        if (!unread.length) {
+            list.innerHTML = `
+                <div class="notif-empty">
+                    <div class="notif-empty-icon">🔔</div>
+                    <p>No tienes notificaciones nuevas</p>
+                </div>`;
+            return;
+        }
+
+        const iconMap = {
+            approved: '✅',
+            rejected: '❌',
+            students: '👥',
+        };
+
+        list.innerHTML = unread.map(n => `
+            <div class="notif-item unread">
+                <div class="notif-icon ${n.type}">${iconMap[n.type] ?? '🔔'}</div>
+                <div class="notif-body">
+                    <p class="notif-item-title">${n.title}</p>
+                    <p class="notif-item-msg">${n.msg}</p>
+                    <span class="notif-item-time">${n.time}</span>
+                </div>
+                <div class="notif-dot"></div>
+            </div>`).join('');
+    }
+
+    async function loadNotifications() {
+        const user = auth.getUser();
+        if (!user?.id) return;
+
+        const state = loadState();
+        if (!state) return;
+
+        const [courses, events] = await Promise.all([
+            AuthManager.fetch('/courses/my').catch(() => []),
+            AuthManager.fetch('/events/my').catch(() => [])
+        ]);
+
+        const newNotifs = [];
+        const now = new Date().toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        // ── Cursos: cambios de estado ─────────────────────────────────────────
+        (courses || []).forEach(c => {
+            const prevStatus = state.seen.courseStatuses[c.id];
+            const currStatus = c.status;
+
+            if (prevStatus !== undefined && prevStatus !== currStatus) {
+                if (currStatus === 'approved') {
+                    const nid = `ca_${c.id}`;
+                    if (!state.unread.find(u => u.id === nid)) {
+                        newNotifs.push({ id: nid, type: 'approved', title: '¡Curso aprobado!', msg: c.title || 'Sin título', time: now });
+                    }
+                } else if (currStatus === 'rejected') {
+                    const nid = `cr_${c.id}`;
+                    if (!state.unread.find(u => u.id === nid)) {
+                        newNotifs.push({ id: nid, type: 'rejected', title: 'Curso rechazado', msg: c.title || 'Sin título', time: now });
+                    }
+                }
+            }
+
+            // ── Estudiantes: cambio en enrolled_count ─────────────────────────
+            const currentEnrolled = c.enrolled_count ?? 0;
+            const prevEnrolled    = state.seen.courseEnrolled[c.id];
+            if (prevEnrolled !== undefined && currentEnrolled > prevEnrolled) {
+                const diff = currentEnrolled - prevEnrolled;
+                const nid  = `stu_${c.id}_${currentEnrolled}`;
+                if (!state.unread.find(u => u.id === nid)) {
+                    newNotifs.push({
+                        id: nid, type: 'students',
+                        title: `${diff} nuevo${diff > 1 ? 's' : ''} estudiante${diff > 1 ? 's' : ''}`,
+                        msg: c.title || 'Sin título',
+                        time: now
+                    });
+                }
+            }
+
+            // Actualizar seen
+            state.seen.courseStatuses[c.id]  = currStatus;
+            state.seen.courseEnrolled[c.id]  = currentEnrolled;
+        });
+
+        // ── Eventos: cambios de estado ────────────────────────────────────────
+        (events || []).forEach(e => {
+            const prevStatus = state.seen.eventStatuses[e.id];
+            const currStatus = e.status;
+
+            if (prevStatus !== undefined && prevStatus !== currStatus) {
+                if (currStatus === 'approved') {
+                    const nid = `ea_${e.id}`;
+                    if (!state.unread.find(u => u.id === nid)) {
+                        newNotifs.push({ id: nid, type: 'approved', title: '¡Evento aprobado!', msg: e.title || 'Sin título', time: now });
+                    }
+                } else if (currStatus === 'rejected') {
+                    const nid = `er_${e.id}`;
+                    if (!state.unread.find(u => u.id === nid)) {
+                        newNotifs.push({ id: nid, type: 'rejected', title: 'Evento rechazado', msg: e.title || 'Sin título', time: now });
+                    }
+                }
+            }
+            state.seen.eventStatuses[e.id] = currStatus;
+        });
+
+        // Agregar al frente de unread
+        state.unread = [...newNotifs, ...state.unread].slice(0, 20);
+        saveState(state);
+
+        renderBadge(state.unread.length);
+        renderList(state.unread);
+    }
+
+    // ── Dropdown ──────────────────────────────────────────────────────────────
+    function openDropdown() {
+        document.getElementById('notifDropdown')?.classList.add('open');
+        document.getElementById('notifBtn')?.classList.add('active');
+        document.getElementById('notifBtn')?.setAttribute('aria-expanded', 'true');
+    }
+    function closeDropdown() {
+        document.getElementById('notifDropdown')?.classList.remove('open');
+        document.getElementById('notifBtn')?.classList.remove('active');
+        document.getElementById('notifBtn')?.setAttribute('aria-expanded', 'false');
+    }
+
+    document.getElementById('notifBtn')?.addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('notifDropdown')?.classList.contains('open') ? closeDropdown() : openDropdown();
+    });
+
+    document.addEventListener('click', e => {
+        if (!document.getElementById('notifDropdown')?.contains(e.target) &&
+            e.target !== document.getElementById('notifBtn')) {
+            closeDropdown();
+        }
+    });
+
+    document.getElementById('notifMarkAll')?.addEventListener('click', () => {
+        const state = loadState();
+        if (!state) return;
+        state.unread = [];
+        saveState(state);
+        renderBadge(0);
+        renderList([]);
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
     document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
         window.dispatchEvent(new CustomEvent('toggleMentorSidebar'));
     });
-</script>
 
+    loadHeaderProfile().then(() => loadNotifications()).catch(() => loadNotifications());
+</script>

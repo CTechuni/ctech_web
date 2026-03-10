@@ -13,8 +13,8 @@ def get_specialties(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=schemas.SpecialtyResponse)
 def create_specialty(data: schemas.SpecialtyCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    """Solo el administrador puede agregar especialidades al catálogo maestro."""
-    if current.rol_id != 1:
-        raise HTTPException(status_code=403, detail="Solo el administrador puede crear especialidades")
+    """Administrador y líder pueden agregar categorías/especialidades al catálogo."""
+    if current.rol_id not in [1, 3]:
+        raise HTTPException(status_code=403, detail="Solo el administrador o el líder pueden crear categorías")
     return service.add_specialty(db, data)
     

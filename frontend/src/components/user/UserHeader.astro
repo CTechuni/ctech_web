@@ -1,5 +1,5 @@
 ---
-// UserHeader.astro - Pixel Perfect v2
+// UserHeader.astro - con notificaciones funcionales
 interface Props {
     title: string;
     subtitle?: string;
@@ -9,7 +9,7 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
 ---
 
 <header class="user-header">
-    <!-- Left: Menu Toggle (visible on mobile) + Title block -->
+    <!-- Left: Menu Toggle + Title -->
     <div class="header-left-group">
         <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -26,15 +26,35 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     <div class="header-actions">
         <!-- Notification Bell -->
         <div class="notif-wrapper">
-            <button class="notif-btn" aria-label="Notificaciones">
+            <button class="notif-btn" id="notifBtn" aria-label="Notificaciones" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                 </svg>
-                <span class="notif-badge">2</span>
+                <span class="notif-badge" id="notifBadge" style="display:none"></span>
             </button>
+
+            <!-- Dropdown -->
+            <div class="notif-dropdown" id="notifDropdown" aria-hidden="true">
+                <div class="notif-dropdown-header">
+                    <span class="notif-dropdown-title">Notificaciones</span>
+                    <button class="notif-mark-all" id="notifMarkAll" title="Marcar todo como leído">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="15" height="15">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        Leído todo
+                    </button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-loading">
+                        <div class="notif-ph"></div>
+                        <div class="notif-ph"></div>
+                        <div class="notif-ph"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- User Avatar + Name (User Chip) -->
+        <!-- User Chip -->
         <div class="user-chip">
             <div class="user-avatar" id="headerAvatar">--</div>
             <span class="user-name" id="headerName">Cargando...</span>
@@ -46,7 +66,7 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     .user-header {
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 200;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -58,166 +78,385 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         margin-bottom: 24px;
     }
 
-    /* ── Left ──────────────────────────── */
-    .header-left-group {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
+    /* ── Left ── */
+    .header-left-group { display: flex; align-items: center; gap: 16px; }
 
     .menu-toggle-btn {
-        width: 40px;
-        height: 40px;
-        background: #f1f5f9;
-        border: none;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        cursor: pointer;
-        transition: all 0.2s;
+        width: 40px; height: 40px;
+        background: #f1f5f9; border: none; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; cursor: pointer; transition: all 0.2s;
     }
     .menu-toggle-btn:hover { background: #e2e8f0; color: #0f172a; }
     .menu-toggle-btn svg { width: 22px; height: 22px; }
 
-    .header-title-block {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-    }
-
-    .header-title {
-        margin: 0;
-        font-size: 0.92rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.2;
-    }
-
-    .header-subtitle {
-        font-size: 0.78rem;
-        color: #94a3b8;
-        font-weight: 400;
-    }
+    .header-title-block { display: flex; flex-direction: column; gap: 1px; }
+    .header-title { margin: 0; font-size: 0.92rem; font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .header-subtitle { font-size: 0.78rem; color: #94a3b8; font-weight: 400; }
 
     @media (max-width: 1024px) {
         .user-header { padding: 0 16px; margin-left: 0; }
         .header-subtitle { display: none; }
     }
+    @media (min-width: 1025px) { .menu-toggle-btn { display: none; } }
 
-    @media (min-width: 1025px) {
-        .menu-toggle-btn { display: none; }
-    }
+    /* ── Right ── */
+    .header-actions { display: flex; align-items: center; gap: 16px; }
 
-    /* ── Right ─────────────────────────── */
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    /* Bell notification */
-    .notif-wrapper {
-        position: relative;
-    }
+    /* Bell */
+    .notif-wrapper { position: relative; }
 
     .notif-btn {
-        width: 36px;
-        height: 36px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        border-radius: 8px;
-        transition: background 0.15s;
-        position: relative;
+        width: 36px; height: 36px;
+        background: transparent; border: none; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; border-radius: 8px;
+        transition: background 0.15s; position: relative;
     }
-
     .notif-btn:hover { background: #f1f5f9; }
-
-    .notif-btn svg {
-        width: 20px;
-        height: 20px;
-    }
+    .notif-btn svg { width: 20px; height: 20px; }
+    .notif-btn.active { background: #eff6ff; color: #2563eb; }
 
     .notif-badge {
-        position: absolute;
-        top: 3px;
-        right: 3px;
-        width: 16px;
-        height: 16px;
-        background: #007bff;
-        color: white;
-        font-size: 0.6rem;
-        font-weight: 700;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
+        position: absolute; top: 3px; right: 3px;
+        min-width: 16px; height: 16px;
+        background: #ef4444; color: white;
+        font-size: 0.6rem; font-weight: 700;
+        border-radius: 9999px;
+        display: flex; align-items: center; justify-content: center;
+        border: 2px solid white; padding: 0 3px;
     }
+
+    /* Dropdown */
+    .notif-dropdown {
+        position: absolute; top: calc(100% + 10px); right: 0;
+        width: 340px;
+        background: #fff;
+        border: 1px solid #e8ecf0;
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        z-index: 500;
+        overflow: hidden;
+        opacity: 0; transform: translateY(-8px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    .notif-dropdown.open {
+        opacity: 1; transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .notif-dropdown-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .notif-dropdown-title { font-size: 0.88rem; font-weight: 700; color: #0f172a; }
+
+    .notif-mark-all {
+        display: flex; align-items: center; gap: 4px;
+        background: none; border: none; cursor: pointer;
+        font-size: 0.75rem; font-weight: 600; color: #2563eb;
+        padding: 4px 8px; border-radius: 6px; transition: background 0.15s;
+    }
+    .notif-mark-all:hover { background: #eff6ff; }
+
+    /* List */
+    .notif-list { max-height: 340px; overflow-y: auto; }
+    .notif-list::-webkit-scrollbar { width: 4px; }
+    .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+    /* Individual item */
+    .notif-item {
+        display: flex; align-items: flex-start; gap: 11px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f8fafc;
+        transition: background 0.12s;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: #f8fafc; }
+    .notif-item.unread { background: #f0f7ff; }
+    .notif-item.unread:hover { background: #e8f1fd; }
+
+    .notif-icon {
+        width: 34px; height: 34px; border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem; flex-shrink: 0; margin-top: 1px;
+    }
+    .notif-icon.event  { background: #ecfdf5; }
+    .notif-icon.course { background: #eff6ff; }
+
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-item-title {
+        font-size: 0.8rem; font-weight: 700; color: #0f172a;
+        margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notif-item-msg {
+        font-size: 0.78rem; color: #475569; margin: 0 0 4px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notif-item-time { font-size: 0.7rem; color: #94a3b8; }
+
+    .notif-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #2563eb; flex-shrink: 0; margin-top: 5px;
+    }
+
+    /* Placeholders */
+    @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:.45} }
+    .notif-ph {
+        height: 56px; margin: 8px 16px; border-radius: 10px;
+        background: #f1f5f9; animation: shimmer 1.4s infinite;
+    }
+
+    /* Empty state */
+    .notif-empty {
+        padding: 32px 16px; text-align: center;
+        color: #94a3b8; font-size: 0.83rem;
+    }
+    .notif-empty-icon { font-size: 2rem; margin-bottom: 8px; }
 
     /* User chip */
     .user-chip {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        padding: 4px 8px 4px 4px;
-        border-radius: 40px;
-        transition: background 0.15s;
+        display: flex; align-items: center; gap: 8px; cursor: pointer;
+        padding: 4px 8px 4px 4px; border-radius: 40px; transition: background 0.15s;
     }
     .user-chip:hover { background: #f1f5f9; }
 
     .user-avatar {
-        width: 32px;
-        height: 32px;
-        background: #007bff;
-        border-radius: 50%;
-        color: white;
-        font-weight: 700;
-        font-size: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        letter-spacing: 0.5px;
+        width: 32px; height: 32px; background: #007bff;
+        border-radius: 50%; color: white; font-weight: 700;
+        font-size: 0.75rem; display: flex; align-items: center;
+        justify-content: center; flex-shrink: 0; letter-spacing: 0.5px;
     }
-
-    .user-name {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #334155;
-    }
+    .user-name { font-size: 0.85rem; font-weight: 600; color: #334155; }
 </style>
 
 <script>
-    import { authManager } from "../../utils/auth.js";
+    import { authManager, AuthManager } from "../../utils/auth.js";
 
-    function loadHeaderProfile() {
-        const user = authManager.getUser();
-        if (user) {
-            const avatar = document.getElementById('headerAvatar');
-            const name = document.getElementById('headerName');
-            const community = document.getElementById('headerCommunity');
+    // ── Perfil ────────────────────────────────────────────────────────────────
+    function applyUser(user) {
+        if (!user) return;
+        const avatar = document.getElementById('headerAvatar');
+        const name   = document.getElementById('headerName');
+        const comm   = document.getElementById('headerCommunity');
+        if (avatar) avatar.textContent = (user.name_user || '--').substring(0, 2).toUpperCase();
+        if (name)   name.textContent   = (user.name_user || 'Usuario').split(' ')[0];
+        if (comm && user.community_name) comm.textContent = user.community_name;
+    }
 
-            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
-            if (name) name.textContent = user.name_user ? user.name_user.split(' ')[0] : 'Usuario';
-            if (community && user.community_name) {
-                community.textContent = user.community_name;
+    async function loadHeaderProfile() {
+        applyUser(authManager.getUser());
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'user' });
+                applyUser(fresh);
             }
+        } catch (_) {}
+    }
+
+    // ── Notificaciones ────────────────────────────────────────────────────────
+
+    const STORAGE_KEY_PREFIX = 'user_notif_';
+
+    function getStorageKey() {
+        const user = authManager.getUser();
+        return user?.id ? `${STORAGE_KEY_PREFIX}${user.id}` : null;
+    }
+
+    /** Estado: { seen: { maxEventId, courseModules: {id: count} }, unread: [{id,type,title,msg,time}] } */
+    function loadState() {
+        const key = getStorageKey();
+        if (!key) return null;
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : { seen: { maxEventId: 0, courseModules: {} }, unread: [] };
+        } catch { return { seen: { maxEventId: 0, courseModules: {} }, unread: [] }; }
+    }
+
+    function saveState(state) {
+        const key = getStorageKey();
+        if (key) localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function fmtDate(d) {
+        if (!d) return '';
+        return new Date(d + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    }
+
+    function renderBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+        if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : String(count);
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
         }
     }
 
-    loadHeaderProfile();
+    function renderList(unread) {
+        const list = document.getElementById('notifList');
+        if (!list) return;
 
-    // Toggle Sidebar Event
+        if (!unread.length) {
+            list.innerHTML = `
+                <div class="notif-empty">
+                    <div class="notif-empty-icon">🔔</div>
+                    <p>No tienes notificaciones nuevas</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = unread.map(n => `
+            <div class="notif-item unread">
+                <div class="notif-icon ${n.type}">${n.type === 'event' ? '🗓️' : '📚'}</div>
+                <div class="notif-body">
+                    <p class="notif-item-title">${n.title}</p>
+                    <p class="notif-item-msg">${n.msg}</p>
+                    <span class="notif-item-time">${n.time}</span>
+                </div>
+                <div class="notif-dot"></div>
+            </div>`).join('');
+    }
+
+    async function loadNotifications() {
+        const user = authManager.getUser();
+        if (!user) return;
+
+        const state = loadState();
+        if (!state) return;
+
+        const communityId = user.community_id;
+
+        // Fetch events y courses en paralelo
+        const [events, courses] = await Promise.all([
+            AuthManager.fetch('/events/').catch(() => []),
+            AuthManager.fetch('/courses/').catch(() => [])
+        ]);
+
+        const newNotifs = [];
+        const now = new Date().toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+        // ── Eventos nuevos ────────────────────────────────────────────────────
+        const myEvents = (events || []).filter(e =>
+            !communityId || e.community_id === communityId
+        );
+
+        const newMaxEventId = myEvents.reduce((m, e) => Math.max(m, e.id), state.seen.maxEventId);
+
+        myEvents
+            .filter(e => e.id > state.seen.maxEventId)
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 5)
+            .forEach(e => {
+                const notifId = `ev_${e.id}`;
+                if (!state.unread.find(u => u.id === notifId)) {
+                    newNotifs.push({
+                        id: notifId,
+                        type: 'event',
+                        title: 'Nuevo evento disponible',
+                        msg: `${e.title}${e.event_date ? ' · ' + fmtDate(e.event_date) : ''}`,
+                        time: now
+                    });
+                }
+            });
+
+        // ── Cursos y módulos nuevos ───────────────────────────────────────────
+        const myCourses = (courses || []).filter(c =>
+            !communityId || c.community_id === communityId
+        );
+
+        myCourses.forEach(c => {
+            const currentMods = Array.isArray(c.modules) ? c.modules.length : 0;
+            const prevMods    = state.seen.courseModules[c.id];
+
+            if (prevMods === undefined) {
+                // Curso nuevo
+                const notifId = `cr_${c.id}`;
+                if (!state.unread.find(u => u.id === notifId)) {
+                    newNotifs.push({
+                        id: notifId,
+                        type: 'course',
+                        title: 'Nuevo curso disponible',
+                        msg: c.title || 'Curso sin título',
+                        time: now
+                    });
+                }
+            } else if (currentMods > prevMods) {
+                // Módulo nuevo en curso existente
+                const notifId = `mod_${c.id}_${currentMods}`;
+                if (!state.unread.find(u => u.id === notifId)) {
+                    newNotifs.push({
+                        id: notifId,
+                        type: 'course',
+                        title: 'Nuevo módulo disponible',
+                        msg: c.title || 'Curso sin título',
+                        time: now
+                    });
+                }
+            }
+        });
+
+        // Actualizar seen
+        state.seen.maxEventId = newMaxEventId;
+        myCourses.forEach(c => {
+            state.seen.courseModules[c.id] = Array.isArray(c.modules) ? c.modules.length : 0;
+        });
+
+        // Agregar nuevas al frente del array unread
+        state.unread = [...newNotifs, ...state.unread].slice(0, 20);
+        saveState(state);
+
+        renderBadge(state.unread.length);
+        renderList(state.unread);
+    }
+
+    // ── Dropdown toggle ───────────────────────────────────────────────────────
+    function openDropdown() {
+        document.getElementById('notifDropdown')?.classList.add('open');
+        document.getElementById('notifBtn')?.classList.add('active');
+        document.getElementById('notifBtn')?.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeDropdown() {
+        document.getElementById('notifDropdown')?.classList.remove('open');
+        document.getElementById('notifBtn')?.classList.remove('active');
+        document.getElementById('notifBtn')?.setAttribute('aria-expanded', 'false');
+    }
+
+    document.getElementById('notifBtn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = document.getElementById('notifDropdown')?.classList.contains('open');
+        isOpen ? closeDropdown() : openDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('notifDropdown')?.contains(e.target) &&
+            e.target !== document.getElementById('notifBtn')) {
+            closeDropdown();
+        }
+    });
+
+    // ── Marcar todo como leído ────────────────────────────────────────────────
+    document.getElementById('notifMarkAll')?.addEventListener('click', () => {
+        const state = loadState();
+        if (!state) return;
+        state.unread = [];
+        saveState(state);
+        renderBadge(0);
+        renderList([]);
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
     document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
         window.dispatchEvent(new CustomEvent('toggleSidebar'));
     });
-</script>
 
+    loadHeaderProfile();
+
+    // Cargar notificaciones después del perfil (necesita community_id del usuario)
+    loadHeaderProfile().then(() => loadNotifications()).catch(() => loadNotifications());
+</script>

@@ -351,7 +351,19 @@ export function getStaticPaths() {
         }
     }
 
+    /**
+     * @param {{
+     *   title?: string,
+     *   specialty_name?: string,
+     *   mentor_name?: string,
+     *   description?: string,
+     *   thumbnail_url?: string,
+     *   content_links?: { videos?: string[], pdfs?: string[], books?: string[] }
+     * }} c
+     * @param {HTMLElement} container
+     */
     function renderCourseDetail(c, container) {
+        /** @type {{videos?: string[], pdfs?: string[], books?: string[]}} */
         const links = c.content_links || { videos: [], pdfs: [], books: [] };
         const initial = c.mentor_name ? c.mentor_name[0] : 'U';
 
@@ -441,6 +453,7 @@ export function getStaticPaths() {
         `;
     }
 
-    initPage();
+    // Initialize after DOM is ready to avoid SSR/window issues
+    document.addEventListener('DOMContentLoaded', initPage);
 </script>
 

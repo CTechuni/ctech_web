@@ -161,11 +161,22 @@ const menuItems = [
 </style>
 
 <script>
-    import { authManager as auth } from "../../utils/auth.js";
-    const user = auth.getUser();
-    if (user) {
-        if (document.getElementById('userNameSide')) document.getElementById('userNameSide').textContent = user.name_user || 'Mentor';
+    import { authManager as auth, AuthManager } from "../../utils/auth.js";
+
+    async function loadSidebarProfile() {
+        const cached = auth.getUser();
+        const nameEl = document.getElementById('userNameSide');
+        if (cached && nameEl) nameEl.textContent = cached.name_user || 'Mentor';
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh && nameEl) {
+                nameEl.textContent = fresh.name_user || 'Mentor';
+                auth.setAuthData(auth.getToken(), { ...fresh, role: 'mentor' });
+            }
+        } catch (e) { /* silencioso */ }
     }
+
+    loadSidebarProfile();
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => auth.logout());
 

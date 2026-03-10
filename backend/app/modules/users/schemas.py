@@ -36,6 +36,8 @@ class UserResponse(UserBase):
     specialty_id: Optional[int] = None
     specialty_name: Optional[str] = None
     member_count: Optional[int] = None
+    courses_count: Optional[int] = None
+    students_count: Optional[int] = None
     status: str
     created_at: datetime
     profile: Optional[ProfileResponse] = None

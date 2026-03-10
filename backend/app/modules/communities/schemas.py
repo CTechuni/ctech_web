@@ -36,6 +36,7 @@ class CommunityPublicResponse(BaseModel):
     id_community: int
     name_community: str
     code: str
+    logo_url: Optional[str] = None
 
     class Config:
         from_attributes = True

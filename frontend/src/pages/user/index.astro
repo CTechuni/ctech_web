@@ -61,8 +61,8 @@ import UserLayout from '../../layouts/UserLayout.astro';
         <!-- Courses Section -->
         <div class="section-card main-area">
             <div class="section-header">
-                <h2>Cursos en Curso</h2>
-                <a href="/user/courses" class="see-all-btn">Ver todos los cursos</a>
+                <h2>Cursos de tu comunidad</h2>
+                <a href="/explore/courses" class="see-all-btn">Ver todos</a>
             </div>
             
             <div class="courses-vertical-list">
@@ -336,7 +336,71 @@ import UserLayout from '../../layouts/UserLayout.astro';
         }
     }
 
+    // 3. Cargar cursos disponibles en la comunidad
+    async function loadCommunityData() {
+        const user = authManager.getUser();
+        if (!user) return;
+
+        try {
+            const [courses, metrics] = await Promise.all([
+                AuthManager.fetch('/courses/'),
+                user.community_id ? AuthManager.fetch(`/metrics/community/${user.community_id}`) : Promise.resolve(null),
+            ]);
+
+            // Actualizar stat de cursos
+            const commCourses = Array.isArray(courses) ? courses.filter(c => c.community_id === user.community_id) : [];
+            const coursesStat = document.querySelector('.stat-card:first-child .stat-value');
+            if (coursesStat) coursesStat.textContent = commCourses.length;
+
+            // Actualizar label del primer stat
+            const coursesLabel = document.querySelector('.stat-card:first-child .stat-label');
+            if (coursesLabel) coursesLabel.textContent = 'Cursos disponibles';
+
+            // Mentores (si hay métricas)
+            if (metrics) {
+                const mentorsStat = document.querySelector('.stat-card:nth-child(4) .stat-value');
+                if (mentorsStat) mentorsStat.textContent = metrics.total_mentors || 0;
+                const mentorsLabel = document.querySelector('.stat-card:nth-child(4) .stat-label');
+                if (mentorsLabel) mentorsLabel.textContent = 'Mentores activos';
+            }
+
+            // Render cursos en la sección principal
+            const coursesList = document.querySelector('.courses-vertical-list');
+            if (coursesList && commCourses.length > 0) {
+                const preview = commCourses.slice(0, 3);
+                coursesList.innerHTML = preview.map(c => {
+                    const mods = Array.isArray(c.modules) ? c.modules.length : 0;
+                    const lvlMap = { basico:'Básico', intermedio:'Intermedio', avanzado:'Avanzado' };
+                    return `
+                    <div class="course-item">
+                        <div class="course-img" style="background:linear-gradient(135deg,#eff6ff,#f5f3ff);display:flex;align-items:center;justify-content:center">
+                            ${c.thumbnail_url
+                                ? `<img src="${c.thumbnail_url}" alt="${c.title}" style="width:100%;height:100%;object-fit:cover">`
+                                : `<i class="fas fa-book-open" style="font-size:1.8rem;color:#c7d2fe"></i>`}
+                        </div>
+                        <div class="course-info">
+                            <div class="course-meta">${c.specialty_name || 'General'} • ${lvlMap[c.level] || 'Básico'}</div>
+                            <h3>${c.title}</h3>
+                            <div class="progress-container">
+                                <div style="font-size:.78rem;color:#94a3b8;display:flex;align-items:center;gap:4px">
+                                    <i class="fas fa-layer-group"></i> ${mods} módulo${mods !== 1 ? 's' : ''}
+                                    &nbsp;•&nbsp; <i class="fas fa-user-tie"></i> ${c.mentor_name || 'CTech'}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/explore/courses/${c.id}" class="continue-btn">Ver</a>
+                    </div>`;
+                }).join('');
+            } else if (coursesList && commCourses.length === 0) {
+                coursesList.innerHTML = '<p style="color:#94a3b8;font-size:.88rem;padding:16px 0">No hay cursos disponibles en tu comunidad aún.</p>';
+            }
+        } catch(e) {
+            console.warn('[Dashboard] Error cargando datos:', e);
+        }
+    }
+
     // Inicializar
     loadUpcomingEvents();
+    loadCommunityData();
 </script>
 

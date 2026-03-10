@@ -3,7 +3,6 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Hero from '../components/shared/Hero.astro';
 import Cards from '../components/shared/Cards.astro';
 import Comunidades from '../components/shared/Comunidades.astro';
-import Equipo from '../components/shared/Equipo.astro';
 import Footer from '../components/shared/Footer.astro';
 
 const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
@@ -21,69 +20,59 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
     <section id="courses-preview" class="courses-preview">
         <h2>Cursos Disponibles</h2>
         <p class="sub">Aprende con los mejores mentores de la comunidad</p>
-        <div class="courses-grid">
-            <div class="course-card">
-                <div class="course-image-placeholder" aria-hidden="true"></div>
-                <span class="tag">Frontend</span>
-                <h3>React Avanzado con TypeScript</h3>
-                <span class="author">Diego Torres</span>
-                <div class="meta"><span>8 módulos</span><span>67 estudiantes</span></div>
-            </div>
-            <div class="course-card">
-                <div class="course-image-placeholder" aria-hidden="true"></div>
-                <span class="tag">Backend</span>
-                <h3>Node.js & Express REST API</h3>
-                <span class="author">Julián Morales</span>
-                <div class="meta"><span>6 módulos</span><span>45 estudiantes</span></div>
-            </div>
-            <div class="course-card">
-                <div class="course-image-placeholder" aria-hidden="true"></div>
-                <span class="tag">Data</span>
-                <h3>Python para Data Science</h3>
-                <span class="author">Valeria Ríos</span>
-                <div class="meta"><span>10 módulos</span><span>33 estudiantes</span></div>
-            </div>
-            <div class="course-card">
-                <div class="course-image-placeholder" aria-hidden="true"></div>
-                <span class="tag">Mobile</span>
-                <h3>Flutter y Dart Completo</h3>
-                <span class="author">Pedro Salas</span>
-                <div class="meta"><span>12 módulos</span><span>28 estudiantes</span></div>
-            </div>
+        <div class="courses-grid" id="coursesGrid">
+            <div class="placeholder-card"><div class="course-image-placeholder"></div><div class="ph-line ph-tag"></div><div class="ph-line ph-title"></div><div class="ph-line ph-author"></div></div>
+            <div class="placeholder-card"><div class="course-image-placeholder"></div><div class="ph-line ph-tag"></div><div class="ph-line ph-title"></div><div class="ph-line ph-author"></div></div>
+            <div class="placeholder-card"><div class="course-image-placeholder"></div><div class="ph-line ph-tag"></div><div class="ph-line ph-title"></div><div class="ph-line ph-author"></div></div>
+            <div class="placeholder-card"><div class="course-image-placeholder"></div><div class="ph-line ph-tag"></div><div class="ph-line ph-title"></div><div class="ph-line ph-author"></div></div>
         </div>
-        <a href="/user/courses" class="view-all">Ver todos los cursos &gt;</a>
+        <a href="/explore/courses" class="view-all">Ver todos los cursos &rarr;</a>
     </section>
 
     <!-- upcoming events preview -->
     <section id="eventos" class="events-preview">
         <h2>Próximos Eventos</h2>
         <p class="sub">Conecta con la comunidad en eventos presenciales y virtuales</p>
-        <div class="events-grid">
-            <div class="event-card">
-                <div class="event-image-placeholder" aria-hidden="true"></div>
-                <span class="badge virtual online">Virtual</span>
-                <h3>Meetup DevFront #12</h3>
-                <p>5 Mar 2026 · DevFront Colombia</p>
-            </div>
-            <div class="event-card">
-                <div class="event-image-placeholder" aria-hidden="true"></div>
-                <span class="badge presencial">Presencial</span>
-                <h3>Hackathon DataScience</h3>
-                <p>10 Mar 2026 · DataScience Hub</p>
-            </div>
-            <div class="event-card">
-                <div class="event-image-placeholder" aria-hidden="true"></div>
-                <span class="badge virtual online">Virtual</span>
-                <h3>Workshop Docker & K8s</h3>
-                <p>14 Mar 2026 · DevOps Cloud</p>
-            </div>
+        <div class="events-grid" id="eventsGrid">
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
         </div>
     </section>
 
-    <!-- featured mentors or team -->
+    <!-- Modal de detalle de evento -->
+    <div id="eventModal" role="dialog" aria-modal="true">
+        <div class="event-modal-box">
+            <div class="event-modal-header">
+                <div class="event-modal-img-ph" id="modalImgPh"></div>
+                <span class="event-modal-badge" id="modalBadge"></span>
+                <button class="event-modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="event-modal-body">
+                <h3 id="modalTitle"></h3>
+                <div class="event-modal-meta">
+                    <span id="modalDate"></span>
+                    <span id="modalCommunity"></span>
+                    <span id="modalLocation"></span>
+                    <span id="modalCapacity"></span>
+                </div>
+                <p class="event-modal-desc" id="modalDesc"></p>
+                <a href="#" class="event-modal-link" id="modalLink" style="display:none" target="_blank" rel="noopener">Ver enlace del evento →</a>
+            </div>
+        </div>
+    </div>
 
-    <!-- Nuestros Mentores -->
-    <Equipo />
+    <!-- Nuestros Mentores (dinámico) -->
+    <section class="equipo" id="equipo">
+        <h2>Nuestros Mentores</h2>
+        <p class="sub">Expertos de la industria listos para guiarte</p>
+        <div class="mentors-grid" id="mentorsGrid">
+            <div class="mentor-ph"></div>
+            <div class="mentor-ph"></div>
+            <div class="mentor-ph"></div>
+            <div class="mentor-ph"></div>
+        </div>
+    </section>
 
     <!-- Nuestras Comunidades -->
     <Comunidades />
@@ -216,6 +205,54 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 }
 .stats-row strong { display: block; font-size: 2.25rem; color: #fff; margin-bottom: 0.25rem; }
 .stats-row div { font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); }
+
+/* Placeholder skeleton */
+.placeholder-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.08); overflow:hidden; }
+.event-card-ph { background:#1a1c29; border-radius:12px; overflow:hidden; width:280px; max-width:100%; }
+.ph-line { background:#e5e7eb; border-radius:6px; height:12px; margin:0.5rem 1rem; animation:shimmer 1.4s infinite; }
+.ph-tag  { width:60px; height:20px; border-radius:9999px; }
+.ph-title{ width:80%; height:14px; }
+.ph-author{ width:50%; height:11px; margin-bottom:1rem; }
+@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Mentor card */
+.equipo { padding:4rem 1rem; background:#fff; text-align:center; }
+.equipo h2 { font-size:2rem; margin-bottom:.5rem; color:#1f2937; }
+.equipo .sub { color:#666; margin-bottom:2rem; }
+.mentors-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; max-width:1200px; margin:0 auto; }
+.mentor-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); padding:1.5rem 1rem; text-align:center; display:flex; flex-direction:column; align-items:center; transition:transform .2s,box-shadow .2s; }
+.mentor-card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,.12); }
+.mentor-avatar { width:72px; height:72px; border-radius:50%; background:#2563eb; color:#fff; font-weight:700; font-size:1.4rem; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; overflow:hidden; flex-shrink:0; }
+.mentor-avatar img { width:100%; height:100%; object-fit:cover; }
+.mentor-card .name { margin:0 0 .2rem; font-size:1.05rem; font-weight:700; color:#1f2937; }
+.mentor-card .specialty { margin:0 0 .3rem; font-size:.88rem; color:#2563eb; font-weight:600; }
+.mentor-card .community { font-size:.78rem; color:#64748b; margin-bottom:.75rem; }
+.mentor-card .mentor-stats { display:flex; gap:1.5rem; justify-content:center; margin-top:auto; padding-top:.75rem; border-top:1px solid #f1f5f9; width:100%; }
+.mentor-card .mentor-stat { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.mentor-card .mentor-stat strong { font-size:1rem; font-weight:700; color:#1f2937; }
+.mentor-card .mentor-stat span { font-size:.72rem; color:#94a3b8; }
+.mentor-ph { background:#f1f5f9; border-radius:12px; height:220px; animation:shimmer 1.4s infinite; }
+
+/* Event modal */
+#eventModal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem; }
+#eventModal.open { display:flex; }
+.event-modal-box { background:#1a1c29; border-radius:16px; max-width:480px; width:100%; color:#fff; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.5); animation:slideUp .25s ease; }
+@keyframes slideUp { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
+.event-modal-header { position:relative; }
+.event-modal-header img,.event-modal-header .event-modal-img-ph { width:100%; height:160px; object-fit:cover; }
+.event-modal-img-ph { background:linear-gradient(135deg,#1e3a8a,#334155); }
+.event-modal-badge { position:absolute; top:.75rem; left:.75rem; font-size:.7rem; padding:.25rem .6rem; border-radius:8px; text-transform:uppercase; font-weight:700; }
+.event-modal-close { position:absolute; top:.75rem; right:.75rem; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.5); border:none; color:#fff; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.event-modal-body { padding:1.25rem 1.5rem 1.5rem; }
+.event-modal-body h3 { margin:0 0 .75rem; font-size:1.15rem; font-weight:700; }
+.event-modal-meta { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1rem; font-size:.875rem; color:rgba(255,255,255,.75); }
+.event-modal-meta span { display:flex; align-items:center; gap:.5rem; }
+.event-modal-desc { font-size:.875rem; color:rgba(255,255,255,.65); margin-bottom:1rem; line-height:1.55; }
+.event-modal-link { display:inline-block; padding:.6rem 1.25rem; background:#2563eb; color:#fff; border-radius:9999px; font-size:.875rem; font-weight:600; text-decoration:none; transition:background .15s; }
+.event-modal-link:hover { background:#1d4ed8; }
+/* Cursor pointer on event cards */
+.event-card { cursor:pointer; transition:transform .2s,box-shadow .2s; }
+.event-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
@@ -351,19 +388,235 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 </style>
 
 <script>
+    import { buildApiUrl } from '../config/api.js';
+
+    const BASE = 'http://localhost:8000/api/v1';
+
+    async function apiFetch(path) {
+        const res = await fetch(`${BASE}${path}`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        return res.json();
+    }
+
+    // ── Utilidades ────────────────────────────────────────────────────────────
+    function fmtDate(dateStr) {
+        if (!dateStr) return '';
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function fmtTime(timeStr) {
+        if (!timeStr) return '';
+        const [h, m] = timeStr.split(':');
+        const hr = parseInt(h);
+        return `${hr > 12 ? hr - 12 : hr || 12}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
+    }
+
+    function escHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Cursos ────────────────────────────────────────────────────────────────
+    async function loadCourses() {
+        const grid = document.getElementById('coursesGrid');
+        if (!grid) return;
+        try {
+            const courses = await apiFetch('/courses/');
+            const list = Array.isArray(courses) ? courses.slice(0, 4) : [];
+            if (!list.length) {
+                grid.innerHTML = '<p style="grid-column:1/-1;color:#888;text-align:center">No hay cursos disponibles aún.</p>';
+                return;
+            }
+            grid.innerHTML = list.map(c => {
+                const mods = Array.isArray(c.modules) ? c.modules.length : (c.modules_count || 0);
+                const thumb = c.thumbnail_url || '';
+                const category = c.specialty_name || 'General';
+                const mentor = c.mentor_name || 'Instructor CTech';
+                const title = c.title || '';
+                const enrolled = c.enrolled_count != null ? c.enrolled_count : '—';
+                return `
+                <div class="course-card">
+                    ${thumb
+                        ? `<img src="${escHtml(thumb)}" alt="${escHtml(title)}" style="width:100%;height:140px;object-fit:cover;border-radius:12px 12px 0 0">`
+                        : `<div class="course-image-placeholder"></div>`}
+                    <span class="tag">${escHtml(category)}</span>
+                    <h3>${escHtml(title)}</h3>
+                    <span class="author">por ${escHtml(mentor)}</span>
+                    <div class="meta">
+                        <span>📚 ${mods} módulo${mods !== 1 ? 's' : ''}</span>
+                        <span>👥 ${enrolled} estudiante${enrolled !== 1 ? 's' : ''}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1;color:#888;text-align:center">Cursos no disponibles en este momento.</p>';
+        }
+    }
+
+    // ── Eventos ───────────────────────────────────────────────────────────────
+    let _eventsCache = [];
+
+    function openEventModal(idx) {
+        const e = _eventsCache[idx];
+        if (!e) return;
+
+        const modal = document.getElementById('eventModal');
+        const type = (e.event_type || '').toLowerCase().includes('presencial') ? 'presencial' : 'virtual';
+        const badgeCls = type === 'presencial' ? 'presencial' : 'virtual online';
+        const badgeTxt = type === 'presencial' ? 'Presencial' : 'Virtual';
+
+        const badge = document.getElementById('modalBadge');
+        badge.textContent = badgeTxt;
+        badge.className = `event-modal-badge badge ${badgeCls}`;
+
+        const imgPh = document.getElementById('modalImgPh');
+        if (e.image_url) {
+            imgPh.outerHTML = `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" style="width:100%;height:160px;object-fit:cover" id="modalImgPh">`;
+        } else {
+            imgPh.className = 'event-modal-img-ph';
+            imgPh.id = 'modalImgPh';
+        }
+
+        document.getElementById('modalTitle').textContent = e.title || '';
+
+        const dateEl = document.getElementById('modalDate');
+        const dateStr = fmtDate(e.event_date);
+        const timeStr = e.event_time ? fmtTime(e.event_time) : '';
+        dateEl.innerHTML = dateStr ? `📅 ${dateStr}${timeStr ? ' · ' + timeStr : ''}` : '';
+        dateEl.style.display = dateStr ? '' : 'none';
+
+        const commEl = document.getElementById('modalCommunity');
+        commEl.innerHTML = e.community_name ? `🏘️ ${escHtml(e.community_name)}` : '';
+        commEl.style.display = e.community_name ? '' : 'none';
+
+        const locEl = document.getElementById('modalLocation');
+        if (e.location) {
+            const isUrl = e.location.startsWith('http');
+            locEl.innerHTML = isUrl
+                ? `🔗 <a href="${escHtml(e.location)}" target="_blank" rel="noopener" style="color:#60a5fa">${escHtml(e.location)}</a>`
+                : `📍 ${escHtml(e.location)}`;
+            locEl.style.display = '';
+        } else {
+            locEl.style.display = 'none';
+        }
+
+        const capEl = document.getElementById('modalCapacity');
+        capEl.innerHTML = e.capacity ? `👥 Capacidad: ${e.capacity} personas` : '';
+        capEl.style.display = e.capacity ? '' : 'none';
+
+        document.getElementById('modalDesc').textContent = e.description || 'Sin descripción disponible.';
+
+        const linkEl = document.getElementById('modalLink');
+        if (e.location && e.location.startsWith('http')) {
+            linkEl.href = e.location;
+            linkEl.style.display = 'inline-block';
+        } else {
+            linkEl.style.display = 'none';
+        }
+
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModal')?.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    async function loadEvents() {
+        const grid = document.getElementById('eventsGrid');
+        if (!grid) return;
+        try {
+            const events = await apiFetch('/events/upcoming');
+            const list = Array.isArray(events) ? events.slice(0, 3) : [];
+            _eventsCache = list;
+
+            if (!list.length) {
+                grid.innerHTML = '<p style="color:rgba(255,255,255,.6);text-align:center;width:100%">No hay eventos próximos.</p>';
+                return;
+            }
+            grid.innerHTML = list.map((e, idx) => {
+                const type = (e.event_type || '').toLowerCase().includes('presencial') ? 'presencial' : 'virtual';
+                const badgeCls = type === 'presencial' ? 'presencial' : 'virtual online';
+                const badgeTxt = type === 'presencial' ? 'Presencial' : 'Virtual';
+                const dateStr = fmtDate(e.event_date);
+                const community = e.community_name || '';
+                return `
+                <div class="event-card" onclick="openEventModal(${idx})">
+                    ${e.image_url
+                        ? `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" style="width:100%;height:120px;object-fit:cover">`
+                        : `<div class="event-image-placeholder"></div>`}
+                    <span class="badge ${badgeCls}">${badgeTxt}</span>
+                    <h3>${escHtml(e.title)}</h3>
+                    <p>${escHtml(dateStr)}${community ? ' · ' + escHtml(community) : ''}</p>
+                </div>`;
+            }).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="color:rgba(255,255,255,.6);text-align:center;width:100%">Eventos no disponibles.</p>';
+        }
+    }
+
+    // ── Mentores ──────────────────────────────────────────────────────────────
+    async function loadMentors() {
+        const grid = document.getElementById('mentorsGrid');
+        if (!grid) return;
+        try {
+            const mentors = await apiFetch('/users/mentors');
+            const list = Array.isArray(mentors) ? mentors.slice(0, 4) : [];
+            if (!list.length) {
+                grid.innerHTML = '<p style="grid-column:1/-1;color:#888;text-align:center">No hay mentores registrados aún.</p>';
+                return;
+            }
+            const colors = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2'];
+            grid.innerHTML = list.map((m, i) => {
+                const initials = (m.name_user || '?').substring(0, 2).toUpperCase();
+                const avatar = m.profile?.avatar_url;
+                const color = colors[i % colors.length];
+                const specialty = m.specialty_name || 'Tecnología';
+                const community = m.community_name || '';
+                const courses = m.courses_count ?? 0;
+                const students = m.students_count ?? 0;
+                return `
+                <div class="mentor-card">
+                    <div class="mentor-avatar" style="background:${color}">
+                        ${avatar ? `<img src="${escHtml(avatar)}" alt="${escHtml(m.name_user)}">` : initials}
+                    </div>
+                    <h3 class="name">${escHtml(m.name_user || '—')}</h3>
+                    <p class="specialty">${escHtml(specialty)}</p>
+                    ${community ? `<p class="community">🏘️ ${escHtml(community)}</p>` : ''}
+                    <div class="mentor-stats">
+                        <div class="mentor-stat"><strong>${courses}</strong><span>Cursos</span></div>
+                        <div class="mentor-stat"><strong>${students}</strong><span>Estudiantes</span></div>
+                    </div>
+                </div>`;
+            }).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="grid-column:1/-1;color:#888;text-align:center">Mentores no disponibles.</p>';
+        }
+    }
+
+    // ── Modal de eventos (listeners) ──────────────────────────────────────────
+    window.openEventModal = openEventModal;
+
     document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('modalClose')?.addEventListener('click', closeEventModal);
+        document.getElementById('eventModal')?.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeEventModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeEventModal();
+        });
+
+        // Auto-open login modal if ?action=login
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('action') === 'login') {
-            // Remove the parameter from the URL cleanly
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            const newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
             window.history.replaceState({path: newUrl}, '', newUrl);
-            
-            // Open the login modal
-            if (typeof window.openModal === 'function') {
-                window.openModal('loginModal');
-            }
+            if (typeof window.openModal === 'function') window.openModal('loginModal');
         }
     });
+
+    // Cargar todo en paralelo
+    Promise.all([loadCourses(), loadEvents(), loadMentors()]);
 </script>
 
 </MainLayout>

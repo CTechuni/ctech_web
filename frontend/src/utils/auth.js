@@ -12,8 +12,18 @@ export class AuthManager {
     // ── Helper: Dynamic Keys ──────────────────────────────────────────────────
 
     /**
-     * Genera una clave única por rol e ID para soportar múltiples sesiones.
+     * Clave por rol (sin ID) — usada como clave principal de sesión activa.
      */
+    getRoleTokenKey(role) {
+        if (!role) return this.baseTokenKey;
+        return `token_${String(role).toLowerCase()}`;
+    }
+
+    getRoleUserKey(role) {
+        if (!role) return this.baseUserKey;
+        return `user_${String(role).toLowerCase()}`;
+    }
+
     getTokenKey(role, id) {
         if (!role) return this.baseTokenKey;
         const r = String(role).toLowerCase();
@@ -43,7 +53,7 @@ export class AuthManager {
         if (path.startsWith('/admin')) role = 'admin';
         else if (path.startsWith('/mentor')) role = 'mentor';
         else if (path.startsWith('/leader')) role = 'leader';
-        else if (path.startsWith('/user')) role = 'usuario';
+        else if (path.startsWith('/user')) role = 'user';   // coincide con lo que devuelve el backend
 
         return { role, id };
     }
@@ -114,20 +124,21 @@ export class AuthManager {
             id = ctx.id;
         }
 
-        // 1. Try context-specific key (if ID present)
+        // 1. Clave por rol solamente (sesión activa de ese rol en este navegador)
+        if (role) {
+            const roleKey = this.getRoleTokenKey(role);
+            const roleToken = localStorage.getItem(roleKey);
+            if (roleToken) return roleToken;
+        }
+
+        // 2. Clave rol+id específica (compatibilidad)
         if (id) {
             const contextKey = this.getTokenKey(role, id);
             const contextToken = localStorage.getItem(contextKey);
             if (contextToken) return contextToken;
         }
 
-        // 2. Special case for Admin
-        if (String(role).toLowerCase() === 'admin') {
-            const adminToken = localStorage.getItem('token_admin_001');
-            if (adminToken) return adminToken;
-        }
-
-        // 3. Fallback to base key (authToken)
+        // 3. Fallback absoluto
         return localStorage.getItem(this.baseTokenKey);
     }
 
@@ -138,20 +149,21 @@ export class AuthManager {
             id = ctx.id;
         }
 
-        // 1. Try context-specific key (if ID present)
+        // 1. Clave por rol solamente (sesión activa de ese rol en este navegador)
+        if (role) {
+            const roleKey = this.getRoleUserKey(role);
+            const raw = localStorage.getItem(roleKey);
+            if (raw) try { return JSON.parse(raw); } catch (e) { }
+        }
+
+        // 2. Clave rol+id específica (compatibilidad)
         if (id) {
             const contextKey = this.getUserKey(role, id);
             let raw = localStorage.getItem(contextKey);
             if (raw) try { return JSON.parse(raw); } catch (e) { }
         }
 
-        // 2. Special case for Admin
-        if (String(role).toLowerCase() === 'admin') {
-            const rawAdmin = localStorage.getItem('user_admin_001');
-            if (rawAdmin) try { return JSON.parse(rawAdmin); } catch (e) { }
-        }
-
-        // 3. Fallback to base key
+        // 3. Fallback absoluto
         const raw = localStorage.getItem(this.baseUserKey);
         try { return raw ? JSON.parse(raw) : null; }
         catch { return null; }
@@ -162,13 +174,20 @@ export class AuthManager {
     setAuthData(token, user) {
         const role = user.role;
         const id = user.id;
-        const tokenKey = this.getTokenKey(role, id);
-        const userKey = this.getUserKey(role, id);
 
-        localStorage.setItem(tokenKey, token);
-        localStorage.setItem(userKey, JSON.stringify(user));
+        // Clave principal: por rol (sin ID) — permite múltiples roles en el mismo navegador
+        const roleTokenKey = this.getRoleTokenKey(role);
+        const roleUserKey  = this.getRoleUserKey(role);
+        localStorage.setItem(roleTokenKey, token);
+        localStorage.setItem(roleUserKey, JSON.stringify(user));
 
-        // Mantener compatibilidad mínima o para "última sesión"
+        // Clave secundaria: rol+id (compatibilidad con código existente)
+        if (id) {
+            localStorage.setItem(this.getTokenKey(role, id), token);
+            localStorage.setItem(this.getUserKey(role, id), JSON.stringify(user));
+        }
+
+        // Clave base: fallback universal (última sesión activa)
         localStorage.setItem(this.baseTokenKey, token);
         localStorage.setItem(this.baseUserKey, JSON.stringify(user));
 
@@ -176,17 +195,25 @@ export class AuthManager {
     }
 
     clearAuthData(role, id) {
-        const tokenKey = this.getTokenKey(role, id);
-        const userKey = this.getUserKey(role, id);
+        // Limpiar clave por rol
+        localStorage.removeItem(this.getRoleTokenKey(role));
+        localStorage.removeItem(this.getRoleUserKey(role));
 
-        localStorage.removeItem(tokenKey);
-        localStorage.removeItem(userKey);
-
-        // Si coincide con las base keys, limpiar también
-        if (localStorage.getItem(this.baseTokenKey) === localStorage.getItem(tokenKey)) {
-            localStorage.removeItem(this.baseTokenKey);
-            localStorage.removeItem(this.baseUserKey);
+        // Limpiar clave rol+id si corresponde
+        if (id) {
+            localStorage.removeItem(this.getTokenKey(role, id));
+            localStorage.removeItem(this.getUserKey(role, id));
         }
+
+        // Limpiar claves base solo si pertenecen a este rol
+        const baseUser = localStorage.getItem(this.baseUserKey);
+        try {
+            const parsedBase = baseUser ? JSON.parse(baseUser) : null;
+            if (parsedBase && String(parsedBase.role || '').toLowerCase() === String(role || '').toLowerCase()) {
+                localStorage.removeItem(this.baseTokenKey);
+                localStorage.removeItem(this.baseUserKey);
+            }
+        } catch (e) { /* ignorar */ }
 
         this.notifyAuthChange('logout');
     }

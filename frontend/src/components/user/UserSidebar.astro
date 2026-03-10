@@ -307,20 +307,27 @@ const menuItems = [
 </style>
 
 <script>
-    import { authManager } from "../../utils/auth.js";
+    import { authManager, AuthManager } from "../../utils/auth.js";
 
     // 1. Cargar datos del perfil
-    function loadSidebarProfile() {
-        const user = authManager.getUser();
-        if (user) {
-            const avatar = document.getElementById('sidebarAvatar');
-            const name = document.getElementById('sidebarName');
-            const community = document.getElementById('sidebarCommunity');
-
-            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
-            if (name) name.textContent = user.name_user || 'Usuario';
-            if (community) community.textContent = user.community_name || 'Sin Comunidad';
+    async function loadSidebarProfile() {
+        const cached = authManager.getUser();
+        const avatar = document.getElementById('sidebarAvatar');
+        const name = document.getElementById('sidebarName');
+        const community = document.getElementById('sidebarCommunity');
+        if (cached) {
+            if (avatar) avatar.textContent = (cached.name_user || '--').substring(0, 2).toUpperCase();
+            if (name) name.textContent = cached.name_user || 'Usuario';
+            if (community) community.textContent = cached.community_name || 'Sin Comunidad';
         }
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'user' });
+                if (avatar) avatar.textContent = (fresh.name_user || '--').substring(0, 2).toUpperCase();
+                if (name) name.textContent = fresh.name_user || 'Usuario';
+            }
+        } catch (e) { /* silencioso */ }
     }
 
     // 2. Logout

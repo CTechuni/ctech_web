@@ -1,434 +1,306 @@
 ---
-/* AdminCoursesSection.astro */
+/* AdminCoursesSection.astro - Admin: ver y gestionar TODOS los cursos */
 ---
 
 <div class="admin-courses-section">
-    <!-- Toolbar: Búsqueda y Especialidad -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <!-- Buscador -->
-        <div class="input-group" style="max-width: 320px;">
-            <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
-                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            <input type="text" class="form-control border-start-0" placeholder="Buscar curso o mentor..." id="courseSearch" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.88rem;">
-        </div>
 
-        <!-- Filtro Especialidad -->
-        <div class="input-group" style="max-width: 240px;">
-            <select id="specialtyFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
-                <option value="">Todas las especialidades</option>
-                <!-- Dinámico -->
-            </select>
+    <!-- Pending approval (admin can also approve/reject) -->
+    <div id="pendingSection" style="display:none">
+        <div class="section-block-header">
+            <h3 class="block-title">
+                <i class="fas fa-hourglass-half text-warning"></i>
+                Pendientes de aprobación
+                <span class="count-pill" id="pendingCount">0</span>
+            </h3>
         </div>
+        <div id="pendingList" class="pending-list"></div>
     </div>
 
-    <div class="courses-grid-premium" id="coursesGrid">
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <span>Organizando currículo académico...</span>
+    <!-- All courses -->
+    <div>
+        <div class="toolbar d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div class="input-group" style="max-width:320px">
+                <span class="input-group-text bg-white border-end-0" style="border-radius:12px 0 0 12px;border-color:#e2e8f0">
+                    <i class="fas fa-search text-muted" style="font-size:.85rem"></i>
+                </span>
+                <input type="text" class="form-control border-start-0" placeholder="Buscar curso o mentor..." id="courseSearch" style="border-radius:0 12px 12px 0;border-color:#e2e8f0;box-shadow:none;font-size:.88rem">
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <select id="statusFilter" class="form-select" style="max-width:180px;border-radius:12px;border-color:#e2e8f0;font-size:.88rem;box-shadow:none">
+                    <option value="">Todos los estados</option>
+                    <option value="pending">Pendiente</option>
+                    <option value="approved">Aprobado</option>
+                    <option value="draft">Borrador</option>
+                    <option value="rejected">Rechazado</option>
+                </select>
+                <select id="specialtyFilter" class="form-select" style="max-width:200px;border-radius:12px;border-color:#e2e8f0;font-size:.88rem;box-shadow:none">
+                    <option value="">Todas las especialidades</option>
+                </select>
+            </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Structure Simplificada para UI -->
-<div class="modal-backdrop" id="courseModal">
-    <div class="modal-card">
-        <h3>Gestionar Programa</h3>
-        <p>Editor de cursos, módulos y recursos didácticos.</p>
-        <button class="btn-close-modal" id="closeCourseModal">Volver al panel</button>
+        <div class="courses-grid" id="coursesGrid">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <span>Cargando cursos...</span>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
-    .admin-courses-section {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
+.admin-courses-section { display: flex; flex-direction: column; gap: 2rem; }
 
-    .section-top-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.section-block-header { margin-bottom: 14px; }
+.block-title { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 8px; }
+.count-pill { background: #fef3c7; color: #d97706; font-size: .7rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
 
-    .header-text h2 {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: #1E293B;
-        margin: 0;
-    }
+/* Pending list */
+.pending-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.pending-card {
+    background: #fff; border-radius: 12px; border: 1.5px solid #fde68a;
+    padding: 16px 18px; display: flex; align-items: flex-start; gap: 14px;
+}
+.pc-info { flex: 1; min-width: 0; }
+.pc-info h4 { margin: 0 0 3px; font-size: .92rem; font-weight: 700; color: #0f172a; }
+.pc-info p  { margin: 0 0 6px; font-size: .78rem; color: #64748b;
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.pc-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+.pc-m { font-size: .72rem; color: #94a3b8; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+.pc-actions { display: flex; gap: 7px; flex-shrink: 0; align-self: center; }
+.btn-approve { background: #22c55e; color: #fff; border: none; padding: 6px 14px; border-radius: 7px; font-weight: 700; font-size: .78rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.btn-approve:hover { background: #16a34a; }
+.btn-reject  { background: #fff; color: #ef4444; border: 1.5px solid #fca5a5; padding: 6px 14px; border-radius: 7px; font-weight: 700; font-size: .78rem; cursor: pointer; }
+.btn-reject:hover { background: #fee2e2; }
 
-    .header-text p {
-        font-size: 0.9rem;
-        color: #94A3B8;
-        margin: 0.2rem 0 0 0;
-        font-weight: 500;
-    }
+/* Course grid */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.25rem;
+}
 
-    .header-actions { display: flex; gap: 1rem; }
+.course-card {
+    background: white; border-radius: 16px; border: 1px solid #f1f5f9;
+    overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,.03); transition: all .25s;
+}
+.course-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.07); }
 
-    .btn-add-course {
-        background: #0073ff;
-        color: white;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0, 115, 255, 0.2);
-    }
+.cc-thumb {
+    height: 140px; background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+}
+.cc-thumb-icon { font-size: 2.5rem; color: #c7d2fe; }
+.cc-thumb img  { width: 100%; height: 100%; object-fit: cover; }
+.status-abs {
+    position: absolute; top: 10px; left: 10px;
+    font-size: .63rem; font-weight: 800; padding: 3px 9px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: .03em;
+}
+.st-pending  { background: #fef3c7; color: #d97706; }
+.st-approved { background: #dcfce7; color: #15803d; }
+.st-rejected { background: #fee2e2; color: #dc2626; }
+.st-draft    { background: #f1f5f9; color: #64748b; }
 
-    .btn-secondary-action {
-        background: white;
-        color: #64748B;
-        border: 1px solid #E2E8F0;
-        padding: 0.75rem 1.25rem;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        cursor: pointer;
-    }
+.cc-body { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.cc-spec { font-size: .68rem; font-weight: 800; color: #6366f1; text-transform: uppercase; letter-spacing: .04em; }
+.cc-title { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0; line-height: 1.3; }
+.cc-desc  { font-size: .82rem; color: #64748b; margin: 0; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cc-mentor { font-size: .78rem; color: #94a3b8; display: flex; align-items: center; gap: 5px; margin-top: auto; }
+.tech-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tech-tag { background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 5px; font-size: .72rem; font-weight: 600; }
+.level-tag { font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 5px; text-transform: capitalize; }
+.lv-basico    { background: #dcfce7; color: #15803d; }
+.lv-intermedio { background: #fef3c7; color: #d97706; }
+.lv-avanzado  { background: #fee2e2; color: #dc2626; }
 
-    /* FILTERS */
-    .filter-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 2rem;
-    }
+.cc-footer {
+    padding: 12px 16px; border-top: 1px solid #f8fafc;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.cc-mods { font-size: .78rem; color: #94a3b8; display: flex; align-items: center; gap: 4px; font-weight: 500; }
+.cc-actions { display: flex; gap: 6px; }
+.btn-ic {
+    width: 30px; height: 30px; border-radius: 8px;
+    border: 1px solid #e2e8f0; background: #fff; cursor: pointer;
+    font-size: .72rem; color: #94a3b8;
+    display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.btn-ic:hover     { color: #3b82f6; border-color: #3b82f6; }
+.btn-ic.del:hover { color: #ef4444; border-color: #ef4444; }
+.btn-ic.approve:hover { color: #22c55e; border-color: #22c55e; }
+.btn-ic.reject:hover  { color: #f59e0b; border-color: #f59e0b; }
 
-    .search-input-wrap {
-        position: relative;
-        flex: 1;
-        max-width: 450px;
-    }
+/* Loading */
+.loading-state {
+    grid-column: 1/-1; display: flex; flex-direction: column;
+    align-items: center; gap: 1rem; padding: 4rem; color: #94a3b8;
+}
+.spinner { width: 28px; height: 28px; border: 3px solid #f1f5f9; border-top-color: #0073ff; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8; font-size: .9rem; }
 
-    .search-icon {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94A3B8;
-    }
-
-    .search-input-wrap input {
-        width: 100%;
-        padding: 0.85rem 1rem 0.85rem 2.8rem;
-        border-radius: 12px;
-        border: 1px solid #E2E8F0;
-        background: white;
-        font-size: 0.9rem;
-        outline: none;
-    }
-
-    .quick-filters { display: flex; gap: 0.5rem; }
-    .q-filter {
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        border: 1px solid #E2E8F0;
-        background: white;
-        color: #64748B;
-        font-weight: 600;
-        font-size: 0.85rem;
-        cursor: pointer;
-    }
-    .q-filter.active { background: #F1F5F9; color: #0073ff; border-color: #0073ff; }
-
-    /* GRID */
-    .courses-grid-premium {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .admin-courses-section .input-group {
-            max-width: 100% !important;
-        }
-        .courses-grid-premium {
-            grid-template-columns: 1fr;
-        }
-        .course-card-premium {
-            max-width: 100%;
-        }
-    }
-
-    /* COURSE CARD */
-    .course-card-premium {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: var(--card-shadow);
-        border: 1px solid #F1F5F9;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
-    }
-
-    .course-card-premium:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
-    }
-
-    .thumb-wrap {
-        height: 180px;
-        background: #F8FAFC;
-        position: relative;
-    }
-
-    .thumb-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .premium-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: linear-gradient(135deg, #F59E0B, #D97706);
-        color: white;
-        padding: 0.35rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        box-shadow: 0 4px 8px rgba(217, 119, 6, 0.2);
-    }
-
-    .card-content {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        flex: 1;
-    }
-
-    .course-type {
-        font-size: 0.7rem;
-        font-weight: 800;
-        color: #6366F1;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .card-content h3 {
-        font-size: 1.25rem;
-        font-weight: 800;
-        color: #1E293B;
-        margin: 0;
-        line-height: 1.3;
-    }
-
-    .card-content p {
-        font-size: 0.9rem;
-        color: #64748B;
-        margin: 0;
-        line-height: 1.5;
-    }
-
-    .tech-stack {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: auto;
-    }
-
-    .tech-tag {
-        background: #F1F5F9;
-        color: #475569;
-        padding: 0.25rem 0.65rem;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-    }
-
-    .card-footer {
-        padding: 1.25rem 1.5rem;
-        border-top: 1px solid #F1F5F9;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .price-tag { font-weight: 800; color: #1E293B; font-size: 1.1rem; }
-    .price-tag.free { color: #10B981; }
-
-    .action-group { display: flex; gap: 0.5rem; }
-
-    .btn-circle {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid #E2E8F0;
-        background: white;
-        color: #94A3B8;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-
-    .btn-circle:hover { color: #0073ff; border-color: #0073ff; }
-
-    /* LOADING */
-    .loading-state {
-        grid-column: 1 / -1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 4rem;
-        color: #94A3B8;
-        gap: 1rem;
-    }
-
-    .spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid #F1F5F9;
-        border-top-color: #0073ff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* MODAL */
-    .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-    }
-    .modal-card {
-        background: white;
-        padding: 3rem;
-        border-radius: 24px;
-        max-width: 550px;
-        width: 90%;
-        text-align: center;
-    }
-    .btn-close-modal {
-        background: #0073ff;
-        color: white;
-        border: none;
-        padding: 0.85rem 2rem;
-        border-radius: 12px;
-        font-weight: 700;
-        margin-top: 1.5rem;
-        cursor: pointer;
-    }
+@media(max-width:768px) {
+    .courses-grid { grid-template-columns: 1fr; }
+    .pending-card { flex-direction: column; }
+}
 </style>
 
 <script>
-    import { AuthManager, authManager } from "../../utils/auth.js";
-    const auth = authManager;
+import { AuthManager } from "../../utils/auth.js";
 
-    let allCourses = [];
+let allCourses     = [];
+let pendingCourses = [];
 
-    async function fetchData() {
-        try {
-            const data = await AuthManager.fetch('/courses');
-            allCourses = Array.isArray(data) ? data : [];
-
-            // Mock if empty
-            if (allCourses.length === 0) {
-                allCourses = [
-                    { title: 'Intro a la Web3 con Solidity', description: 'Fundamentos de smart contracts y dApps.', specialty_name: 'Blockchain', mentor_name: 'Diego Torres', price: 49.99, is_premium: true, image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'Arquitectura de Microservicios', description: 'Escalamiento de aplicaciones con Docker y K8s.', specialty_name: 'Back-end', mentor_name: 'Ana Martínez', price: 0, is_premium: false, image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&q=80&w=400' },
-                    { title: 'UX/UI Design System Pro', description: 'Crea sistemas de diseño escalables y modernos.', specialty_name: 'Design', mentor_name: 'Carlos Ruiz', price: 79.99, is_premium: true, image: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?auto=format&fit=crop&q=80&w=400' }
-                ];
-            }
-
-            populateSpecialties(allCourses);
-            renderCourses(allCourses);
-        } catch (error) {
-            console.error('Error fetching courses:', error);
-        }
+async function init() {
+    try {
+        const data = await AuthManager.fetch('/courses/all');
+        allCourses     = Array.isArray(data) ? data : [];
+        pendingCourses = allCourses.filter(c => c.status === 'pending');
+        populateSpecialties();
+        renderPending();
+        renderGrid(allCourses);
+    } catch(e) {
+        document.getElementById('coursesGrid').innerHTML = '<div class="empty-state">Error al cargar cursos.</div>';
     }
+}
 
-    function populateSpecialties(courses) {
-        const select = document.getElementById('specialtyFilter');
-        if (!select) return;
-        select.innerHTML = '<option value="">Todas las especialidades</option>';
+function populateSpecialties() {
+    const sel = document.getElementById('specialtyFilter');
+    const specs = [...new Set(allCourses.map(c => c.specialty_name).filter(Boolean))].sort();
+    specs.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s; opt.textContent = s;
+        sel.appendChild(opt);
+    });
+}
 
-        const specialties = [...new Set(courses.map(c => c.specialty_name).filter(Boolean))].sort();
+function renderPending() {
+    const section = document.getElementById('pendingSection');
+    const list    = document.getElementById('pendingList');
+    const badge   = document.getElementById('pendingCount');
+    badge.textContent = pendingCourses.length;
+    if (!pendingCourses.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    list.innerHTML = pendingCourses.map(c => `
+    <div class="pending-card" id="pc-${c.id}">
+        <div class="pc-info">
+            <h4>${c.title}</h4>
+            <p>${c.description || 'Sin descripción.'}</p>
+            <div class="pc-meta">
+                <span class="pc-m"><i class="fas fa-user-tie"></i> ${c.mentor_name || '—'}</span>
+                <span class="pc-m"><i class="fas fa-layer-group"></i> ${(c.modules||[]).length} módulos</span>
+                <span class="pc-m"><i class="fas fa-signal"></i> ${c.level || 'básico'}</span>
+            </div>
+        </div>
+        <div class="pc-actions">
+            <button class="btn-approve" onclick="adminApprove(${c.id})"><i class="fas fa-check"></i> Aprobar</button>
+            <button class="btn-reject"  onclick="adminReject(${c.id})"><i class="fas fa-times"></i> Rechazar</button>
+        </div>
+    </div>`).join('');
+}
 
-        specialties.forEach(spec => {
-            const option = document.createElement('option');
-            option.value = spec;
-            option.textContent = spec;
-            select.appendChild(option);
-        });
+window.adminApprove = async function(id) {
+    if (!confirm('¿Aprobar este curso?')) return;
+    const res = await AuthManager.fetch(`/courses/${id}/approve`, { method: 'PATCH' });
+    if (res) {
+        updateLocalStatus(id, 'approved');
+        renderPending();
+        applyFilters();
     }
+};
+window.adminReject = async function(id) {
+    if (!confirm('¿Rechazar este curso?')) return;
+    const res = await AuthManager.fetch(`/courses/${id}/reject`, { method: 'PATCH' });
+    if (res) {
+        updateLocalStatus(id, 'rejected');
+        renderPending();
+        applyFilters();
+    }
+};
+window.adminDelete = async function(id) {
+    if (!confirm('¿Eliminar este curso permanentemente?')) return;
+    const res = await AuthManager.fetch(`/courses/${id}`, { method: 'DELETE' });
+    if (res !== null) {
+        allCourses     = allCourses.filter(c => c.id !== id);
+        pendingCourses = pendingCourses.filter(c => c.id !== id);
+        renderPending();
+        applyFilters();
+    }
+};
 
-    function renderCourses(list) {
-        const grid = document.getElementById('coursesGrid');
-        if (!grid) return;
+function updateLocalStatus(id, status) {
+    const c = allCourses.find(c => c.id === id);
+    if (c) c.status = status;
+    pendingCourses = allCourses.filter(c => c.status === 'pending');
+}
 
-        grid.innerHTML = list.map(c => `
-            <div class="course-card-premium">
-                <div class="thumb-wrap">
-                    <img src="${c.image || 'https://via.placeholder.com/400x200'}" alt="${c.title}">
-                    ${c.is_premium ? '<span class="premium-badge">PREMIUM</span>' : ''}
+function renderGrid(list) {
+    const grid = document.getElementById('coursesGrid');
+    if (!list.length) {
+        grid.innerHTML = '<div class="empty-state">No hay cursos con los filtros actuales.</div>';
+        return;
+    }
+    const stCls = { pending:'st-pending', approved:'st-approved', rejected:'st-rejected', draft:'st-draft' };
+    const stLbl = { pending:'Pendiente', approved:'Aprobado', rejected:'Rechazado', draft:'Borrador' };
+    const lvCls = { basico:'lv-basico', intermedio:'lv-intermedio', avanzado:'lv-avanzado' };
+
+    grid.innerHTML = list.map(c => {
+        const techs = (c.technologies || []).slice(0, 4).map(t => `<span class="tech-tag">${t}</span>`).join('');
+        const status = c.status || 'pending';
+        const isPending = status === 'pending';
+        return `
+        <div class="course-card">
+            <div class="cc-thumb">
+                ${c.thumbnail_url
+                    ? `<img src="${c.thumbnail_url}" alt="${c.title}" loading="lazy">`
+                    : `<i class="fas fa-book-open cc-thumb-icon"></i>`}
+                <span class="status-abs ${stCls[status] || 'st-draft'}">${stLbl[status] || status}</span>
+            </div>
+            <div class="cc-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="cc-spec">${c.specialty_name || 'General'}</span>
+                    <span class="level-tag ${lvCls[c.level] || 'lv-basico'}">${c.level || 'básico'}</span>
                 </div>
-                <div class="card-content">
-                    <span class="course-type">${c.specialty_name || 'Especialidad'}</span>
-                    <h3>${c.title}</h3>
-                    <p>${c.description || 'Sin descripción disponible.'}</p>
-                    <div class="tech-stack">
-                        <span class="tech-tag">Next.js</span>
-                        <span class="tech-tag">Tailwind</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="price-tag ${c.price === 0 ? 'free' : ''}">
-                        ${c.price === 0 ? 'GRATIS' : `$${c.price}`}
-                    </div>
-                    <div class="action-group">
-                        <button class="btn-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" /><path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" /></svg></button>
-                        <button class="btn-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.199Z" /></svg></button>
-                        <button class="btn-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5 0v8.25a.75.75 0 0 0 1.5 0v-8.25Zm2.25 0a.75.75 0 0 0-1.5 0v8.25a.75.75 0 0 0 1.5 0v-8.25Zm2.25 0a.75.75 0 1 0-1.5 0v8.25a.75.75 0 0 0 1.5 0v-8.25Z" clip-rule="evenodd" /></svg></button>
-                    </div>
+                <h3 class="cc-title">${c.title}</h3>
+                <p class="cc-desc">${c.description || 'Sin descripción.'}</p>
+                ${techs ? `<div class="tech-tags">${techs}</div>` : ''}
+                <div class="cc-mentor"><i class="fas fa-user-tie"></i> ${c.mentor_name || '—'}</div>
+            </div>
+            <div class="cc-footer">
+                <span class="cc-mods"><i class="fas fa-layer-group"></i> ${(c.modules||[]).length} módulos</span>
+                <div class="cc-actions">
+                    ${isPending ? `
+                    <button class="btn-ic approve" onclick="adminApprove(${c.id})" title="Aprobar"><i class="fas fa-check"></i></button>
+                    <button class="btn-ic reject"  onclick="adminReject(${c.id})"  title="Rechazar"><i class="fas fa-times"></i></button>
+                    ` : ''}
+                    <button class="btn-ic del" onclick="adminDelete(${c.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
-        `).join('');
-    }
+        </div>`;
+    }).join('');
+}
 
-    function applyFilters() {
-        const searchEl = document.getElementById('courseSearch');
-        const selectEl = document.getElementById('specialtyFilter');
-        const term = (searchEl && searchEl.value) ? searchEl.value.toLowerCase() : '';
-        const specialty = selectEl ? selectEl.value : '';
+function applyFilters() {
+    const term    = (document.getElementById('courseSearch') as HTMLInputElement).value.toLowerCase();
+    const status  = (document.getElementById('statusFilter')   as HTMLSelectElement).value;
+    const spec    = (document.getElementById('specialtyFilter') as HTMLSelectElement).value;
 
-        const filtered = allCourses.filter(c => {
-            const title = (c.title || '').toString().toLowerCase();
-            const mentor = (c.mentor_name || '').toString().toLowerCase();
-            const matchesSearch = title.includes(term) || mentor.includes(term);
-            const matchesSpecialty = !specialty || c.specialty_name === specialty;
-            return matchesSearch && matchesSpecialty;
-        });
-
-        renderCourses(filtered);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchEl = document.getElementById('courseSearch');
-        const selectEl = document.getElementById('specialtyFilter');
-        searchEl?.addEventListener('input', applyFilters);
-        selectEl?.addEventListener('change', applyFilters);
-        fetchData();
+    const filtered = allCourses.filter(c => {
+        const matchTerm   = c.title.toLowerCase().includes(term) || (c.mentor_name || '').toLowerCase().includes(term);
+        const matchStatus = !status || c.status === status;
+        const matchSpec   = !spec   || c.specialty_name === spec;
+        return matchTerm && matchStatus && matchSpec;
     });
-</script>
+    renderGrid(filtered);
+}
 
+document.getElementById('courseSearch').addEventListener('input', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
+document.getElementById('specialtyFilter').addEventListener('change', applyFilters);
+
+init();
+</script>

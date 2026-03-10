@@ -1,0 +1,228 @@
+---
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+---
+
+<LeaderLayout title="Usuarios" subtitle="Usuarios de tu comunidad">
+<div class="page-wrap">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="fa-solid fa-users"></i> Usuarios</h1>
+            <p class="page-sub">Miembros estándar de tu comunidad</p>
+        </div>
+        <div class="stat-pill"><span id="userCountNum">0</span> usuarios</div>
+    </div>
+
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="userSearch" placeholder="Buscar por nombre o email..." />
+    </div>
+
+    <div class="table-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>USUARIO</th>
+                    <th class="tc">FECHA REGISTRO</th>
+                    <th class="tc">ESTADO</th>
+                    <th class="tc">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody id="usersBody">
+                <tr><td colspan="4" class="loading-cell">
+                    <div class="spinner"></div> Cargando usuarios...
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Promover -->
+<div class="m-overlay" id="promoteModal">
+    <div class="promote-card">
+        <div class="promote-icon"><i class="fa-solid fa-user-graduate"></i></div>
+        <h4 id="promoteTitle">Promover a Mentor</h4>
+        <p>Selecciona la especialidad del nuevo mentor.</p>
+        <input type="hidden" id="promoteUserId" />
+        <div class="fg">
+            <label>Especialidad <span style="color:#ef4444">*</span></label>
+            <select id="promoteSpecialty" class="promote-select">
+                <option value="">Selecciona una especialidad...</option>
+            </select>
+        </div>
+        <div class="promote-actions">
+            <button class="btn-ghost" id="btnCancelPromote">Cancelar</button>
+            <button class="btn-confirm" id="btnConfirmPromote" disabled>
+                <i class="fa-solid fa-user-graduate"></i> Promover
+            </button>
+        </div>
+    </div>
+</div>
+</LeaderLayout>
+
+<style>
+.page-wrap { max-width: 1100px; display: flex; flex-direction: column; gap: 20px; }
+.page-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.page-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 10px; }
+.page-title i { color: #3b82f6; }
+.page-sub { font-size: .85rem; color: #64748b; margin: 4px 0 0 0; }
+.stat-pill { background: #eff6ff; color: #3b82f6; border-radius: 20px; padding: 6px 16px; font-size: .85rem; font-weight: 700; }
+.search-bar { position: relative; max-width: 420px; }
+.search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .9rem; }
+.search-bar input {
+    width: 100%; box-sizing: border-box; padding: 10px 14px 10px 40px;
+    border: 1.5px solid #e2e8f0; border-radius: 50px; font-size: .88rem; outline: none; background: #fff;
+}
+.search-bar input:focus { border-color: #3b82f6; }
+.table-card { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead { background: #f8fafc; }
+.data-table th { padding: 14px 20px; font-size: .75rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .03em; border-bottom: 1px solid #e2e8f0; text-align: left; }
+.tc { text-align: center !important; }
+.data-table td { padding: 16px 20px; border-bottom: 1px solid #f8fafc; font-size: .88rem; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #fafbfc; }
+.loading-cell { text-align: center; padding: 3rem !important; color: #94a3b8; }
+.spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.user-cell { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .82rem; flex-shrink: 0; }
+.user-name  { font-weight: 600; color: #0f172a; font-size: .9rem; }
+.user-email { font-size: .78rem; color: #64748b; }
+.badge-active { background: #dcfce7; color: #15803d; border-radius: 20px; padding: 3px 10px; font-size: .75rem; font-weight: 600; }
+.btn-promote {
+    background: #e0e7ff; border: 1px solid #c7d2fe; color: #4338ca;
+    padding: 6px 14px; border-radius: 20px; font-size: .78rem; font-weight: 700;
+    cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-promote:hover { background: #4338ca; color: #fff; }
+
+/* Modal */
+.m-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+.m-overlay.open { display: flex; }
+.promote-card { background: #fff; border-radius: 20px; width: 100%; max-width: 400px; padding: 32px 28px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,.15); }
+.promote-icon { width: 52px; height: 52px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin: 0 auto 14px; }
+.promote-card h4 { font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 6px; }
+.promote-card p  { font-size: .83rem; color: #64748b; margin: 0 0 18px; }
+.fg { text-align: left; }
+.fg label { font-size: .78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 5px; }
+.promote-select { width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 12px; font-size: .87rem; color: #1e293b; font-family: inherit; outline: none; }
+.promote-select:focus { border-color: #3b82f6; }
+.promote-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.btn-ghost { background: #f1f5f9; border: none; padding: 9px 20px; border-radius: 10px; font-weight: 600; font-size: .87rem; cursor: pointer; color: #64748b; }
+.btn-confirm { background: #4338ca; color: #fff; border: none; padding: 9px 20px; border-radius: 10px; font-weight: 700; font-size: .87rem; cursor: pointer; display: flex; align-items: center; gap: 7px; }
+.btn-confirm:disabled { background: #94a3b8; cursor: not-allowed; }
+</style>
+
+<script>
+import { AuthManager, authManager } from '../../utils/auth.js';
+
+let users       = [];
+let communityId = null;
+
+const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4'];
+
+async function init() {
+    const user = authManager.getUser();
+    if (!user?.community_id) { setTimeout(init, 400); return; }
+    communityId = user.community_id;
+
+    const [members, specs] = await Promise.all([
+        AuthManager.fetch(`/users/community/${communityId}`),
+        fetch('http://localhost:8000/api/v1/specialties/').then(r => r.json()).catch(() => []),
+    ]);
+
+    users = (Array.isArray(members) ? members : []).filter(m => m.rol_id === 4);
+    document.getElementById('userCountNum').textContent = users.length;
+
+    // Populate specialties dropdown
+    const sel = document.getElementById('promoteSpecialty');
+    (Array.isArray(specs) ? specs : []).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id; opt.textContent = s.name;
+        sel.appendChild(opt);
+    });
+
+    render(users);
+}
+
+function render(list) {
+    const tbody = document.getElementById('usersBody');
+    if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2.5rem;color:#94a3b8;">No hay usuarios en tu comunidad.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = list.map(m => {
+        const initials = (m.name_user || '?').substring(0, 2).toUpperCase();
+        const color    = AVATAR_COLORS[m.id % AVATAR_COLORS.length];
+        const regDate  = m.created_at ? new Date(m.created_at).toLocaleDateString('es-ES', { day:'numeric', month:'short', year:'numeric' }) : '—';
+        return `
+        <tr>
+            <td>
+                <div class="user-cell">
+                    <div class="avatar" style="background:${color}">${initials}</div>
+                    <div>
+                        <div class="user-name">${m.name_user}</div>
+                        <div class="user-email">${m.email}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="tc">${regDate}</td>
+            <td class="tc"><span class="badge-active">Activo</span></td>
+            <td class="tc">
+                <button class="btn-promote" data-id="${m.id}" data-name="${m.name_user}">
+                    <i class="fa-solid fa-user-graduate"></i> Promover a Mentor
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('.btn-promote').forEach(btn => {
+        btn.addEventListener('click', () => openPromoteModal(btn.dataset.id, btn.dataset.name));
+    });
+}
+
+// Promote modal
+function openPromoteModal(userId, userName) {
+    document.getElementById('promoteUserId').value = userId;
+    document.getElementById('promoteTitle').textContent = `Promover a ${userName}`;
+    document.getElementById('promoteSpecialty').value = '';
+    document.getElementById('btnConfirmPromote').disabled = true;
+    document.getElementById('promoteModal').classList.add('open');
+}
+
+document.getElementById('promoteSpecialty').addEventListener('change', function() {
+    document.getElementById('btnConfirmPromote').disabled = !this.value;
+});
+
+document.getElementById('btnCancelPromote').addEventListener('click', () => {
+    document.getElementById('promoteModal').classList.remove('open');
+});
+
+document.getElementById('btnConfirmPromote').addEventListener('click', async () => {
+    const userId      = document.getElementById('promoteUserId').value;
+    const specialtyId = document.getElementById('promoteSpecialty').value;
+    const btn = document.getElementById('btnConfirmPromote');
+    btn.disabled = true;
+    try {
+        const res = await AuthManager.fetch(`/users/${userId}/promote`, {
+            method: 'PATCH',
+            body: JSON.stringify({ specialty_id: parseInt(specialtyId) }),
+        });
+        if (res) {
+            document.getElementById('promoteModal').classList.remove('open');
+            await init();
+        }
+    } catch(e) {
+        alert('Error al promover: ' + e.message);
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('userSearch').addEventListener('input', function() {
+    const term = this.value.toLowerCase();
+    render(users.filter(m => m.name_user.toLowerCase().includes(term) || m.email.toLowerCase().includes(term)));
+});
+
+init();
+</script>

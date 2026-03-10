@@ -93,22 +93,40 @@ def get_leaders_enriched(db: Session):
     return leaders
 
 def get_mentors_enriched(db: Session):
-    """Returns mentors with community_name and specialty_name."""
+    """Returns mentors with community_name, specialty_name, courses_count and students_count."""
+    from app.modules.courses.models import Course
+
+    CourseCount = db.query(
+        Course.mentor_id,
+        func.count(Course.id).label('courses_count')
+    ).filter(Course.status == 'approved').group_by(Course.mentor_id).subquery()
+
+    MemberCount = db.query(
+        models.User.community_id,
+        func.count(models.User.id).label('member_count')
+    ).filter(models.User.community_id != None).group_by(models.User.community_id).subquery()
+
     results = db.query(
         models.User,
         Community.name_community,
-        Specialty.name.label('spec_name')
+        Specialty.name.label('spec_name'),
+        CourseCount.c.courses_count,
+        MemberCount.c.member_count
     ).options(joinedload(models.User.profile))\
      .outerjoin(Community, models.User.community_id == Community.id_community)\
      .outerjoin(Specialty, models.User.specialty_id == Specialty.id)\
+     .outerjoin(CourseCount, models.User.id == CourseCount.c.mentor_id)\
+     .outerjoin(MemberCount, models.User.community_id == MemberCount.c.community_id)\
      .filter(models.User.rol_id == 2)\
      .order_by(models.User.created_at.desc())\
      .all()
 
     mentors = []
-    for user, comm_name, spec_name in results:
+    for user, comm_name, spec_name, courses_count, member_count in results:
         user.community_name = comm_name
         user.specialty_name = spec_name
+        user.courses_count = courses_count or 0
+        user.students_count = member_count or 0
         mentors.append(user)
     return mentors
 

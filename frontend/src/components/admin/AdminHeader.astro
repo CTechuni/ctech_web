@@ -372,36 +372,46 @@ const { title, subtitle = 'Gestión Global' } = Astro.props;
     dropdown?.addEventListener('click', (e) => e.stopPropagation());
     markAllBtn?.addEventListener('click', markAllRead);
 
-    const currentUser = auth.getUser();
-    if (currentUser && currentUser.rol_id === 1) {
-        fetchNotifications();
-        setInterval(fetchNotifications, 30000);
-    }
-
-    if (currentUser) {
+    function applyAdminUser(user) {
+        if (!user) return;
         const nameHeader = document.getElementById('userNameHeader');
-        if (nameHeader) {
-            nameHeader.textContent = (currentUser.name_user || 'Admin').split(' ')[0];
-        }
-        
+        if (nameHeader) nameHeader.textContent = (user.name_user || 'Admin').split(' ')[0];
         const avatarContainer = document.getElementById('headerAvatarContainer');
         const headerInitial = document.getElementById('headerInitial');
-
         if (avatarContainer && headerInitial) {
-            const fullName = currentUser.name_user || 'Admin';
-            const initials = fullName
-                .split(' ')
-                .map(word => word[0])
-                .join('')
-                .substring(0, 2)
-                .toUpperCase();
-            
+            const initials = (user.name_user || 'Admin')
+                .split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
             headerInitial.textContent = initials;
-            // Aseguramos que no haya una imagen previa si el contenedor se reutiliza
             const existingImg = avatarContainer.querySelector('img');
             if (existingImg) existingImg.remove();
         }
     }
+
+    async function initAdminHeader() {
+        // 1. Render inmediato desde localStorage
+        applyAdminUser(auth.getUser());
+        // 2. Refrescar desde el servidor
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                auth.setAuthData(auth.getToken(), { ...fresh, role: 'admin' });
+                applyAdminUser(fresh);
+                if (fresh.rol_id === 1) {
+                    fetchNotifications();
+                    setInterval(fetchNotifications, 30000);
+                }
+            }
+        } catch (e) {
+            // Fallback: usar localStorage
+            const cached = auth.getUser();
+            if (cached?.rol_id === 1) {
+                fetchNotifications();
+                setInterval(fetchNotifications, 30000);
+            }
+        }
+    }
+
+    initAdminHeader();
 
     document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
         window.dispatchEvent(new CustomEvent('toggleAdminSidebar'));

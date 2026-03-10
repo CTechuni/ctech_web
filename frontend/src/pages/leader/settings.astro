@@ -1,0 +1,175 @@
+---
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+---
+
+<LeaderLayout title="Ajustes" subtitle="Seguridad y cuenta">
+<div class="settings-page">
+
+    <!-- Cambiar contraseña -->
+    <div class="settings-card">
+        <div class="card-header">
+            <div class="header-icon icon-blue"><i class="fa-solid fa-lock"></i></div>
+            <div>
+                <h3>Cambiar contraseña</h3>
+                <p>Actualiza tu contraseña de acceso</p>
+            </div>
+        </div>
+
+        <form id="pwdForm" class="settings-form">
+            <div class="fg">
+                <label>Contraseña actual</label>
+                <div class="input-eye">
+                    <input type="password" id="currentPwd" class="fi" placeholder="Tu contraseña actual" required />
+                    <button type="button" class="eye-btn" data-target="currentPwd"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+            <div class="fg">
+                <label>Nueva contraseña</label>
+                <div class="input-eye">
+                    <input type="password" id="newPwd" class="fi" placeholder="Mínimo 8 caracteres" required />
+                    <button type="button" class="eye-btn" data-target="newPwd"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <div class="strength-bar" id="strengthBar">
+                    <div class="strength-fill" id="strengthFill"></div>
+                </div>
+                <span class="strength-label" id="strengthLabel"></span>
+            </div>
+            <div class="fg">
+                <label>Confirmar contraseña</label>
+                <div class="input-eye">
+                    <input type="password" id="confirmPwd" class="fi" placeholder="Repite la nueva contraseña" required />
+                    <button type="button" class="eye-btn" data-target="confirmPwd"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+            <div id="pwdAlert" class="alert-msg" style="display:none"></div>
+            <button type="submit" class="btn-save" id="btnSavePwd">
+                <i class="fa-solid fa-check"></i> Actualizar contraseña
+            </button>
+        </form>
+    </div>
+</div>
+</LeaderLayout>
+
+<style>
+.settings-page { max-width: 640px; display: flex; flex-direction: column; gap: 24px; }
+
+.settings-card {
+    background: #fff; border-radius: 18px; border: 1px solid #e2e8f0;
+    padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,.03);
+}
+.card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid #f1f5f9; }
+.header-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.icon-blue { background: #eff6ff; color: #3b82f6; }
+.card-header h3 { margin: 0 0 3px; font-size: 1rem; font-weight: 700; color: #0f172a; }
+.card-header p  { margin: 0; font-size: .82rem; color: #64748b; }
+
+.settings-form { display: flex; flex-direction: column; gap: 16px; }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg label { font-size: .8rem; font-weight: 700; color: #475569; }
+.input-eye { position: relative; }
+.fi {
+    width: 100%; box-sizing: border-box;
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 10px 40px 10px 13px; font-size: .88rem; color: #1e293b;
+    font-family: inherit; outline: none; transition: border-color .2s;
+}
+.fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+.eye-btn {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: #94a3b8; cursor: pointer; font-size: .85rem;
+}
+
+.strength-bar  { height: 4px; background: #f1f5f9; border-radius: 4px; margin-top: 6px; overflow: hidden; }
+.strength-fill { height: 100%; width: 0; border-radius: 4px; transition: all .3s; }
+.strength-label { font-size: .72rem; font-weight: 600; }
+
+.alert-msg { padding: 10px 14px; border-radius: 8px; font-size: .84rem; font-weight: 600; }
+.alert-msg.success { background: #dcfce7; color: #15803d; }
+.alert-msg.error   { background: #fee2e2; color: #dc2626; }
+
+.btn-save {
+    background: #3b82f6; color: #fff; border: none;
+    padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: .9rem;
+    cursor: pointer; display: flex; align-items: center; gap: 7px; width: fit-content;
+    transition: background .2s;
+}
+.btn-save:hover { background: #2563eb; }
+.btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
+</style>
+
+<script>
+import { AuthManager } from '../../utils/auth.js';
+
+// Eye toggles
+document.querySelectorAll('.eye-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        const isPass = input.type === 'password';
+        input.type = isPass ? 'text' : 'password';
+        btn.innerHTML = `<i class="fa-solid fa-eye${isPass ? '-slash' : ''}"></i>`;
+    });
+});
+
+// Strength meter
+document.getElementById('newPwd').addEventListener('input', function() {
+    const v = this.value;
+    let score = 0;
+    if (v.length >= 8) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    const colors = ['#ef4444','#f59e0b','#22c55e','#15803d'];
+    const labels = ['Débil','Regular','Fuerte','Muy fuerte'];
+    fill.style.width  = `${(score / 4) * 100}%`;
+    fill.style.background = colors[score - 1] || '#f1f5f9';
+    label.textContent = score ? labels[score - 1] : '';
+    label.style.color = colors[score - 1] || '#94a3b8';
+});
+
+// Form submit
+document.getElementById('pwdForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSavePwd');
+    const alert = document.getElementById('pwdAlert');
+    const current = (document.getElementById('currentPwd') as HTMLInputElement).value;
+    const newPwd  = (document.getElementById('newPwd')     as HTMLInputElement).value;
+    const confirm = (document.getElementById('confirmPwd') as HTMLInputElement).value;
+
+    if (newPwd !== confirm) {
+        alert.textContent = 'Las contraseñas nuevas no coinciden.';
+        alert.className = 'alert-msg error';
+        alert.style.display = 'block';
+        return;
+    }
+    if (newPwd.length < 8) {
+        alert.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        alert.className = 'alert-msg error';
+        alert.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    try {
+        await AuthManager.fetch('/users/me/password', {
+            method: 'PATCH',
+            body: JSON.stringify({ current_password: current, new_password: newPwd }),
+        });
+        alert.textContent = '✓ Contraseña actualizada correctamente.';
+        alert.className = 'alert-msg success';
+        alert.style.display = 'block';
+        document.getElementById('pwdForm').reset();
+        document.getElementById('strengthFill').style.width = '0';
+        document.getElementById('strengthLabel').textContent = '';
+        setTimeout(() => { alert.style.display = 'none'; }, 4000);
+    } catch(err) {
+        alert.textContent = err.message || 'Error al actualizar la contraseña.';
+        alert.className = 'alert-msg error';
+        alert.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+});
+</script>

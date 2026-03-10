@@ -195,26 +195,33 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 </style>
 
 <script>
-    import { authManager } from "../../utils/auth.js";
+    import { authManager, AuthManager } from "../../utils/auth.js";
 
-    function loadHeaderProfile() {
-        const user = authManager.getUser();
-        if (user) {
-            const avatar = document.getElementById('headerAvatar');
-            const name = document.getElementById('headerName');
-            const community = document.getElementById('headerCommunity');
+    function applyUser(user) {
+        if (!user) return;
+        const avatar = document.getElementById('headerAvatar');
+        const name = document.getElementById('headerName');
+        const community = document.getElementById('headerCommunity');
+        if (avatar) avatar.textContent = (user.name_user || '--').substring(0, 2).toUpperCase();
+        if (name) name.textContent = (user.name_user || 'Líder').split(' ')[0];
+        if (community && user.community_name) community.textContent = user.community_name;
+    }
 
-            if (avatar) avatar.textContent = user.name_user ? user.name_user.substring(0, 2).toUpperCase() : '--';
-            if (name) name.textContent = user.name_user ? user.name_user.split(' ')[0] : 'Usuario';
-            if (community && user.community_name) {
-                community.textContent = user.community_name;
+    async function loadHeaderProfile() {
+        // 1. Render rápido desde localStorage (evita parpadeo)
+        applyUser(authManager.getUser());
+        // 2. Refrescar desde el servidor para garantizar datos del usuario correcto
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'leader' });
+                applyUser(fresh);
             }
-        }
+        } catch (e) { /* silencioso — ya se renderizó desde localStorage */ }
     }
 
     loadHeaderProfile();
 
-    // Toggle Sidebar Event
     document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
         window.dispatchEvent(new CustomEvent('toggleSidebar'));
     });

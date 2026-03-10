@@ -105,7 +105,7 @@ def get_leaders(db: Session = Depends(get_db), current=Depends(get_current_user)
     return service.list_leaders(db)
 
 @router.get("/mentors", response_model=list[schemas.UserResponse])
-def get_mentors(db: Session = Depends(get_db), current=Depends(get_current_user)):
+def get_mentors(db: Session = Depends(get_db)):
     return service.list_mentors(db)
 
 @router.patch("/{user_id}", response_model=schemas.UserResponse)

@@ -280,36 +280,23 @@ import { escapeHtml } from '../../utils/escape.js';
     async function loadCatalog() {
         const grid = document.getElementById('coursesGrid');
         const user = authManager.getUser();
-        
-        if (!user) {
-            window.location.href = '/login';
-            return;
-        }
 
         try {
-            // Intentar fetch real
-            const data = await AuthManager.fetch('/courses');
-            const communityCourses = Array.isArray(data) ? data : [];
-            
-            // Lógica de Privacidad: Solo cursos de la misma comunidad
-            // y que estén publicados (asumimos true por defecto en esta vista o según API)
-            allCourses = communityCourses.filter(c => c.community_id == user.community_id);
+            // GET /courses/ devuelve solo cursos aprobados (público)
+            const data = await AuthManager.fetch('/courses/');
+            let courses = Array.isArray(data) ? data : [];
 
-            // Mock Data if empty (for UI testing)
-            if (allCourses.length === 0) {
-                allCourses = [
-                    { id_course: 101, title: 'Maestría en React v19 & Next15', mentor_name: 'Diego Torres', specialty_name: 'Frontend', thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80', modules_count: 12 },
-                    { id_course: 102, title: 'Arquitectura Limpia con Node.js', mentor_name: 'Ana Martínez', specialty_name: 'Backend', thumbnail: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc51?w=800&q=80', modules_count: 8 },
-                    { id_course: 103, title: 'UX/UI: De Cero a Pro System', mentor_name: 'Carlos Ruiz', specialty_name: 'Design', thumbnail: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?w=800&q=80', modules_count: 15 },
-                    { id_course: 104, title: 'DevOps & Kubernetes Cloud', mentor_name: 'Elena Soler', specialty_name: 'DevOps', thumbnail: 'https://images.unsplash.com/photo-1667372333114-3d237c642a8a?w=800&q=80', modules_count: 10 }
-                ];
+            // Si el usuario está autenticado, filtrar por su comunidad
+            if (user?.community_id) {
+                courses = courses.filter(c => c.community_id === user.community_id);
             }
+            allCourses = courses;
 
             populateSpecialties(allCourses);
             renderCards(allCourses);
         } catch (err) {
             console.error('[Catalog] Error:', err);
-            if (grid) grid.innerHTML = '<div class="loading-state"><span>Ocurrió un error al cargar el catálogo. Por favor reintenta.</span></div>';
+            if (grid) grid.innerHTML = '<div class="loading-state"><span>Ocurrió un error al cargar el catálogo.</span></div>';
         }
     }
 
@@ -335,26 +322,35 @@ import { escapeHtml } from '../../utils/escape.js';
             return;
         }
 
-        grid.innerHTML = list.map(c => `
+        grid.innerHTML = list.map(c => {
+            const moduleCount = Array.isArray(c.modules) ? c.modules.length : (c.modules_count || 0);
+            const thumb = c.thumbnail_url || c.thumbnail || '';
+            const lvlMap = { basico:'Básico', intermedio:'Intermedio', avanzado:'Avanzado' };
+            const lvl = lvlMap[c.level] || 'Básico';
+            const techs = (c.technologies || []).slice(0, 3).map(t => `<span style="background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:5px;font-size:.72rem;font-weight:600">${escapeHtml(t)}</span>`).join('');
+            return `
             <div class="course-card-v2">
                 <div class="card-banner">
-                    <img src="${c.thumbnail || 'https://via.placeholder.com/800x450'}" alt="${escapeHtml(c.title)}">
-                    <span class="tag-published">Publicado</span>
+                    ${thumb
+                        ? `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(c.title)}" loading="lazy">`
+                        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#c7d2fe"><i class="fas fa-book-open"></i></div>`}
+                    <span class="tag-published">${lvl}</span>
                 </div>
                 <div class="card-body">
-                    <span class="card-specialty">${escapeHtml(c.specialty_name || 'Especialidad')}</span>
+                    <span class="card-specialty">${escapeHtml(c.specialty_name || 'General')}</span>
                     <h3>${escapeHtml(c.title)}</h3>
                     <div class="card-mentor"><span>Por</span> ${escapeHtml(c.mentor_name || 'Instructor CTech')}</div>
+                    ${techs ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${techs}</div>` : ''}
                 </div>
                 <div class="card-footer">
                     <div class="modules-count">
                         <i class="fas fa-layer-group"></i>
-                        ${c.modules_count || 0} Módulos
+                        ${moduleCount} módulo${moduleCount !== 1 ? 's' : ''}
                     </div>
-                    <a href="/explore/courses/${c.id_course}" class="btn-access">Acceder</a>
+                    <a href="/explore/courses/${c.id}" class="btn-access">Ver curso</a>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     function handleFilters() {
