@@ -43,6 +43,21 @@ def get_counts(db: Session):
         "community_distribution": community_distribution,
         "user_growth": user_growth
     }
+def get_mentor_counts(db: Session, mentor_id: int, community_id: int):
+    from app.modules.courses.models import Course
+    courses = db.query(Course).filter(Course.mentor_id == mentor_id).all()
+    total_courses = len(courses)
+    total_modules = sum(len(c.modules or []) for c in courses)
+    active_students = db.query(User).filter(
+        User.rol_id == 4,
+        User.community_id == community_id
+    ).count()
+    return {
+        "total_courses": total_courses,
+        "total_modules": total_modules,
+        "active_students": active_students,
+    }
+
 def get_community_counts(db: Session, community_id: int):
     # Conteos filtrados por comunidad
     total_users = db.query(User).filter(User.rol_id == 4, User.community_id == community_id).count()

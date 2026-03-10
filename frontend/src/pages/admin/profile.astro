@@ -269,45 +269,52 @@ const subtitle = 'Mi cuenta administrativa';
 
   <script>
     import { authManager as auth, AuthManager } from '../../utils/auth.js';
-    const user = auth.getUser();
 
-    if (user) {
-      if (document.getElementById('profileFullName')) document.getElementById('profileFullName').textContent = user.name_user || 'Admin';
-      
-      const profileInitial = document.getElementById('profileLargeInitial');
-      if (profileInitial) {
-        const fullName = user.name_user || 'Admin';
-        const initials = fullName
-          .split(' ')
-          .map(word => word[0])
-          .join('')
-          .substring(0, 2)
-          .toUpperCase();
-        profileInitial.textContent = initials;
+    async function initProfile() {
+      try {
+        const user = (auth && auth.getUser) ? auth.getUser() : null;
+        if (user) {
+          const fullNameEl = document.getElementById('profileFullName');
+          if (fullNameEl) fullNameEl.textContent = user.name_user || 'Admin';
+
+          const profileInitial = document.getElementById('profileLargeInitial');
+          if (profileInitial) {
+            const fullName = user.name_user || 'Admin';
+            const initials = fullName
+              .split(' ')
+              .map(word => (word && word[0]) ? word[0] : '')
+              .join('')
+              .substring(0, 2)
+              .toUpperCase();
+            profileInitial.textContent = initials;
+          }
+
+          // Update form inputs safely
+          const nameInput = document.getElementById('profileInputName');
+          const emailInput = document.getElementById('profileInputEmail');
+          const roleInput = document.getElementById('profileInputRole');
+
+          if (nameInput) nameInput.value = user.name_user || 'Admin';
+          if (emailInput) emailInput.value = user.email || '';
+          if (roleInput) roleInput.value = (user.role && user.role.name_rol) ? user.role.name_rol : 'Administrador Global';
+        }
+      } catch (e) {
+        console.warn('Profile init error:', e);
       }
-      
-      // Update form inputs
-      const nameInput = document.getElementById('profileInputName') as HTMLInputElement;
-      const emailInput = document.getElementById('profileInputEmail') as HTMLInputElement;
-      const roleInput = document.getElementById('profileInputRole') as HTMLInputElement;
-      
-      if (nameInput) nameInput.value = user.name_user || 'Admin';
-      if (emailInput) emailInput.value = user.email || '';
-      if (roleInput) roleInput.value = user.role?.name_rol || 'Administrador Global';
-    }
 
-    // Dynamic Stats
-    async function loadProfileStats() {
+      // Dynamic Stats
       try {
         const data = await AuthManager.fetch('/metrics/admin');
         if (data) {
-          if (document.getElementById('profileEvents')) document.getElementById('profileEvents').textContent = data.active_events || '0';
-          if (document.getElementById('profileCommunities')) document.getElementById('profileCommunities').textContent = data.total_communities || '0';
-          if (document.getElementById('profileUsers')) document.getElementById('profileUsers').textContent = data.total_users || '0';
-          if (document.getElementById('profileCourses')) document.getElementById('profileCourses').textContent = data.total_courses || '0';
+          const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value ?? '0'); };
+          setText('profileEvents', data.active_events);
+          setText('profileCommunities', data.total_communities);
+          setText('profileUsers', data.total_users);
+          setText('profileCourses', data.total_courses);
         }
       } catch (e) { console.error('Error loading profile stats:', e); }
     }
-    loadProfileStats();
+
+    document.addEventListener('DOMContentLoaded', initProfile);
   </script>
 </AdminLayout>

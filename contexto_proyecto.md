@@ -1,60 +1,47 @@
 # Contexto del Proyecto: CTech
 
 ## 📌 Visión General
-**CTech** es una plataforma integral de gestión para comunidades tecnológicas en Colombia. El proyecto nace como una solución para conectar a entusiastas de la tecnología, mentores y líderes de comunidad, facilitando la organización de eventos, el seguimiento de mentorías y el acceso a contenido educativo.
+**CTech** es una plataforma integral diseñada para potenciar y gestionar las **comunidades tecnológicas de Colombia**. El proyecto nace con la misión de centralizar el ecosistema tech nacional, conectando a entusiastas, desarrolladores, mentores y líderes de comunidad en un solo lugar.
 
-Este proyecto forma parte de la formación del **SENA (Ficha 2995403)** y busca estandarizar la interacción entre los diferentes actores del ecosistema tecnológico local.
+Su propósito es facilitar el intercambio de conocimientos a través de mentorías y el acceso a recursos educativos, fortaleciendo el tejido tecnológico en el país.
 
 ---
 
-## 🎯 Objetivos del Proyecto
-1.  **Centralización**: Ofrecer un punto único para descubrir y registrarse en eventos tecnológicos.
-2.  **Gestión de Mentorías**: Permitir que los usuarios soliciten y agenden sesiones 1-a-1 con mentores expertos.
-3.  **Roles y Accesos (RBAC)**: Segmentar la experiencia según el perfil (Admin, Líder, Mentor, Usuario).
-4.  **Seguimiento de Métricas**: Visualizar el impacto y crecimiento de las comunidades a través de dashboards interactivos.
+## 🎯 Objetivos Actuales (Fase MVP)
+1.  **Consolidación del Core**: Desarrollar el Producto Mínimo Viable (MVP) que permita el registro de usuarios y la gestión básica de perfiles.
+2.  **Validación de Roles (RBAC)**: Implementar y verificar los permisos para los paneles de Administrador, Líder, Mentor y Usuario Estándar.
+3.  **Gestión de Eventos**: Desplegar un sistema funcional de creación, edición y filtrado de eventos (Virtual/Presencial) sincronizado con un calendario global.
+4.  **Estabilización API-Frontend**: Asegurar la integridad de datos y comunicación fluida entre el backend (FastAPI) y el frontend (Astro).
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
 ### Frontend (Lado del Cliente)
-*   **Framework**: [Astro 5.x](https://astro.build/) - Utilizado para generar un sitio rápido, priorizando la entrega de HTML estático con islas de interactividad.
-*   **Lenguajes**: JavaScript (ES6+) y TypeScript (para tipado y robustez).
-*   **Estilos**: 
-    *   **Vanilla CSS**: Diseño premium personalizado mediante variables CSS y componentes modulares.
-    *   **Bootstrap 5**: Utilizado puntualmente para estructuras base y componentes de apoyo.
-*   **Iconografía**: FontAwesome 6 (iconos sólidos y regulares).
-*   **UI/UX**: Enfoque en accesibilidad, diseño responsivo y estética moderna (Glassmorphism, Dark Mode).
+*   **Framework**: [Astro 5.x](https://astro.build/) - Arquitectura de islas para máximo rendimiento.
+*   **Lenguajes**: JavaScript (ES6+) y TypeScript.
+*   **Estilos**: Vanilla CSS (Custom UI) y Bootstrap 5 para componentes estructurales.
+*   **Iconografía**: FontAwesome 6.
 
 ### Backend (Lado del Servidor)
-*   **Lenguaje**: [Python 3.10+](https://www.python.org/)
-*   **Framework**: [FastAPI](https://fastapi.tiangolo.com/) - Utilizado por su alto rendimiento, validación automática con Pydantic y generación automática de documentación de API (Swagger).
-*   **ORM**: SQLAlchemy 2.0 - Para la gestión de modelos y consultas a la base de datos de manera eficiente.
-*   **Seguridad**: OAuth2 con tokens JWT (JSON Web Tokens) para autenticación y autorización segura.
-*   **Almacenamiento de Imágenes**: Cloudinary API - Gestión externa de activos multimedia.
+*   **Lenguaje**: Python 3.10+
+*   **Framework**: FastAPI (Rápido, moderno y con documentación automática Swagger).
+*   **ORM**: SQLAlchemy 2.0 para la gestión de modelos relacionales.
+*   **Seguridad**: Autenticación con JWT (JSON Web Tokens) y control de acceso por roles.
+*   **Multimedia**: Cloudinary API para gestión de imágenes.
 
 ### Base de Datos
-*   **Motor**: [PostgreSQL](https://www.postgresql.org/) - Base de datos relacional robusta elegida por su escalabilidad e integridad de datos.
+*   **Motor**: PostgreSQL (Base de datos relacional robusta y escalable).
 
 ---
 
 ## ⚙️ Metodologías y Herramientas
 
-### Metodología de Trabajo
-*   **Agile / Scrum**: Desarrollo iterativo e incremental por sprints, priorizando el valor entregado al usuario final y la mejora continua.
-*   **Diseño de Arquitectura**: 
-    *   **Frontend**: Basado en Componentes Compartidos (`CalendarShared`, sidebar dinámico).
-    *   **Backend**: Arquitectura modular por carpetas (auth, events, communities, etc.).
+### Metodología de Desarrollo
+*   **Agile / Scrum**: Ciclos cortos de desarrollo enfocados en la entrega de valor inmediata (MVP).
+*   **Arquitectura Modular**: Organización del código por módulos funcionales desacoplados.
 
-### Herramientas de Desarrollo
-*   **Control de Versiones**: Git & GitHub.
-*   **Gestión de Dependencias**: 
-    *   Frontend: `npm` / `package.json`.
-    *   Backend: `pip` / `requirements.txt`.
-*   **Entorno**: Visual Studio Code con extensiones para Astro y Python.
-*   **API Testing**: Invoke-RestMethod (PowerShell) y scripts personalizados de verificación.
-
----
-
-## 🚀 A donde queremos llegar
-El objetivo final es consolidar a **CTech** como la plataforma líder para comunidades SENA y externas en Colombia, logrando una automatización total de los certificados de asistencia, integraciones con calendarios externos (Google/Outlook) y un sistema de gamificación para incentivar la participación estudiantil.
+### Herramientas
+*   **Gestión de Código**: Git & GitHub.
+*   **Entornos**: VS Code, Venv (Python), Node.js.
+*   **Pruebas**: Scripts de validación automatizados y herramientas de consumo de API (Invoke-RestMethod/Curl).

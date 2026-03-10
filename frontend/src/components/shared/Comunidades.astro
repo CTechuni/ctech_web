@@ -139,6 +139,7 @@
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
             
+            /** @type {{logo_url?: string, name_community?: string}[]} */
             const communities = await response.json();
             
             if (!communities || communities.length === 0) {
@@ -146,14 +147,29 @@
                 return;
             }
 
-            grid.innerHTML = communities.map(c => `
-                <div class="comunidad-item">
-                    <div class="comunidad-icon">
-                        <img src="${c.logo_url}" alt="${c.name_community}" loading="lazy">
-                    </div>
-                    <span class="comunidad-name">${c.name_community}</span>
-                </div>
-            `).join('');
+            // Build nodes instead of assigning innerHTML to avoid XSS and handle missing data
+            grid.innerHTML = '';
+            communities.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'comunidad-item';
+
+                const icon = document.createElement('div');
+                icon.className = 'comunidad-icon';
+
+                const img = document.createElement('img');
+                img.loading = 'lazy';
+                img.alt = c.name_community || 'Comunidad';
+                img.src = c.logo_url || '/images/placeholder-community.png';
+                icon.appendChild(img);
+
+                const name = document.createElement('span');
+                name.className = 'comunidad-name';
+                name.textContent = c.name_community || 'Sin nombre';
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                grid.appendChild(item);
+            });
 
         } catch (err) {
             console.error(err);

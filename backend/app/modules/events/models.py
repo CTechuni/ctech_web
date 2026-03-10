@@ -11,8 +11,10 @@ class Event(Base):
     event_time = Column(Time, name="time_events")
     location = Column(String(255), name="place")
     image_url = Column(Text, name="image")
-    status = Column(String(50))
+    status = Column(String(50), default="pending")   # draft | pending | approved | rejected
+    visibility = Column(String(20), default="publico") # publico | privado
     event_type = Column(String(50), name="type_event")
     capacity = Column(Integer)
     community_id = Column(Integer)
+    mentor_id = Column(Integer)
     course_id = Column(Integer)

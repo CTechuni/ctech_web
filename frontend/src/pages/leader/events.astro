@@ -4,14 +4,30 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 ---
 
 <LeaderLayout title="Eventos" subtitle="Gestión de Eventos y Talleres">
-    <div class="events-section">
-        <!-- Section Header -->
-        <div class="events-header">
-            <div class="header-content">
-                <h1 class="header-title">Eventos</h1>
-                <p class="header-subtitle">6 eventos programados para este mes</p>
+<div class="events-section">
+
+    <!-- ── Pendientes de aprobación ────────────────────────────────── -->
+    <div class="section-block" id="pendingSection" style="display:none">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fa-solid fa-hourglass-half"></i>
+                Pendientes de aprobación
+                <span class="count-badge" id="pendingCount">0</span>
+            </h2>
+        </div>
+        <div class="pending-list" id="pendingList">
+            <p class="empty-pending">No hay eventos pendientes.</p>
+        </div>
+    </div>
+
+    <!-- ── Eventos aprobados ────────────────────────────────────────── -->
+    <div class="section-block">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title"><i class="fa-solid fa-calendar-check"></i> Eventos</h2>
+                <p class="section-sub">Eventos aprobados de tu comunidad</p>
             </div>
-            <button class="btn-create-event">
+            <button class="btn-create-event" id="btnNewEvent">
                 <i class="fa-solid fa-plus"></i>
                 Crear Evento
             </button>
@@ -21,7 +37,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         <div class="filters-row">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                <input type="text" placeholder="Buscar evento..." class="search-input" />
+                <input type="text" id="eventSearch" placeholder="Buscar evento..." class="search-input" />
             </div>
             <div class="filter-buttons">
                 <button class="filter-btn active" data-filter="all">Todos</button>
@@ -32,388 +48,629 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
         <!-- Events Grid -->
         <div class="events-grid" id="eventsGrid">
-            <!-- Shimmer/Loading items -->
             <div class="loading-placeholder">
                 <div class="spinner"></div>
                 <p>Cargando eventos...</p>
             </div>
         </div>
     </div>
+</div>
+
+<!-- ══ Modal Crear / Editar Evento ══ -->
+<div class="m-overlay" id="eventModal">
+    <div class="m-card">
+        <div class="m-header">
+            <h4 id="mTitle">Nuevo Evento</h4>
+            <button class="m-close" id="btnCloseModal"><i class="fa-solid fa-times"></i></button>
+        </div>
+
+        <form id="eventForm" class="m-body">
+            <input type="hidden" id="fId" />
+
+            <div class="fg">
+                <label>Título del evento <span class="req">*</span></label>
+                <input type="text" id="fTitle" class="fi" placeholder="Ej: Workshop de React" required />
+            </div>
+
+            <div class="fg">
+                <label>Descripción</label>
+                <textarea id="fDesc" class="fi" rows="3" placeholder="¿De qué trata el evento?..."></textarea>
+            </div>
+
+            <div class="row2">
+                <div class="fg">
+                    <label>Fecha <span class="req">*</span></label>
+                    <input type="date" id="fDate" class="fi" required />
+                </div>
+                <div class="fg">
+                    <label>Hora</label>
+                    <input type="time" id="fTime" class="fi" />
+                </div>
+            </div>
+
+            <div class="row2">
+                <div class="fg">
+                    <label>Tipo de evento</label>
+                    <div class="type-toggle" id="typeToggle">
+                        <button type="button" class="type-btn active" data-val="virtual">
+                            <i class="fa-solid fa-video"></i> Virtual
+                        </button>
+                        <button type="button" class="type-btn" data-val="presencial">
+                            <i class="fa-solid fa-map-marker-alt"></i> Presencial
+                        </button>
+                    </div>
+                    <input type="hidden" id="fType" value="virtual" />
+                </div>
+                <div class="fg">
+                    <label>Capacidad</label>
+                    <input type="number" id="fCapacity" class="fi" placeholder="Ej: 50" min="1" />
+                </div>
+            </div>
+
+            <div class="fg">
+                <label id="locationLabel">Link de la reunión</label>
+                <input type="text" id="fLocation" class="fi" placeholder="https://meet.google.com/..." />
+            </div>
+
+            <div class="fg">
+                <label>Visibilidad</label>
+                <div class="vis-toggle">
+                    <label class="vis-opt">
+                        <input type="radio" name="fVisibility" value="publico" checked />
+                        <span class="vis-card">
+                            <i class="fa-solid fa-globe-americas"></i>
+                            <strong>Público</strong>
+                            <small>Visible para todos</small>
+                        </span>
+                    </label>
+                    <label class="vis-opt">
+                        <input type="radio" name="fVisibility" value="privado" />
+                        <span class="vis-card">
+                            <i class="fa-solid fa-lock"></i>
+                            <strong>Privado</strong>
+                            <small>Solo miembros registrados</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="m-footer">
+                <button type="button" class="btn-ghost" id="btnCancelModal">Cancelar</button>
+                <button type="submit" class="btn-save" id="btnSubmit">
+                    <i class="fa-solid fa-check"></i> <span id="btnTxt">Crear Evento</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 </LeaderLayout>
 
 <style>
-    .events-section {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+.events-section { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
 
-    /* ── Section Header ── */
-    .events-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-    }
+/* Section block */
+.section-block { display: flex; flex-direction: column; gap: 20px; }
 
-    .header-title {
-        font-size: 1.75rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin: 0;
-        letter-spacing: -0.01em;
-    }
+.section-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+}
+.section-title {
+    font-size: 1.3rem; font-weight: 800; color: #1e293b; margin: 0;
+    display: flex; align-items: center; gap: 10px;
+}
+.section-title i { color: #3b82f6; }
+.section-sub { font-size: .85rem; color: #64748b; margin: 4px 0 0 0; }
 
-    .header-subtitle {
-        font-size: 0.9rem;
-        color: #64748b;
-        margin: 4px 0 0 0;
-        font-weight: 500;
-    }
+.count-badge {
+    background: #fef3c7; color: #d97706; font-size: .72rem;
+    font-weight: 800; padding: 2px 9px; border-radius: 20px; min-width: 22px; text-align: center;
+}
 
-    .btn-create-event {
-        background: #3b82f6;
-        color: white;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 10px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-    }
+/* Pending list */
+.pending-list { display: flex; flex-direction: column; gap: 12px; }
+.empty-pending { color: #94a3b8; font-size: .88rem; text-align: center; padding: 20px 0; }
 
-    .btn-create-event:hover {
-        background: #2563eb;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
-    }
+.pending-card {
+    background: #fff; border-radius: 14px; border: 1.5px solid #fde68a;
+    padding: 18px 20px; display: flex; align-items: flex-start; gap: 16px;
+}
+.pending-date {
+    background: #fef3c7; border-radius: 10px; padding: 10px 14px;
+    text-align: center; flex-shrink: 0; line-height: 1.1;
+}
+.pd-day { font-size: 1.6rem; font-weight: 800; color: #d97706; display: block; }
+.pd-mon { font-size: .65rem; font-weight: 700; color: #92400e; text-transform: uppercase; }
 
-    /* ── Filters & Search ── */
-    .filters-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 32px;
-        gap: 20px;
-    }
+.pending-info { flex: 1; min-width: 0; }
+.pending-info h4 { margin: 0 0 4px; font-size: 1rem; font-weight: 700; color: #0f172a; }
+.pending-info p  { margin: 0 0 8px; font-size: .82rem; color: #64748b; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pending-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+.pm-it { display: flex; align-items: center; gap: 5px; font-size: .77rem; color: #94a3b8; font-weight: 500; }
+.pm-it i { font-size: .8rem; }
 
-    .search-box {
-        position: relative;
-        flex: 1;
-        max-width: 400px;
-    }
+.pending-actions { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
+.btn-approve {
+    background: #22c55e; color: #fff; border: none;
+    padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem;
+    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .2s;
+}
+.btn-approve:hover { background: #16a34a; }
+.btn-reject {
+    background: #fff; color: #ef4444; border: 1.5px solid #fca5a5;
+    padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem;
+    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s;
+}
+.btn-reject:hover { background: #fee2e2; border-color: #ef4444; }
 
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.9rem;
-    }
+/* Create event button */
+.btn-create-event {
+    background: #3b82f6; color: white; border: none;
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: .9rem;
+    display: flex; align-items: center; gap: 8px; transition: all .2s;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,.25); white-space: nowrap;
+}
+.btn-create-event:hover { background: #2563eb; transform: translateY(-1px); }
 
-    .search-input {
-        width: 100%;
-        padding: 10px 14px 10px 40px;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        color: #1e293b;
-        outline: none;
-        transition: all 0.2s ease;
-        background: white;
-    }
+/* Filters */
+.filters-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.search-box { position: relative; flex: 1; max-width: 400px; }
+.search-icon {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%); color: #94a3b8; font-size: .9rem;
+}
+.search-input {
+    width: 100%; padding: 10px 14px 10px 40px; box-sizing: border-box;
+    border: 1.5px solid #e2e8f0; border-radius: 50px; font-size: .9rem;
+    color: #1e293b; outline: none; transition: all .2s; background: white;
+}
+.search-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,.08); }
+.filter-buttons { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
+.filter-btn {
+    border: none; background: transparent; padding: 8px 16px;
+    border-radius: 8px; font-size: .85rem; font-weight: 600; color: #64748b; cursor: pointer;
+}
+.filter-btn:hover { color: #1e293b; }
+.filter-btn.active { background: white; color: #3b82f6; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
 
-    .search-input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
-    }
+/* Events Grid */
+.events-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.loading-placeholder {
+    grid-column: 1/-1; display: flex; flex-direction: column;
+    align-items: center; gap: 1rem; padding: 80px 0; color: #94a3b8;
+}
+.spinner {
+    width: 32px; height: 32px; border: 4px solid #f1f5f9;
+    border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-grid { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #94a3b8; }
+.empty-grid i { font-size: 2rem; margin-bottom: .75rem; display: block; color: #cbd5e1; }
 
-    .filter-buttons {
-        display: flex;
-        background: #f1f5f9;
-        padding: 4px;
-        border-radius: 12px;
-        gap: 4px;
-    }
+/* Event Card (approved) */
+.ev-card {
+    background: white; border-radius: 16px; border: 1px solid #e2e8f0;
+    padding: 24px; display: flex; flex-direction: column; gap: 16px;
+    transition: all .2s; box-shadow: 0 2px 8px rgba(0,0,0,.02); position: relative;
+}
+.ev-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.06); border-color: #cbd5e1; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+    padding: 4px 10px; border-radius: 6px; font-size: .68rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+}
+.badge-virtual  { background: #eff6ff; color: #3b82f6; }
+.badge-presencial { background: #fdf4ff; color: #a855f7; }
+.badge-publico  { background: #dcfce7; color: #15803d; }
+.badge-privado  { background: #f1f5f9; color: #64748b; }
+.ev-date { font-size: .8rem; font-weight: 500; color: #64748b; }
+.card-body { flex: 1; }
+.ev-title { font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0 0 8px; line-height: 1.4; }
+.ev-desc  { font-size: .88rem; color: #64748b; margin: 0; line-height: 1.6;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-footer {
+    display: flex; align-items: center; gap: 12px;
+    padding-top: 14px; border-top: 1.5px dashed #f1f5f9; margin-top: auto;
+}
+.meta-item { display: flex; align-items: center; gap: 6px; font-size: .76rem; font-weight: 600; color: #94a3b8; }
+.meta-item i { font-size: .82rem; }
+.meta-link { font-size: .76rem; font-weight: 600; color: #3b82f6; text-decoration: none; margin-left: auto; }
+.meta-link:hover { text-decoration: underline; }
 
-    .filter-btn {
-        border: none;
-        background: transparent;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #64748b;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
+.card-actions {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; gap: 6px;
+}
+.btn-ic {
+    width: 28px; height: 28px; border-radius: 7px;
+    border: 1px solid #e2e8f0; background: #fff; cursor: pointer;
+    font-size: .72rem; color: #94a3b8;
+    display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.btn-ic:hover { color: #3b82f6; border-color: #3b82f6; }
+.btn-ic.del:hover { color: #ef4444; border-color: #ef4444; }
 
-    .filter-btn:hover {
-        color: #1e293b;
-    }
+/* Modal */
+.m-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.55); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 3000; padding: 20px;
+}
+.m-overlay.open { display: flex; }
+.m-card {
+    background: #fff; border-radius: 20px;
+    width: 100%; max-width: 580px; max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0,0,0,.15);
+}
+.m-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 28px 18px; border-bottom: 1px solid #f1f5f9;
+    position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.m-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+.m-close {
+    background: #f1f5f9; border: none; width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer; color: #64748b;
+    display: flex; align-items: center; justify-content: center;
+}
+.m-close:hover { background: #e2e8f0; }
+.m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg label { font-size: .8rem; font-weight: 700; color: #475569; }
+.fi {
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 10px 13px; font-size: .88rem; color: #1e293b;
+    font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: border-color .2s;
+}
+.fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+textarea.fi { resize: vertical; }
+.req { color: #ef4444; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.type-toggle { display: flex; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.type-btn {
+    flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600;
+    background: #fff; border: none; color: #64748b; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.type-btn:not(:last-child) { border-right: 1px solid #e2e8f0; }
+.type-btn.active { background: #3b82f6; color: #fff; }
+.vis-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vis-opt { cursor: pointer; }
+.vis-opt input[type="radio"] { display: none; }
+.vis-card {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 10px;
+    text-align: center; transition: all .2s;
+}
+.vis-card i { font-size: 1.2rem; color: #94a3b8; }
+.vis-card strong { font-size: .85rem; color: #475569; font-weight: 700; }
+.vis-card small  { font-size: .7rem; color: #94a3b8; }
+.vis-opt input:checked + .vis-card { border-color: #3b82f6; background: #f0f7ff; }
+.vis-opt input:checked + .vis-card i      { color: #3b82f6; }
+.vis-opt input:checked + .vis-card strong { color: #3b82f6; }
+.m-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 28px 22px; border-top: 1px solid #f1f5f9;
+    position: sticky; bottom: 0; background: #fff;
+}
+.btn-ghost {
+    background: #f1f5f9; border: none; padding: 10px 20px;
+    border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b;
+}
+.btn-save {
+    background: #3b82f6; color: white; border: none;
+    padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: .88rem;
+    cursor: pointer; display: flex; align-items: center; gap: 7px;
+}
+.btn-save:hover { background: #2563eb; }
+.btn-save:disabled { background: #94a3b8; cursor: not-allowed; }
 
-    .filter-btn.active {
-        background: white;
-        color: #3b82f6;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    }
-
-    /* ── Events Grid ── */
-    .events-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-    }
-
-    :global(.event-card) {
-        background: white;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-    }
-
-    :global(.event-card:hover) {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-        border-color: #cbd5e1;
-    }
-
-    :global(.card-header) {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    :global(.badge) {
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
-    }
-
-    :global(.badge-virtual), :global(.badge-online) {
-        background: #eff6ff;
-        color: #3b82f6;
-    }
-
-    :global(.badge-presencial) {
-        background: #f5f3ff;
-        color: #8b5cf6;
-    }
-
-    :global(.event-date) {
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #64748b;
-    }
-
-    :global(.card-body) {
-        flex: 1;
-    }
-
-    :global(.event-title) {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0 0 8px 0;
-        line-height: 1.4;
-    }
-
-    :global(.event-desc) {
-        font-size: 0.9rem;
-        color: #64748b;
-        margin: 0;
-        line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    :global(.card-footer) {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-top: 16px;
-        border-top: 1.5px dashed #f1f5f9;
-        margin-top: auto;
-    }
-
-    :global(.meta-item) {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #94a3b8;
-    }
-
-    :global(.meta-item i) {
-        font-size: 0.85rem;
-        color: #cbd5e1;
-    }
-
-    :global(.assistants) {
-        margin-left: auto;
-        background: #f8fafc;
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-
-    :global(.assistants i) {
-        color: #3b82f6;
-        font-size: 0.75rem;
-    }
-
-    /* Loading state */
-    .loading-placeholder {
-        grid-column: 1 / -1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 100px 0;
-        color: #94a3b8;
-    }
-
-    .spinner {
-        width: 32px;
-        height: 32px;
-        border: 4px solid #f1f5f9;
-        border-top-color: #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Responsive ── */
-    @media (max-width: 1024px) {
-        .events-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 640px) {
-        .events-grid { grid-template-columns: 1fr; }
-        .events-header { flex-direction: column; align-items: flex-start; gap: 16px; }
-        .btn-create-event { width: 100%; justify-content: center; }
-        .filters-row { flex-direction: column; align-items: flex-start; }
-        .search-box { max-width: 100%; }
-        .filter-buttons { width: 100%; }
-        .filter-btn { flex: 1; text-align: center; }
-    }
+@media(max-width: 1024px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 768px)  {
+    .events-grid { grid-template-columns: 1fr; }
+    .filters-row { flex-direction: column; align-items: stretch; }
+    .search-box { max-width: 100%; }
+    .pending-card { flex-direction: column; }
+    .pending-actions { flex-direction: row; }
+    .row2 { grid-template-columns: 1fr; }
+}
 </style>
 
 <script>
-    import { authManager as auth } from "../../utils/auth.js";
+import { authManager as auth } from '../../utils/auth.js';
 
-    let allEvents = [];
-    let currentFilter = 'all';
+let allEvents     = [];
+let pendingEvents = [];
+let currentFilter = 'all';
+let editingId     = null;
 
-    async function init() {
-        try {
-            const data = await auth.get('events');
-            allEvents = data || [];
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-            // Mock fallback
-            if (allEvents.length === 0) {
-                allEvents = [
-                    { title: 'Workshop de Astro v4', event_date: '2026-03-04', description: 'Exploraremos las nuevas APIs de contenido y las optimizaciones de rendimiento en Astro.', location: 'Zoom / Meet', event_type: 'virtual', capacity: 24, event_time: '18:30' },
-                    { title: 'Meetup CTech: AI & Frontend', event_date: '2026-03-12', description: 'Charla sobre cómo integrar LLMs en tus aplicaciones frontend de forma eficiente.', location: 'Hub Central', event_type: 'presencial', capacity: 45, event_time: '19:00' },
-                    { title: 'Masterclass: TailwindCSS Pro', event_date: '2026-03-18', description: 'Técnicas avanzadas para construir sistemas de diseño escalables con Tailwind.', location: 'Zoom', event_type: 'virtual', capacity: 120, event_time: '18:00' }
-                ];
-            }
+// ── Carga ─────────────────────────────────────────────────────────────────────
+async function init() {
+    await Promise.all([loadPending(), loadEvents()]);
+}
 
-            renderGrid();
-        } catch (err) {
-            console.error('Leader Events: Load failure', err);
-            const grid = document.getElementById('eventsGrid');
-            if (grid) grid.innerHTML = '<p>Error al cargar el catálogo de eventos.</p>';
-        }
+async function loadPending() {
+    try {
+        const data = await auth.fetch('/events/pending');
+        pendingEvents = Array.isArray(data) ? data : [];
+    } catch(e) {
+        pendingEvents = [];
     }
+    renderPending();
+}
 
-    function renderGrid() {
-        const grid = document.getElementById('eventsGrid');
-        const searchTerm = (document.querySelector('.search-input') as HTMLInputElement)?.value.toLowerCase() || '';
-        
-        if (!grid) return;
+async function loadEvents() {
+    try {
+        const data = await auth.fetch('/events/');
+        // El líder recibe todos los de su comunidad; filtramos los aprobados para esta sección
+        allEvents = (Array.isArray(data) ? data : []).filter(ev => ev.status === 'approved');
+    } catch(e) {
+        allEvents = [];
+    }
+    renderGrid();
+}
 
-        const filtered = allEvents.filter(ev => {
-            const matchesSearch = ev.title.toLowerCase().includes(searchTerm) || (ev.location || '').toLowerCase().includes(searchTerm);
-            
-            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-            let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
-            
-            const matchesFilter = currentFilter === 'all' || normalizedType === currentFilter;
-            return matchesSearch && matchesFilter;
-        });
+// ── Pending ───────────────────────────────────────────────────────────────────
+function renderPending() {
+    const section = document.getElementById('pendingSection');
+    const list    = document.getElementById('pendingList');
+    const count   = document.getElementById('pendingCount');
 
-        if (filtered.length === 0) {
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px;">No se encontraron eventos con los criterios actuales.</p>';
-            return;
-        }
+    count.textContent = pendingEvents.length;
 
-        grid.innerHTML = filtered.map(ev => {
-            const dateObj = new Date(ev.event_date + 'T00:00:00');
-            const dateStr = dateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-            
-            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-            let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
-            
-            const typeLabel = type === 'virtual' ? 'Virtual' : 'Presencial';
-            const badgeClass = type === 'virtual' ? 'badge-virtual' : 'badge-presencial';
+    if (pendingEvents.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = 'block';
 
-            return `
-                <div class="event-card">
-                    <div class="card-header">
-                        <span class="badge ${badgeClass}">${typeLabel}</span>
-                        <span class="event-date">${dateStr}</span>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="event-title">${ev.title}</h3>
-                        <p class="event-desc">${ev.description || ev.desc || ''}</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="meta-item">
-                            <i class="fa-regular fa-clock"></i>
-                            <span>${ev.event_time || '18:00'} hr</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="${type === 'virtual' ? 'fa-regular fa-link' : 'fa-solid fa-location-dot'}"></i>
-                            <span>${(ev.location || '').split(',')[0] || 'TBD'}</span>
-                        </div>
-                        <div class="meta-item assistants">
-                            <i class="fa-solid fa-users"></i>
-                            <span>${ev.capacity || 0}</span>
-                        </div>
-                    </div>
+    list.innerHTML = pendingEvents.map(ev => {
+        const d   = new Date((ev.event_date || '') + 'T00:00:00');
+        const day = d.getDate();
+        const mon = MONTHS[d.getMonth()] || '';
+        const type = (ev.event_type || 'virtual').toLowerCase();
+        return `
+        <div class="pending-card" id="pc-${ev.id}">
+            <div class="pending-date">
+                <span class="pd-day">${day}</span>
+                <span class="pd-mon">${mon}</span>
+            </div>
+            <div class="pending-info">
+                <h4>${ev.title}</h4>
+                <p>${ev.description || 'Sin descripción.'}</p>
+                <div class="pending-meta">
+                    <span class="pm-it"><i class="fa-solid fa-${type === 'presencial' ? 'map-marker-alt' : 'video'}"></i> ${type === 'presencial' ? 'Presencial' : 'Virtual'}</span>
+                    ${ev.event_time ? `<span class="pm-it"><i class="fa-regular fa-clock"></i> ${String(ev.event_time).substring(0,5)}h</span>` : ''}
+                    ${ev.capacity  ? `<span class="pm-it"><i class="fa-solid fa-users"></i> ${ev.capacity} personas</span>` : ''}
+                    ${ev.visibility === 'privado' ? `<span class="pm-it"><i class="fa-solid fa-lock"></i> Privado</span>` : `<span class="pm-it"><i class="fa-solid fa-globe"></i> Público</span>`}
                 </div>
-            `;
-        }).join('');
-    }
+            </div>
+            <div class="pending-actions">
+                <button class="btn-approve" onclick="approveEvent(${ev.id})">
+                    <i class="fa-solid fa-check"></i> Aprobar
+                </button>
+                <button class="btn-reject" onclick="rejectEvent(${ev.id})">
+                    <i class="fa-solid fa-times"></i> Rechazar
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
 
-    // Listeners
-    document.querySelector('.search-input')?.addEventListener('input', renderGrid);
-    
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.getAttribute('data-filter') || 'all';
+window.approveEvent = async function(id) {
+    if (!confirm('¿Aprobar este evento? Se publicará en la comunidad.')) return;
+    try {
+        const result = await auth.fetch(`/events/${id}/approve`, { method: 'PATCH' });
+        if (result) {
+            pendingEvents = pendingEvents.filter(e => e.id !== id);
+            allEvents.push(result);
+            renderPending();
             renderGrid();
-        });
+        }
+    } catch(e) {
+        alert('Error al aprobar: ' + e.message);
+    }
+};
+
+window.rejectEvent = async function(id) {
+    if (!confirm('¿Rechazar este evento? Se notificará al mentor.')) return;
+    try {
+        const result = await auth.fetch(`/events/${id}/reject`, { method: 'PATCH' });
+        if (result) {
+            pendingEvents = pendingEvents.filter(e => e.id !== id);
+            renderPending();
+        }
+    } catch(e) {
+        alert('Error al rechazar: ' + e.message);
+    }
+};
+
+// ── Grid (aprobados) ──────────────────────────────────────────────────────────
+function renderGrid() {
+    const grid = document.getElementById('eventsGrid');
+    const term = (document.getElementById('eventSearch') as HTMLInputElement)?.value.toLowerCase() || '';
+
+    const filtered = allEvents.filter(ev => {
+        const matchSearch = ev.title.toLowerCase().includes(term) ||
+                            (ev.location || '').toLowerCase().includes(term);
+        const type = (ev.event_type || '').toLowerCase();
+        const matchFilter = currentFilter === 'all' || type === currentFilter;
+        return matchSearch && matchFilter;
     });
 
-    init();
+    if (!filtered.length) {
+        grid.innerHTML = `<div class="empty-grid"><i class="fa-regular fa-calendar-xmark"></i>No hay eventos aprobados.</div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(ev => {
+        const d       = new Date((ev.event_date || '') + 'T00:00:00');
+        const dateStr = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        const type    = (ev.event_type || 'virtual').toLowerCase();
+        const typeLbl = type === 'presencial' ? 'Presencial' : 'Virtual';
+        const typeCls = type === 'presencial' ? 'badge-presencial' : 'badge-virtual';
+        const visCls  = ev.visibility === 'privado' ? 'badge-privado' : 'badge-publico';
+        const visLbl  = ev.visibility === 'privado' ? '🔒 Privado' : '🌐 Público';
+
+        const locationHtml = ev.location
+            ? (type === 'virtual'
+                ? `<a class="meta-link" href="${ev.location}" target="_blank">Unirse →</a>`
+                : `<span class="meta-item"><i class="fa-solid fa-location-dot"></i>${ev.location.substring(0,25)}${ev.location.length > 25 ? '…' : ''}</span>`)
+            : '';
+
+        return `
+        <div class="ev-card">
+            <div class="card-actions">
+                <button class="btn-ic" onclick="openEdit(${ev.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-ic del" onclick="deleteEvent(${ev.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="card-header">
+                <div class="badges">
+                    <span class="badge ${typeCls}">${typeLbl}</span>
+                    <span class="badge ${visCls}">${visLbl}</span>
+                </div>
+                <span class="ev-date">${dateStr}</span>
+            </div>
+            <div class="card-body">
+                <h3 class="ev-title">${ev.title}</h3>
+                <p class="ev-desc">${ev.description || ''}</p>
+            </div>
+            <div class="card-footer">
+                <span class="meta-item"><i class="fa-regular fa-clock"></i>${ev.event_time ? String(ev.event_time).substring(0,5) + 'h' : 'TBD'}</span>
+                ${ev.capacity ? `<span class="meta-item"><i class="fa-solid fa-users"></i>${ev.capacity}</span>` : ''}
+                ${locationHtml}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── CRUD ──────────────────────────────────────────────────────────────────────
+window.deleteEvent = async function(id) {
+    if (!confirm('¿Eliminar este evento?')) return;
+    const res = await auth.fetch(`/events/${id}`, { method: 'DELETE' });
+    if (res !== null) {
+        allEvents = allEvents.filter(e => e.id !== id);
+        renderGrid();
+    }
+};
+
+// ── Modal ──────────────────────────────────────────────────────────────────────
+function openModal(ev = null) {
+    editingId = ev?.id || null;
+    document.getElementById('mTitle').textContent = ev ? 'Editar Evento' : 'Nuevo Evento';
+    document.getElementById('btnTxt').textContent = ev ? 'Guardar Cambios' : 'Crear Evento';
+    document.getElementById('fId').value       = ev?.id || '';
+    document.getElementById('fTitle').value    = ev?.title || '';
+    document.getElementById('fDesc').value     = ev?.description || '';
+    document.getElementById('fDate').value     = ev?.event_date || '';
+    document.getElementById('fTime').value     = ev?.event_time ? String(ev.event_time).substring(0,5) : '';
+    document.getElementById('fLocation').value = ev?.location || '';
+    document.getElementById('fCapacity').value = ev?.capacity || '';
+
+    const type = (ev?.event_type || 'virtual').toLowerCase();
+    document.getElementById('fType').value = type;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === type));
+    updateLocationLabel(type);
+
+    const vis = ev?.visibility || 'publico';
+    document.querySelectorAll('input[name="fVisibility"]').forEach(r => { r.checked = r.value === vis; });
+
+    document.getElementById('eventModal').classList.add('open');
+    document.getElementById('fTitle').focus();
+}
+
+window.openEdit = function(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (ev) openModal(ev);
+};
+
+function closeModal() {
+    document.getElementById('eventModal').classList.remove('open');
+    document.getElementById('eventForm').reset();
+    editingId = null;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'virtual'));
+    document.getElementById('fType').value = 'virtual';
+    updateLocationLabel('virtual');
+}
+
+function updateLocationLabel(type) {
+    document.getElementById('locationLabel').textContent =
+        type === 'virtual' ? 'Link de la reunión' : 'Dirección del lugar';
+    document.getElementById('fLocation').placeholder =
+        type === 'virtual' ? 'https://meet.google.com/...' : 'Calle 123, Ciudad...';
+}
+
+document.getElementById('typeToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.type-btn');
+    if (!btn) return;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('fType').value = btn.dataset.val;
+    updateLocationLabel(btn.dataset.val);
+});
+
+document.getElementById('eventForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+
+    const payload = {
+        title:       (document.getElementById('fTitle') as HTMLInputElement).value.trim(),
+        description: (document.getElementById('fDesc') as HTMLTextAreaElement).value.trim() || null,
+        event_date:  (document.getElementById('fDate') as HTMLInputElement).value,
+        event_time:  (document.getElementById('fTime') as HTMLInputElement).value || null,
+        event_type:  (document.getElementById('fType') as HTMLInputElement).value,
+        location:    (document.getElementById('fLocation') as HTMLInputElement).value.trim() || null,
+        capacity:    parseInt((document.getElementById('fCapacity') as HTMLInputElement).value) || null,
+        visibility:  (document.querySelector('input[name="fVisibility"]:checked') as HTMLInputElement)?.value || 'publico',
+    };
+
+    try {
+        let result;
+        if (editingId) {
+            result = await auth.fetch(`/events/${editingId}`, {
+                method: 'PUT', body: JSON.stringify(payload),
+            });
+            if (result) {
+                const idx = allEvents.findIndex(e => e.id === editingId);
+                if (idx !== -1) allEvents[idx] = result;
+            }
+        } else {
+            result = await auth.fetch('/events/', {
+                method: 'POST', body: JSON.stringify(payload),
+            });
+            if (result) allEvents.unshift(result);
+        }
+        if (result) { renderGrid(); closeModal(); }
+    } catch(err) {
+        alert('Error al guardar: ' + err.message);
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+document.getElementById('btnNewEvent').addEventListener('click',   () => openModal());
+document.getElementById('btnCloseModal').addEventListener('click',  closeModal);
+document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+document.getElementById('eventModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+});
+document.getElementById('eventSearch').addEventListener('input', renderGrid);
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter') || 'all';
+        renderGrid();
+    });
+});
+
+init();
 </script>

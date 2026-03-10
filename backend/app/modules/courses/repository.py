@@ -4,6 +4,15 @@ from . import models, schemas
 def get_all(db: Session):
     return db.query(models.Course).all()
 
+def get_by_mentor(db: Session, mentor_id: int):
+    return db.query(models.Course).filter(models.Course.mentor_id == mentor_id).all()
+
+def get_by_status(db: Session, status: str, community_id: int = None):
+    query = db.query(models.Course).filter(models.Course.status == status)
+    if community_id is not None:
+        query = query.filter(models.Course.community_id == community_id)
+    return query.all()
+
 def get_by_id(db: Session, course_id: int):
     return db.query(models.Course).filter(models.Course.id == course_id).first()
 

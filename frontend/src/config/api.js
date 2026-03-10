@@ -1,93 +1,124 @@
-// Configuración de API para el backend
-// TODO: Actualizar estas URLs cuando tengas tu backend listo
+// Configuración central de la API — CTech Backend (FastAPI)
 
 export const API_CONFIG = {
-    // URLs base
-    BASE_URL: 'http://localhost:8000', // Cambiar por tu URL de backend
+    BASE_URL: 'http://localhost:8000',
     API_VERSION: '/api/v1',
 
-    // Endpoints de autenticación
     AUTH: {
-        LOGIN: '/auth/login',
-        REGISTER: '/auth/register',
-        LOGOUT: '/auth/logout',
-        REFRESH: '/auth/refresh',
+        LOGIN:           '/auth/login',
+        REGISTER:        '/auth/register',
+        LOGOUT:          '/auth/logout',
         FORGOT_PASSWORD: '/auth/forgot-password',
-        RESET_PASSWORD: '/auth/reset-password',
-        VERIFY_EMAIL: '/auth/verify-email',
-        VERIFY_INVITE_CODE: '/auth/verify-invite-code'
+        RESET_PASSWORD:  '/auth/reset-password',
     },
 
-    // Endpoints de usuario
-    USER: {
-        PROFILE: '/user/profile',
-        UPDATE_PROFILE: '/user/profile',
-        CHANGE_PASSWORD: '/user/change-password',
-        DELETE_ACCOUNT: '/user/delete'
+    USERS: {
+        ME:              '/users/me',
+        CHANGE_PASSWORD: '/users/me/password',
+        LIST:            '/users/',             // ?page=1&limit=6&role=all&search=
+        LEADERS:         '/users/leaders',
+        MENTORS:         '/users/mentors',
+        BY_COMMUNITY:    '/users/community/',   // + community_id
+        UPDATE:          '/users/',             // + user_id  PATCH
+        DELETE:          '/users/',             // + user_id  DELETE
+        PROMOTE:         '/users/',             // + user_id + /promote  PATCH
+        DEMOTE:          '/users/',             // + user_id + /demote   PATCH
     },
 
-    // Endpoints de contenido
-    CONTENT: {
-        SEARCH: '/content/search',
-        CATEGORIES: '/content/categories',
-        ARTICLES: '/content/articles',
-        TUTORIALS: '/content/tutorials'
-    },
-
-    // Endpoints de comunidades
     COMMUNITIES: {
-        LIST: '/communities',
-        WITH_LOGO: '/communities/with-logo',
-        JOIN: '/communities/join',
-        LEAVE: '/communities/leave',
-        CREATE: '/communities/create',
-        GET_BY_ID: '/communities/:id',
-        GET_MEMBERS: '/communities/:id/members'
+        PUBLIC:          '/communities/public',
+        WITH_LOGO:       '/communities/with-logo',
+        LIST:            '/communities/',
+        CREATE:          '/communities/',
+        UPDATE:          '/communities/',       // + id  PATCH
+        DELETE:          '/communities/',       // + id  DELETE
+        UPLOAD_LOGO:     '/communities/upload',
     },
 
-    // Endpoints del foro
-    FORUM: {
-        POSTS: '/forum/posts',
-        CREATE_POST: '/forum/posts',
-        COMMENTS: '/forum/comments',
-        CATEGORIES: '/forum/categories'
-    }
+    EVENTS: {
+        LIST:            '/events/',            // GET — sin auth: aprobados+públicos; auth: aprobados; líder: su comunidad; admin: todos
+        MY:              '/events/my',          // GET — solo mentor: sus propios eventos (todos estados)
+        PENDING:         '/events/pending',     // GET — líder: pendientes de su comunidad
+        UPCOMING:        '/events/upcoming',
+        CREATE:          '/events/',            // POST — admin(1), líder(3), mentor(2)
+        UPDATE:          '/events/',            // + event_id  PUT
+        APPROVE:         '/events/',            // + event_id + /approve  PATCH (líder/admin)
+        REJECT:          '/events/',            // + event_id + /reject   PATCH (líder/admin)
+        REGISTER:        '/events/',            // + event_id + /register  POST
+        DELETE:          '/events/',            // + event_id  DELETE
+    },
+
+    COURSES: {
+        LIST:            '/courses/',           // solo aprobados (público)
+        PENDING:         '/courses/pending',    // líder y admin
+        ALL:             '/courses/all',        // solo admin
+        DETAIL:          '/courses/',           // + id  GET
+        CREATE:          '/courses/',           // solo mentor
+        UPDATE:          '/courses/',           // + id  PUT (solo mentor dueño)
+        DELETE:          '/courses/',           // + id  DELETE (mentor dueño o admin)
+        APPROVE:         '/courses/',           // + id + /approve  PATCH (líder/admin)
+        REJECT:          '/courses/',           // + id + /reject   PATCH (líder/admin)
+    },
+
+    METRICS: {
+        ADMIN:           '/metrics/admin',
+        MENTOR:          '/metrics/mentor',
+        COMMUNITY:       '/metrics/community/', // + community_id
+    },
+
+    NOTIFICATIONS: {
+        LIST:            '/notifications/',
+        MARK_READ:       '/notifications/',     // + id + /read  PATCH
+        MARK_ALL_READ:   '/notifications/read-all',
+    },
+
+    CONTENT: {
+        LIST:            '/contenido/',
+        DETAIL:          '/contenido/',         // + content_id
+        CREATE:          '/contenido/',         // admin o mentor
+        UPDATE:          '/contenido/',         // + content_id  PUT
+        DELETE:          '/contenido/',         // + content_id  DELETE
+    },
+
+    SPECIALTIES: {
+        LIST:            '/specialties/',
+        CREATE:          '/specialties/',       // solo admin
+    },
+
+    TECHNOLOGIES: {
+        LIST:            '/technologies/',
+        CREATE:          '/technologies/',      // admin o líder
+    },
+
+    SESSIONS: {
+        CREATE:          '/sessions/',
+        BY_COURSE:       '/sessions/course/',   // + course_id
+        RESERVE:         '/sessions/',          // + id + /reserve  POST
+        CANCEL:          '/sessions/',          // + id + /cancel   DELETE
+    },
 };
 
-// Función helper para construir URLs completas
+// Construye la URL completa: BASE_URL + /api/v1 + endpoint
 export function buildApiUrl(endpoint) {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const cleanVersion = API_CONFIG.API_VERSION.endsWith('/') ? API_CONFIG.API_VERSION : `${API_CONFIG.API_VERSION}/`;
-    return `${API_CONFIG.BASE_URL}${cleanVersion}${cleanEndpoint}`;
+    return `${API_CONFIG.BASE_URL}${API_CONFIG.API_VERSION}/${cleanEndpoint}`;
 }
 
-// Función helper para hacer requests autenticados
+// Petición autenticada genérica
 export async function authenticatedRequest(url, options = {}) {
-    const token = localStorage.getItem('authToken'); // ✅ Consistente con AuthManager
+    const token = localStorage.getItem('authToken');
 
-    const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-        }
+    const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+        ...options.headers,
     };
 
-    const finalOptions = {
-        ...defaultOptions,
-        ...options,
-        headers: {
-            ...defaultOptions.headers,
-            ...options.headers
-        }
-    };
+    const response = await fetch(url, { ...options, headers });
 
-    const response = await fetch(url, finalOptions);
-
-    // Handle 401 Unauthorized
     if (response.status === 401) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        localStorage.removeItem('lastAuthToken');
         window.location.href = '/';
         return null;
     }
@@ -95,12 +126,11 @@ export async function authenticatedRequest(url, options = {}) {
     return response;
 }
 
-// Función para manejar respuestas de la API
+// Parsea la respuesta y lanza error si no es ok
 export async function handleApiResponse(response) {
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Error desconocido' }));
-        throw new Error(error.message || `Error ${response.status}: ${response.statusText}`);
+        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
+        throw new Error(error.detail || `Error ${response.status}: ${response.statusText}`);
     }
-
     return response.json();
 }

@@ -46,3 +46,7 @@ class UserPaginationResponse(BaseModel):
 
 class UserPromoteRequest(BaseModel):
     specialty_id: int
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str

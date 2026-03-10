@@ -1,365 +1,644 @@
 ---
-// src/pages/mentor/events.astro
 import MentorLayout from '../../layouts/MentorLayout.astro';
 ---
 
-<MentorLayout title="Eventos" subtitle="Calendario Global de Eventos y Talleres">
-    <div class="events-container">
-        <!-- Dashboard Header Actions -->
-        <div class="events-toolbar">
-            <div class="search-wrapper">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
-                <input type="text" id="eventSearch" placeholder="Buscar eventos por título o ubicación..." />
-            </div>
+<MentorLayout title="Eventos" subtitle="Gestiona los eventos de tu comunidad">
+<div class="events-page">
 
-            <div class="segmented-control" id="typeFilter">
-                <button class="seg-btn active" data-filter="all">Todos</button>
-                <button class="seg-btn" data-filter="virtual">Virtual</button>
-                <button class="seg-btn" data-filter="presencial">Presencial</button>
-            </div>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-wrap">
+            <i class="fas fa-search search-ico"></i>
+            <input type="text" id="eventSearch" placeholder="Buscar por título o ubicación..." />
         </div>
+        <div class="seg-ctrl" id="typeFilter">
+            <button class="seg active" data-filter="all">Todos</button>
+            <button class="seg" data-filter="virtual">Virtual</button>
+            <button class="seg" data-filter="presencial">Presencial</button>
+        </div>
+        <button class="btn-primary" id="btnNewEvent">
+            <i class="fas fa-plus"></i> Nuevo Evento
+        </button>
+    </div>
 
-        <!-- Events Grid -->
-        <div class="events-grid" id="eventsGrid">
-            <!-- Shimmer/Loading items -->
-            <div class="loading-placeholder">
-                <div class="spinner"></div>
-                <p>Cargando calendario de eventos...</p>
-            </div>
+    <!-- Status legend -->
+    <div class="status-legend">
+        <span class="leg-item"><span class="st-dot st-draft"></span>Borrador</span>
+        <span class="leg-item"><span class="st-dot st-pending"></span>En revisión</span>
+        <span class="leg-item"><span class="st-dot st-approved"></span>Aprobado</span>
+        <span class="leg-item"><span class="st-dot st-rejected"></span>Rechazado</span>
+    </div>
+
+    <!-- Grid -->
+    <div class="events-grid" id="eventsGrid">
+        <div class="loading-state">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span>Cargando eventos...</span>
         </div>
     </div>
+</div>
+
+<!-- ══ Modal Crear / Editar Evento ══ -->
+<div class="m-overlay" id="eventModal">
+    <div class="m-card">
+        <div class="m-header">
+            <h4 id="mTitle">Nuevo Evento</h4>
+            <button class="m-close" id="btnCloseModal"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form id="eventForm" class="m-body">
+            <input type="hidden" id="fId" />
+
+            <!-- Título -->
+            <div class="fg">
+                <label>Título del evento <span class="req">*</span></label>
+                <input type="text" id="fTitle" class="fi" placeholder="Ej: Workshop de React" required />
+            </div>
+
+            <!-- Descripción -->
+            <div class="fg">
+                <label>Descripción</label>
+                <textarea id="fDesc" class="fi" rows="3" placeholder="¿De qué trata el evento? ¿Qué aprenderán?..."></textarea>
+            </div>
+
+            <!-- Fecha + Hora -->
+            <div class="row2">
+                <div class="fg">
+                    <label>Fecha <span class="req">*</span></label>
+                    <input type="date" id="fDate" class="fi" required />
+                </div>
+                <div class="fg">
+                    <label>Hora</label>
+                    <input type="time" id="fTime" class="fi" />
+                </div>
+            </div>
+
+            <!-- Tipo + Capacidad -->
+            <div class="row2">
+                <div class="fg">
+                    <label>Tipo de evento <span class="req">*</span></label>
+                    <div class="type-toggle" id="typeToggle">
+                        <button type="button" class="type-btn active" data-val="virtual">
+                            <i class="fas fa-video"></i> Virtual
+                        </button>
+                        <button type="button" class="type-btn" data-val="presencial">
+                            <i class="fas fa-map-marker-alt"></i> Presencial
+                        </button>
+                    </div>
+                    <input type="hidden" id="fType" value="virtual" />
+                </div>
+                <div class="fg">
+                    <label>Capacidad <span class="hint">(participantes)</span></label>
+                    <input type="number" id="fCapacity" class="fi" placeholder="Ej: 50" min="1" />
+                </div>
+            </div>
+
+            <!-- URL / Dirección -->
+            <div class="fg">
+                <label id="locationLabel">Link de la reunión</label>
+                <input type="text" id="fLocation" class="fi" placeholder="https://meet.google.com/..." />
+            </div>
+
+            <!-- Visibilidad (cuando sea aprobado) -->
+            <div class="fg">
+                <label>Visibilidad <span class="hint">(cuando sea aprobado)</span></label>
+                <div class="vis-toggle">
+                    <label class="vis-opt">
+                        <input type="radio" name="fVisibility" value="publico" checked />
+                        <span class="vis-card">
+                            <i class="fas fa-globe-americas"></i>
+                            <strong>Público</strong>
+                            <small>Visible para todos, incluso visitantes</small>
+                        </span>
+                    </label>
+                    <label class="vis-opt">
+                        <input type="radio" name="fVisibility" value="privado" />
+                        <span class="vis-card">
+                            <i class="fas fa-lock"></i>
+                            <strong>Privado</strong>
+                            <small>Solo para miembros registrados</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Estado de publicación -->
+            <div class="fg">
+                <label>Publicación</label>
+                <div class="pub-toggle" id="pubToggle">
+                    <button type="button" class="pub-btn active" data-val="draft">
+                        <i class="fas fa-file-alt"></i>
+                        <div>
+                            <strong>Guardar borrador</strong>
+                            <small>Solo tú lo verás</small>
+                        </div>
+                    </button>
+                    <button type="button" class="pub-btn" data-val="pending">
+                        <i class="fas fa-paper-plane"></i>
+                        <div>
+                            <strong>Enviar a revisión</strong>
+                            <small>El líder lo revisará</small>
+                        </div>
+                    </button>
+                </div>
+                <input type="hidden" id="fStatus" value="draft" />
+            </div>
+
+            <div class="m-footer">
+                <button type="button" class="btn-ghost" id="btnCancelModal">Cancelar</button>
+                <button type="submit" class="btn-primary" id="btnSubmit">
+                    <i class="fas fa-check"></i> <span id="btnTxt">Crear Evento</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 </MentorLayout>
 
 <style>
-    .events-container {
-        max-width: 1200px;
-    }
+.events-page { max-width: 1100px; display: flex; flex-direction: column; gap: 1.5rem; }
 
-    /* Toolbar */
-    .events-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 2.5rem;
-    }
+/* Toolbar */
+.toolbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.search-wrap { position: relative; flex: 1; min-width: 220px; }
+.search-ico {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%); color: #94a3b8; font-size: .9rem;
+}
+.search-wrap input {
+    width: 100%; box-sizing: border-box;
+    padding: 10px 14px 10px 40px;
+    border: 1px solid #e2e8f0; border-radius: 50px;
+    font-size: .88rem; outline: none; background: #fff;
+    transition: border-color .2s;
+}
+.search-wrap input:focus { border-color: #3b82f6; }
 
-    .search-wrapper {
-        position: relative;
-        flex: 1;
-        max-width: 400px;
-    }
+.seg-ctrl { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; gap: 4px; }
+.seg {
+    border: none; background: transparent; padding: 7px 16px;
+    border-radius: 8px; font-size: .82rem; font-weight: 600; color: #64748b; cursor: pointer;
+}
+.seg:hover { color: #0f172a; }
+.seg.active { background: #fff; color: #0073ff; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
 
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 18px;
-        height: 18px;
-        color: #94a3b8;
-    }
+.btn-primary {
+    display: flex; align-items: center; gap: 7px;
+    background: #0073ff; color: #fff; border: none;
+    padding: 10px 18px; border-radius: 10px;
+    font-weight: 700; font-size: .85rem; cursor: pointer;
+    transition: background .2s; white-space: nowrap;
+}
+.btn-primary:hover { background: #0062cc; }
+.btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
 
-    .search-wrapper input {
-        width: 100%;
-        padding: 12px 14px 12px 42px;
-        border: 1px solid #e2e8f0;
-        border-radius: 50px;
-        font-size: 0.9rem;
-        background: white;
-        outline: none;
-        transition: all 0.2s;
-    }
+/* Legend */
+.status-legend {
+    display: flex; gap: 20px; flex-wrap: wrap;
+}
+.leg-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: .78rem; font-weight: 600; color: #64748b;
+}
+.st-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+}
+.st-draft    { background: #94a3b8; }
+.st-pending  { background: #f59e0b; }
+.st-approved { background: #22c55e; }
+.st-rejected { background: #ef4444; }
 
-    .search-wrapper input:focus {
-        border-color: var(--color-azure-radiant);
-        box-shadow: 0 0 0 4px rgba(0, 115, 255, 0.08);
-    }
+/* Grid */
+.events-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+.loading-state {
+    grid-column: 1/-1; display: flex; align-items: center; gap: 10px;
+    justify-content: center; padding: 3rem; color: #94a3b8; font-size: .88rem;
+}
+.empty-state {
+    grid-column: 1/-1; text-align: center; padding: 4rem; color: #94a3b8;
+}
+.empty-state i { font-size: 2rem; margin-bottom: .75rem; display: block; }
 
-    .segmented-control {
-        display: flex;
-        background: #f1f5f9;
-        padding: 4px;
-        border-radius: 12px;
-        gap: 4px;
-    }
+/* Event Card */
+.ev-card {
+    background: #fff; border-radius: 18px; padding: 22px;
+    border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 14px;
+    transition: all .3s; position: relative;
+}
+.ev-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.06); }
+.ev-card.is-draft    { border-left: 3px solid #94a3b8; }
+.ev-card.is-pending  { border-left: 3px solid #f59e0b; }
+.ev-card.is-rejected { border-left: 3px solid #ef4444; }
 
-    .seg-btn {
-        border: none;
-        background: transparent;
-        padding: 8px 18px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #64748b;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; }
 
-    .seg-btn:hover { color: #0f172a; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge-type {
+    font-size: .65rem; font-weight: 800; padding: 3px 10px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: .04em;
+}
+.badge-virtual    { background: #eff6ff; color: #3b82f6; }
+.badge-presencial { background: #fdf2f8; color: #db2777; }
+.badge-publico    { background: #dcfce7; color: #15803d; }
+.badge-privado    { background: #f1f5f9; color: #64748b; }
+.badge-draft      { background: #f1f5f9; color: #64748b; }
+.badge-pending    { background: #fef3c7; color: #d97706; }
+.badge-approved   { background: #dcfce7; color: #15803d; }
+.badge-rejected   { background: #fee2e2; color: #dc2626; }
 
-    .seg-btn.active {
-        background: white;
-        color: var(--color-azure-radiant);
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
+.date-box { text-align: right; line-height: 1; }
+.date-num { font-size: 1.8rem; font-weight: 800; color: #0073ff; display: block; }
+.date-mon { font-size: .7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
 
-    /* Grid */
-    .events-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-    }
+.card-body h3 { margin: 0 0 6px; font-size: 1rem; font-weight: 700; color: #0f172a; line-height: 1.3; }
+.card-body p  { margin: 0; font-size: .83rem; color: #64748b; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-    @media (max-width: 1024px) {
-        .events-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+.card-meta {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    padding-top: 12px; border-top: 1px dashed #f1f5f9; margin-top: auto;
+}
+.meta-it { display: flex; align-items: center; gap: 5px; font-size: .78rem; color: #94a3b8; font-weight: 500; }
+.meta-it i { font-size: .8rem; }
+.meta-link {
+    font-size: .75rem; font-weight: 600; color: #0073ff; text-decoration: none;
+    display: flex; align-items: center; gap: 4px; margin-left: auto;
+}
+.meta-link:hover { text-decoration: underline; }
 
-    @media (max-width: 768px) {
-        .events-toolbar { flex-direction: column; align-items: stretch; }
-        .search-wrapper { max-width: 100%; }
-        .events-grid { grid-template-columns: 1fr; }
-    }
+.rejected-msg {
+    font-size: .78rem; color: #dc2626; background: #fee2e2;
+    border-radius: 8px; padding: 6px 10px; margin-top: 4px;
+    display: flex; align-items: center; gap: 5px;
+}
 
-    /* Event Card (Premium) */
-    :global(.event-card) {
-        background: white;
-        border-radius: 20px;
-        padding: 24px;
-        border: 1px solid #f1f5f9;
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-    }
+.card-actions {
+    position: absolute; top: 14px; right: 14px;
+    display: flex; gap: 6px;
+}
+.btn-ic {
+    width: 28px; height: 28px; border-radius: 7px;
+    border: 1px solid #e2e8f0; background: #fff; cursor: pointer;
+    font-size: .72rem; color: #94a3b8;
+    display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.btn-ic:hover { color: #0073ff; border-color: #0073ff; }
+.btn-ic.del:hover { color: #ef4444; border-color: #ef4444; }
 
-    :global(.event-card:hover) {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-        border-color: #e0f2fe;
-    }
+/* Modal */
+.m-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.55); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 3000; padding: 20px;
+}
+.m-overlay.open { display: flex; }
+.m-card {
+    background: #fff; border-radius: 20px;
+    width: 100%; max-width: 600px; max-height: 92vh; overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0,0,0,.15);
+}
+.m-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 28px 18px; border-bottom: 1px solid #f1f5f9;
+    position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.m-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+.m-close {
+    background: #f1f5f9; border: none; width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer; color: #64748b;
+    display: flex; align-items: center; justify-content: center;
+}
+.m-close:hover { background: #e2e8f0; }
 
-    :global(.card-top) {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
+.m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 16px; }
 
-    :global(.event-badge) {
-        font-size: 0.7rem;
-        font-weight: 800;
-        padding: 4px 12px;
-        border-radius: 40px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg label { font-size: .8rem; font-weight: 700; color: #475569; }
+.fi {
+    border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 10px 13px; font-size: .88rem; color: #1e293b;
+    font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: border-color .2s;
+}
+.fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+textarea.fi { resize: vertical; }
+.req  { color: #ef4444; }
+.hint { font-weight: 400; color: #94a3b8; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    :global(.badge-virtual), :global(.badge-online) { background: #eff6ff; color: #3b82f6; }
-    :global(.badge-presencial) { background: #fdf2f8; color: #db2777; }
+/* Tipo toggle */
+.type-toggle { display: flex; gap: 0; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.type-btn {
+    flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600;
+    background: #fff; border: none; color: #64748b; cursor: pointer; transition: all .2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.type-btn:not(:last-child) { border-right: 1px solid #e2e8f0; }
+.type-btn.active { background: #0073ff; color: #fff; }
 
-    :global(.event-date-box) {
-        text-align: right;
-        display: flex;
-        flex-direction: column;
-        line-height: 1;
-    }
+/* Visibilidad */
+.vis-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vis-opt { cursor: pointer; }
+.vis-opt input[type="radio"] { display: none; }
+.vis-card {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 10px;
+    text-align: center; transition: all .2s; background: #fff;
+}
+.vis-card i      { font-size: 1.2rem; color: #94a3b8; margin-bottom: 3px; }
+.vis-card strong { font-size: .85rem; color: #475569; font-weight: 700; }
+.vis-card small  { font-size: .7rem; color: #94a3b8; }
+.vis-opt input:checked + .vis-card { border-color: #0073ff; background: #f0f7ff; }
+.vis-opt input:checked + .vis-card i      { color: #0073ff; }
+.vis-opt input:checked + .vis-card strong { color: #0073ff; }
+.vis-opt:last-child input:checked + .vis-card {
+    border-color: #64748b; background: #f8fafc;
+}
+.vis-opt:last-child input:checked + .vis-card i      { color: #64748b; }
+.vis-opt:last-child input:checked + .vis-card strong { color: #475569; }
 
-    :global(.date-num) {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: var(--color-azure-radiant);
-    }
+/* Publicación toggle */
+.pub-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pub-btn {
+    display: flex; align-items: center; gap: 10px;
+    border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;
+    background: #fff; cursor: pointer; transition: all .2s; text-align: left;
+}
+.pub-btn i { font-size: 1.3rem; color: #94a3b8; flex-shrink: 0; }
+.pub-btn div { display: flex; flex-direction: column; gap: 2px; }
+.pub-btn strong { font-size: .82rem; font-weight: 700; color: #475569; }
+.pub-btn small  { font-size: .7rem; color: #94a3b8; }
+.pub-btn.active { border-color: #0073ff; background: #f0f7ff; }
+.pub-btn.active i      { color: #0073ff; }
+.pub-btn.active strong { color: #0073ff; }
 
-    :global(.date-txt) {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #94a3b8;
-        text-transform: uppercase;
-    }
+.m-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding: 16px 28px 22px; border-top: 1px solid #f1f5f9;
+    position: sticky; bottom: 0; background: #fff;
+}
+.btn-ghost {
+    background: #f1f5f9; border: none; padding: 10px 20px;
+    border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b;
+}
 
-    :global(.card-body h3) {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0 0 8px 0;
-        line-height: 1.4;
-    }
-
-    :global(.event-description) {
-        font-size: 0.88rem;
-        color: #64748b;
-        margin: 0;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    :global(.card-footer-meta) {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-top: 16px;
-        border-top: 1.5px dashed #f1f5f9;
-        margin-top: auto;
-    }
-
-    :global(.meta-item) {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #94a3b8;
-    }
-
-    :global(.meta-item svg) { width: 15px; height: 15px; color: #cbd5e1; }
-
-    :global(.capacity-indicator) {
-        margin-left: auto;
-        background: #f8fafc;
-        padding: 4px 8px;
-        border-radius: 6px;
-    }
-
-    /* Loading state */
-    .loading-placeholder {
-        grid-column: 1 / -1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        padding: 100px 0;
-        color: #94a3b8;
-    }
-
-    .spinner {
-        width: 32px;
-        height: 32px;
-        border: 4px solid #f1f5f9;
-        border-top-color: var(--color-azure-radiant);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
+@media(max-width: 1024px) { .events-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 640px)  {
+    .events-grid { grid-template-columns: 1fr; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .row2 { grid-template-columns: 1fr; }
+    .pub-toggle { grid-template-columns: 1fr; }
+}
 </style>
 
 <script>
-    import { authManager as auth } from "../../utils/auth.js";
+import { AuthManager, authManager } from '../../utils/auth.js';
 
-    let allEvents = [];
-    let activeFilter = 'all';
+let allEvents  = [];
+let activeType = 'all';
+let editingId  = null;
 
-    async function init() {
-        try {
-            // Fetch real events
-            const data = await auth.get('events');
-            allEvents = data || [];
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-            // Mock fallback for UI demonstration
-            if (allEvents.length === 0) {
-                allEvents = [
-                    { title: 'Workshop de Astro para Mentores', event_date: '2026-03-24', description: 'Capacitación avanzada sobre el ecosistema Astro y cómo mentorizar a nuevos estudiantes.', location: 'Zoom Meet', event_type: 'virtual', capacity: 30, event_time: '18:00' },
-                    { title: 'Meetup CTech: Medellín', event_date: '2026-04-05', description: 'Encuentro presencial para establecer contactos y compartir experiencias de tecnología.', location: 'Ruta N, Medellín', event_type: 'presencial', capacity: 100, event_time: '16:30' },
-                    { title: 'Taller de TypeScript Avanzado', event_date: '2026-03-15', description: 'Profundizando en tipos genéricos y decoradores para proyectos a gran escala.', location: 'Discord Community Lab', event_type: 'virtual', capacity: 50, event_time: '19:00' }
-                ];
-            }
+const STATUS_MAP = {
+    draft:    { label: 'Borrador',    cls: 'badge-draft',    cardCls: 'is-draft' },
+    pending:  { label: 'En revisión', cls: 'badge-pending',  cardCls: 'is-pending' },
+    approved: { label: 'Aprobado',    cls: 'badge-approved', cardCls: '' },
+    rejected: { label: 'Rechazado',   cls: 'badge-rejected', cardCls: 'is-rejected' },
+};
 
-            renderGrid();
-        } catch (err) {
-            console.error('Failure loading events', err);
-            const grid = document.getElementById('eventsGrid');
-            if (grid) grid.innerHTML = '<p>Error al sincronizar el calendario. Intente más tarde.</p>';
-        }
-    }
+// ── Carga ────────────────────────────────────────────────────────────────────
+async function init() {
+    const data = await AuthManager.fetch('/events/my');
+    allEvents  = Array.isArray(data) ? data : [];
+    render();
+}
 
-    function renderGrid() {
-        const grid = document.getElementById('eventsGrid');
-        const searchTerm = (document.getElementById('eventSearch') as HTMLInputElement)?.value.toLowerCase() || '';
-        
-        if (!grid) return;
+// ── Render ───────────────────────────────────────────────────────────────────
+function render() {
+    const grid = document.getElementById('eventsGrid');
+    const term = (document.getElementById('eventSearch') as HTMLInputElement).value.toLowerCase();
 
-        const filtered = allEvents.filter(ev => {
-            const matchesSearch = ev.title.toLowerCase().includes(searchTerm) || ev.location.toLowerCase().includes(searchTerm);
-            
-            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-            let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
-            
-            const matchesType = activeFilter === 'all' || normalizedType === activeFilter;
-            return matchesSearch && matchesType;
-        });
-
-        if (filtered.length === 0) {
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">No se encontraron eventos con los criterios actuales.</p>';
-            return;
-        }
-
-        grid.innerHTML = filtered.map(ev => {
-            const date = new Date(ev.event_date + 'T00:00:00');
-            const dayNum = date.getDate();
-            const monthText = date.toLocaleString('es', { month: 'short' }).toUpperCase();
-            
-            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-            let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
-            
-            const typeClass = type === 'virtual' ? 'badge-virtual' : 'badge-presencial';
-            const typeLabel = type === 'virtual' ? 'Virtual' : 'Presencial';
-
-            return `
-                <div class="event-card">
-                    <div class="card-top">
-                        <span class="event-badge ${typeClass}">${typeLabel}</span>
-                        <div class="event-date-box">
-                            <span class="date-num">${dayNum}</span>
-                            <span class="date-txt">${monthText}</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3>${ev.title}</h3>
-                        <p class="event-description">${ev.description}</p>
-                    </div>
-                    <div class="card-footer-meta">
-                        <div class="meta-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>${ev.event_time || '18:00'}h</span>
-                        </div>
-                        <div class="meta-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                            </svg>
-                            <span>${ev.location.split(',')[0]}</span>
-                        </div>
-                        <div class="meta-item capacity-indicator">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a5.97 5.97 0 0 0-.942 3.197M12 10.5a3.375 3.375 0 1 0 0-6.75 3.375 3.375 0 0 0 0 6.75ZM2.625 18c0-1.113.285-2.16.786-3.07a4.125 4.125 0 0 1 3.238-2.228M2.625 18c.007.244.025.487.052.729A11.91 11.91 0 0 0 12 21c2.17 0 4.207-.576 5.963-1.584A6.062 6.062 0 0 1 18 18.719m-15.375 0a4.188 4.188 0 0 1-.375-1.75c0-1.113.285-2.16.786-3.07Zm12.188-9.75a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-                            </svg>
-                            <span>${ev.capacity}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // Listeners
-    document.getElementById('eventSearch')?.addEventListener('input', renderGrid);
-    
-    document.querySelectorAll('.seg-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeFilter = btn.getAttribute('data-filter') || 'all';
-            renderGrid();
-        });
+    const filtered = allEvents.filter(ev => {
+        const matchTerm = ev.title.toLowerCase().includes(term) ||
+                          (ev.location || '').toLowerCase().includes(term);
+        const type = (ev.event_type || '').toLowerCase();
+        const matchType = activeType === 'all' || type === activeType;
+        return matchTerm && matchType;
     });
 
-    init();
+    if (!filtered.length) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                No se encontraron eventos.
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(ev => {
+        const d     = new Date((ev.event_date || '') + 'T00:00:00');
+        const day   = d.getDate();
+        const mon   = MONTHS[d.getMonth()] || '';
+        const type  = (ev.event_type || 'virtual').toLowerCase();
+        const typeLabel = type === 'presencial' ? 'Presencial' : 'Virtual';
+        const typeCls   = type === 'presencial' ? 'badge-presencial' : 'badge-virtual';
+
+        const stInfo    = STATUS_MAP[ev.status] || STATUS_MAP.pending;
+        const visCls    = ev.visibility === 'privado' ? 'badge-privado' : 'badge-publico';
+        const visLabel  = ev.visibility === 'privado' ? '🔒 Privado' : '🌐 Público';
+
+        // Solo se puede editar/eliminar en draft o pending
+        const canEdit = ev.status === 'draft' || ev.status === 'pending';
+
+        const locationHtml = ev.location
+            ? (ev.event_type === 'virtual'
+                ? `<a class="meta-link" href="${ev.location}" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Unirse</a>`
+                : `<span class="meta-it"><i class="fas fa-map-marker-alt"></i> ${ev.location.substring(0, 30)}${ev.location.length > 30 ? '…' : ''}</span>`)
+            : '';
+
+        const rejectedMsg = ev.status === 'rejected'
+            ? `<div class="rejected-msg"><i class="fas fa-times-circle"></i> Rechazado por el líder. Puedes editar y reenviar a revisión.</div>` : '';
+
+        return `
+        <div class="ev-card ${stInfo.cardCls}">
+            ${canEdit ? `
+            <div class="card-actions">
+                <button class="btn-ic" onclick="openEdit(${ev.id})" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+                <button class="btn-ic del" onclick="deleteEvent(${ev.id})" title="Eliminar"><i class="fas fa-trash"></i></button>
+            </div>` : ''}
+            <div class="card-top">
+                <div class="badges">
+                    <span class="badge-type ${typeCls}">${typeLabel}</span>
+                    <span class="badge-type ${stInfo.cls}">${stInfo.label}</span>
+                    ${ev.status === 'approved' ? `<span class="badge-type ${visCls}">${visLabel}</span>` : ''}
+                </div>
+                <div class="date-box">
+                    <span class="date-num">${day}</span>
+                    <span class="date-mon">${mon}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h3>${ev.title}</h3>
+                <p>${ev.description || 'Sin descripción.'}</p>
+                ${rejectedMsg}
+            </div>
+            <div class="card-meta">
+                ${ev.event_time ? `<span class="meta-it"><i class="fas fa-clock"></i> ${String(ev.event_time).substring(0,5)}h</span>` : ''}
+                ${ev.capacity  ? `<span class="meta-it"><i class="fas fa-users"></i> ${ev.capacity}</span>` : ''}
+                ${locationHtml}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── Eliminar ─────────────────────────────────────────────────────────────────
+window.deleteEvent = async function(id) {
+    if (!confirm('¿Eliminar este evento?')) return;
+    const res = await AuthManager.fetch(`/events/${id}`, { method: 'DELETE' });
+    if (res !== null) {
+        allEvents = allEvents.filter(e => e.id !== id);
+        render();
+    }
+};
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openModal(ev = null) {
+    editingId = ev?.id || null;
+    document.getElementById('mTitle').textContent = ev ? 'Editar Evento' : 'Nuevo Evento';
+    document.getElementById('btnTxt').textContent = ev ? 'Guardar Cambios' : 'Crear Evento';
+    document.getElementById('fId').value       = ev?.id || '';
+    document.getElementById('fTitle').value    = ev?.title || '';
+    document.getElementById('fDesc').value     = ev?.description || '';
+    document.getElementById('fDate').value     = ev?.event_date || '';
+    document.getElementById('fTime').value     = ev?.event_time ? String(ev.event_time).substring(0,5) : '';
+    document.getElementById('fLocation').value = ev?.location || '';
+    document.getElementById('fCapacity').value = ev?.capacity || '';
+
+    // tipo
+    const type = (ev?.event_type || 'virtual').toLowerCase();
+    document.getElementById('fType').value = type;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === type));
+    updateLocationLabel(type);
+
+    // visibilidad
+    const vis = ev?.visibility || 'publico';
+    document.querySelectorAll('input[name="fVisibility"]').forEach(r => { r.checked = r.value === vis; });
+
+    // estado de publicación: si era rechazado, permitir reenviar como pending
+    const status = ev?.status === 'approved' ? 'pending' : (ev?.status || 'draft');
+    document.getElementById('fStatus').value = status;
+    document.querySelectorAll('.pub-btn').forEach(b => b.classList.toggle('active', b.dataset.val === status));
+
+    document.getElementById('eventModal').classList.add('open');
+    document.getElementById('fTitle').focus();
+}
+
+window.openEdit = function(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (ev) openModal(ev);
+};
+
+function closeModal() {
+    document.getElementById('eventModal').classList.remove('open');
+    document.getElementById('eventForm').reset();
+    editingId = null;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'virtual'));
+    document.getElementById('fType').value = 'virtual';
+    updateLocationLabel('virtual');
+    // reset pub toggle
+    document.querySelectorAll('.pub-btn').forEach(b => b.classList.toggle('active', b.dataset.val === 'draft'));
+    document.getElementById('fStatus').value = 'draft';
+}
+
+function updateLocationLabel(type) {
+    document.getElementById('locationLabel').textContent =
+        type === 'virtual' ? 'Link de la reunión' : 'Dirección del lugar';
+    document.getElementById('fLocation').placeholder =
+        type === 'virtual' ? 'https://meet.google.com/...' : 'Calle 123, Ciudad...';
+}
+
+// Tipo toggle
+document.getElementById('typeToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.type-btn');
+    if (!btn) return;
+    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('fType').value = btn.dataset.val;
+    updateLocationLabel(btn.dataset.val);
+});
+
+// Pub toggle
+document.getElementById('pubToggle').addEventListener('click', e => {
+    const btn = e.target.closest('.pub-btn');
+    if (!btn) return;
+    document.querySelectorAll('.pub-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('fStatus').value = btn.dataset.val;
+});
+
+// ── Submit ────────────────────────────────────────────────────────────────────
+document.getElementById('eventForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+
+    const payload = {
+        title:       (document.getElementById('fTitle') as HTMLInputElement).value.trim(),
+        description: (document.getElementById('fDesc') as HTMLTextAreaElement).value.trim() || null,
+        event_date:  (document.getElementById('fDate') as HTMLInputElement).value,
+        event_time:  (document.getElementById('fTime') as HTMLInputElement).value || null,
+        event_type:  (document.getElementById('fType') as HTMLInputElement).value,
+        location:    (document.getElementById('fLocation') as HTMLInputElement).value.trim() || null,
+        capacity:    parseInt((document.getElementById('fCapacity') as HTMLInputElement).value) || null,
+        visibility:  (document.querySelector('input[name="fVisibility"]:checked') as HTMLInputElement)?.value || 'publico',
+        status:      (document.getElementById('fStatus') as HTMLInputElement).value,
+    };
+
+    try {
+        let result;
+        if (editingId) {
+            result = await AuthManager.fetch(`/events/${editingId}`, {
+                method: 'PUT', body: JSON.stringify(payload),
+            });
+            if (result) {
+                const idx = allEvents.findIndex(e => e.id === editingId);
+                if (idx !== -1) allEvents[idx] = result;
+            }
+        } else {
+            result = await AuthManager.fetch('/events/', {
+                method: 'POST', body: JSON.stringify(payload),
+            });
+            if (result) allEvents.unshift(result);
+        }
+        if (result) { render(); closeModal(); }
+    } catch(err) {
+        alert('Error al guardar: ' + err.message);
+    } finally {
+        btn.disabled = false;
+    }
+});
+
+// ── Eventos UI ────────────────────────────────────────────────────────────────
+document.getElementById('btnNewEvent').addEventListener('click',  () => openModal());
+document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+document.getElementById('eventModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+});
+document.getElementById('eventSearch').addEventListener('input', render);
+document.querySelectorAll('.seg').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.seg').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeType = btn.dataset.filter;
+        render();
+    });
+});
+
+init();
 </script>

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, JSON, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, JSON, DateTime, Date, func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -9,12 +9,20 @@ class Course(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text)
     is_premium = Column(Boolean, default=False)
-    technologies = Column(JSON, default=[]) 
+    technologies = Column(JSON, default=[])
     content_links = Column(JSON)
     thumbnail_url = Column(Text)
     mentor_id = Column(Integer, ForeignKey("users.id"))
     community_id = Column(Integer, ForeignKey("communities.id_community"))
     specialty_id = Column(Integer, ForeignKey("specialties.id"))
+    # Nivel del curso
+    level = Column(String(20), default="basico", nullable=False)  # basico | intermedio | avanzado
+    # Fecha de inicio del curso
+    start_date = Column(Date, nullable=True)
+    # Módulos: lista de {title, description}
+    modules = Column(JSON, default=[])
+    # "pending" = esperando aprobación del líder, "approved" = activo, "rejected" = rechazado
+    status = Column(String(20), default="pending", nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
     # Relaciones

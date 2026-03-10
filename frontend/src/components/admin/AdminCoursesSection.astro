@@ -341,7 +341,7 @@
         try {
             const data = await AuthManager.fetch('/courses');
             allCourses = Array.isArray(data) ? data : [];
-            
+
             // Mock if empty
             if (allCourses.length === 0) {
                 allCourses = [
@@ -361,9 +361,10 @@
     function populateSpecialties(courses) {
         const select = document.getElementById('specialtyFilter');
         if (!select) return;
-        
+        select.innerHTML = '<option value="">Todas las especialidades</option>';
+
         const specialties = [...new Set(courses.map(c => c.specialty_name).filter(Boolean))].sort();
-        
+
         specialties.forEach(spec => {
             const option = document.createElement('option');
             option.value = spec;
@@ -406,12 +407,15 @@
     }
 
     function applyFilters() {
-        const term = (document.getElementById('courseSearch') as HTMLInputElement)?.value.toLowerCase() || '';
-        const specialty = (document.getElementById('specialtyFilter') as HTMLSelectElement)?.value || '';
+        const searchEl = document.getElementById('courseSearch');
+        const selectEl = document.getElementById('specialtyFilter');
+        const term = (searchEl && searchEl.value) ? searchEl.value.toLowerCase() : '';
+        const specialty = selectEl ? selectEl.value : '';
 
         const filtered = allCourses.filter(c => {
-            const matchesSearch = c.title.toLowerCase().includes(term) || 
-                                (c.mentor_name || '').toLowerCase().includes(term);
+            const title = (c.title || '').toString().toLowerCase();
+            const mentor = (c.mentor_name || '').toString().toLowerCase();
+            const matchesSearch = title.includes(term) || mentor.includes(term);
             const matchesSpecialty = !specialty || c.specialty_name === specialty;
             return matchesSearch && matchesSpecialty;
         });
@@ -419,9 +423,12 @@
         renderCourses(filtered);
     }
 
-    document.getElementById('courseSearch')?.addEventListener('input', applyFilters);
-    document.getElementById('specialtyFilter')?.addEventListener('change', applyFilters);
-
-    fetchData();
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchEl = document.getElementById('courseSearch');
+        const selectEl = document.getElementById('specialtyFilter');
+        searchEl?.addEventListener('input', applyFilters);
+        selectEl?.addEventListener('change', applyFilters);
+        fetchData();
+    });
 </script>
 

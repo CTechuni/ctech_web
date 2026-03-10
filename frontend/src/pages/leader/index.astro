@@ -92,9 +92,30 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                             <th class="px-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="leaderMembersTableBody">
-                    </tbody>
+                    <tbody id="leaderMembersTableBody"></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Promover a Mentor -->
+    <div class="promote-overlay" id="promoteModal">
+        <div class="promote-card">
+            <div class="promote-icon"><i class="fas fa-user-graduate"></i></div>
+            <h4 id="promoteTitle">Promover a Mentor</h4>
+            <p id="promoteSubtitle">Selecciona la especialidad para asignar al nuevo mentor.</p>
+            <input type="hidden" id="promoteUserId" />
+            <div class="fg">
+                <label>Especialidad <span style="color:#ef4444">*</span></label>
+                <select id="promoteSpecialty" class="promote-select">
+                    <option value="">Selecciona una especialidad...</option>
+                </select>
+            </div>
+            <div class="promote-actions">
+                <button class="btn-ghost-p" id="btnCancelPromote">Cancelar</button>
+                <button class="btn-promote" id="btnConfirmPromote" disabled>
+                    <i class="fas fa-user-graduate"></i> Promover
+                </button>
             </div>
         </div>
     </div>
@@ -376,6 +397,25 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             overflow: visible;
         }
 
+        .btn-promote-sm {
+            background-color: #e0e7ff;
+            border: 1px solid #c7d2fe;
+            color: #4338ca;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-promote-sm:hover {
+            background-color: #4338ca;
+            color: white;
+        }
+
         .btn-quit-mentor {
             background-color: #fffbeb;
             border: 1px solid #fef3c7;
@@ -419,56 +459,228 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             color: #ef4444;
         }
 
-        /* SweetAlert2 Pill Customization */
-        .rounded-16 {
-            border-radius: 16px !important;
-        }
-
-        .pill-button {
-            border-radius: 9999px !important;
-            padding: 10px 24px !important;
-            font-size: 0.9rem !important;
-            font-weight: 600 !important;
-        }
-
-
         .text-end { text-align: right; }
-
         .row-fade-out {
-            opacity: 0;
-            transform: translateX(20px);
+            opacity: 0; transform: translateX(20px);
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
-
         .bg-purple { background: #a855f7; }
 
-
-            .metrics-grid-leader {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .search-box {
-                width: 200px;
-            }
+        @media (max-width: 768px) {
+            .metrics-grid-leader { grid-template-columns: repeat(2, 1fr); }
+            .search-box { width: 200px; }
         }
-
         @media (max-width: 640px) {
-            .metrics-grid-leader {
-                grid-template-columns: 1fr;
-            }
-            .table-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .search-box {
-                width: 100%;
-            }
+            .metrics-grid-leader { grid-template-columns: 1fr; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .search-box { width: 100%; }
         }
+
+        /* ── Modal promover ── */
+        .promote-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,.55); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 3000; padding: 20px;
+        }
+        .promote-overlay.open { display: flex; }
+        .promote-card {
+            background: #fff; border-radius: 20px;
+            width: 100%; max-width: 400px; padding: 32px 28px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,.15);
+        }
+        .promote-icon {
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #e0e7ff; color: #4338ca;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; margin: 0 auto 14px;
+        }
+        .promote-card h4 { font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 6px; }
+        .promote-card p  { font-size: .83rem; color: #64748b; margin: 0 0 18px; }
+        .fg { text-align: left; }
+        .fg label { font-size: .78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 5px; }
+        .promote-select {
+            width: 100%; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 9px 12px; font-size: .87rem; color: #1e293b;
+            font-family: inherit; outline: none;
+        }
+        .promote-select:focus { border-color: #3b82f6; }
+        .promote-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .btn-ghost-p {
+            background: #f1f5f9; border: none; padding: 9px 20px;
+            border-radius: 10px; font-weight: 600; font-size: .87rem;
+            cursor: pointer; color: #64748b;
+        }
+        .btn-promote {
+            background: #4338ca; color: #fff; border: none;
+            padding: 9px 20px; border-radius: 10px;
+            font-weight: 700; font-size: .87rem; cursor: pointer;
+            display: flex; align-items: center; gap: 7px; transition: background .2s;
+        }
+        .btn-promote:hover    { background: #3730a3; }
+        .btn-promote:disabled { background: #94a3b8; cursor: not-allowed; }
     </style>
 </LeaderLayout>
 
 <script type="module">
     import { AuthManager, authManager } from "../../utils/auth.js";
+
+    const ROLE_MAP = { 1: 'Admin', 2: 'Mentor', 3: 'Líder', 4: 'Usuario' };
+    const ROLE_CSS = { 1: 'leader', 2: 'mentor', 3: 'leader', 4: 'member' };
+
+    let members      = [];
+    let specialties  = [];
+    let communityId  = null;
+
+    // ── Especialidades ────────────────────────────────────────────────────────
+    async function loadSpecialties() {
+        try {
+            const res = await fetch('http://localhost:8000/api/v1/specialties/');
+            specialties = await res.json();
+            const sel = document.getElementById('promoteSpecialty');
+            specialties.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id; opt.textContent = s.name;
+                sel.appendChild(opt);
+            });
+        } catch(e) { console.warn('No se pudieron cargar especialidades', e); }
+    }
+
+    // ── Modal promover ────────────────────────────────────────────────────────
+    function openPromoteModal(userId, userName) {
+        document.getElementById('promoteUserId').value = userId;
+        document.getElementById('promoteTitle').textContent    = `Promover a ${userName}`;
+        document.getElementById('promoteSubtitle').textContent = 'Selecciona la especialidad para asignar al nuevo mentor.';
+        document.getElementById('promoteSpecialty').value      = '';
+        document.getElementById('btnConfirmPromote').disabled  = true;
+        document.getElementById('promoteModal').classList.add('open');
+    }
+
+    document.getElementById('promoteSpecialty').addEventListener('change', function() {
+        document.getElementById('btnConfirmPromote').disabled = !this.value;
+    });
+
+    document.getElementById('btnCancelPromote').addEventListener('click', () => {
+        document.getElementById('promoteModal').classList.remove('open');
+    });
+
+    document.getElementById('btnConfirmPromote').addEventListener('click', async () => {
+        const userId      = document.getElementById('promoteUserId').value;
+        const specialtyId = document.getElementById('promoteSpecialty').value;
+        const btn = document.getElementById('btnConfirmPromote');
+        btn.disabled = true;
+        try {
+            const res = await AuthManager.fetch(`/users/${userId}/promote`, {
+                method: 'PATCH',
+                body: JSON.stringify({ specialty_id: parseInt(specialtyId) }),
+            });
+            if (res) {
+                document.getElementById('promoteModal').classList.remove('open');
+                await reloadMembers();
+            }
+        } catch(e) {
+            alert('Error al promover: ' + e.message);
+            btn.disabled = false;
+        }
+    });
+
+    // ── Demote ────────────────────────────────────────────────────────────────
+    async function demoteMentor(userId, userName) {
+        if (!confirm(`¿Quitar el rol de mentor a ${userName}? Volverá a ser usuario estándar.`)) return;
+        try {
+            const res = await AuthManager.fetch(`/users/${userId}/demote`, { method: 'PATCH' });
+            if (res) await reloadMembers();
+        } catch(e) { alert('Error al quitar el rol: ' + e.message); }
+    }
+
+    // ── Recargar miembros ─────────────────────────────────────────────────────
+    async function reloadMembers() {
+        if (!communityId) return;
+        const data = await AuthManager.fetch(`/users/community/${communityId}`);
+        members = Array.isArray(data) ? data : [];
+        renderMembers(members);
+        // actualizar métricas rápido
+        const mentorCount = members.filter(m => m.rol_id === 2).length;
+        const userCount   = members.filter(m => m.rol_id === 4).length;
+        document.getElementById('leaderMembersCount').textContent = userCount;
+        document.getElementById('leaderMentorsCount').textContent = mentorCount;
+    }
+
+    // ── Render tabla ──────────────────────────────────────────────────────────
+    function renderMembers(list) {
+        const tbody = document.getElementById('leaderMembersTableBody');
+        if (!tbody) return;
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:#94a3b8;">Sin miembros en la comunidad.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = list.map(m => {
+            const roleName = ROLE_MAP[m.rol_id] || 'Usuario';
+            const roleCss  = ROLE_CSS[m.rol_id] || 'member';
+            const initials = (m.name_user || '?').substring(0, 2).toUpperCase();
+            const avatarColors = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444'];
+            const color = avatarColors[m.id % avatarColors.length];
+
+            const actions = [];
+            if (m.rol_id === 4) {
+                actions.push(`
+                    <button class="btn-promote-sm" data-id="${m.id}" data-name="${m.name_user}" title="Promover a Mentor">
+                        <i class="fas fa-user-graduate"></i> Promover
+                    </button>`);
+            }
+            if (m.rol_id === 2) {
+                actions.push(`
+                    <button class="btn-quit-mentor" data-id="${m.id}" data-name="${m.name_user}" title="Quitar Mentor">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hero-icon-sm">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                        </svg>
+                    </button>`);
+            }
+
+            return `
+            <tr>
+                <td class="px-4">
+                    <div class="user-cell">
+                        <div class="avatar" style="background:${color}">${initials}</div>
+                        <div class="user-meta">
+                            <span class="user-name">${m.name_user}</span>
+                            <span class="user-email">${m.email}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 text-center">
+                    <span class="badge rounded-pill role-badge ${roleCss}">${roleName}</span>
+                </td>
+                <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
+                <td class="px-4 text-center">
+                    <div class="actions">${actions.join('')}</div>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // Búsqueda
+        const searchInput = document.getElementById('member-search');
+        if (searchInput) {
+            searchInput.oninput = function() {
+                const term = this.value.toLowerCase();
+                tbody.querySelectorAll('tr').forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            };
+        }
+
+        // Botones promover
+        tbody.querySelectorAll('.btn-promote-sm').forEach(btn => {
+            btn.onclick = () => openPromoteModal(btn.dataset.id, btn.dataset.name);
+        });
+
+        // Botones quitar mentor
+        tbody.querySelectorAll('.btn-quit-mentor').forEach(btn => {
+            btn.onclick = () => demoteMentor(btn.dataset.id, btn.dataset.name);
+        });
+    }
 
     window.addEventListener('load', function() {
         // @ts-ignore
@@ -552,101 +764,38 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             }
         });
 
-        // --- Carga de Datos Dinámicos ---
+        // ── Carga de datos ────────────────────────────────────────────────
         async function loadLeaderData() {
             const user = authManager.getUser();
             if (!user || !user.community_id) {
-                console.warn('Contexto de líder no encontrado, re-intentando en 500ms...');
                 setTimeout(loadLeaderData, 500);
                 return;
             }
-
-            const communityId = user.community_id;
-            console.log('Cargando datos para comunidad:', communityId);
+            communityId = user.community_id;
 
             try {
-                // 1. Cargar Métricas
-                const metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
+                const [metrics, membersData] = await Promise.all([
+                    AuthManager.fetch(`/metrics/community/${communityId}`),
+                    AuthManager.fetch(`/users/community/${communityId}`),
+                ]);
+
                 if (metrics) {
-                    document.getElementById('leaderMembersCount').textContent = metrics.total_users || 0;
+                    document.getElementById('leaderMembersCount').textContent = metrics.total_users  || 0;
                     document.getElementById('leaderCoursesCount').textContent = metrics.total_courses || 0;
-                    document.getElementById('leaderEventsCount').textContent = metrics.active_events || 0;
+                    document.getElementById('leaderEventsCount').textContent  = metrics.active_events || 0;
                     document.getElementById('leaderMentorsCount').textContent = metrics.total_mentors || 0;
                 }
 
-                // 2. Cargar Miembros
-                const members = await AuthManager.fetch(`/users/community/${communityId}`);
-                const tbody = document.getElementById('leaderMembersTableBody');
-                if (members && tbody) {
-                    tbody.innerHTML = members.map(m => `
-                        <tr>
-                            <td class="px-4">
-                                <div class="user-cell">
-                                    <div class="avatar bg-soft-blue">${m.name_user.substring(0, 2).toUpperCase()}</div>
-                                    <div class="user-meta">
-                                        <span class="user-name">${m.name_user}</span>
-                                        <span class="user-email">${m.email}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 text-center">
-                                <span class="badge rounded-pill role-badge ${m.role_name?.toLowerCase() || 'member'}">${m.role_name || 'Usuario'}</span>
-                            </td>
-                            <td class="px-4 text-center"><span class="status-badge active">activo</span></td>
-                            <td class="px-4 text-center">
-                                <div class="actions">
-                                    ${m.rol_id === 2 ? `
-                                        <button class="btn-quit-mentor" data-id="${m.id}" title="Quitar Mentor">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hero-icon-sm">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M22 10.5h-6m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                                            </svg>
-                                        </button>
-                                    ` : ''}
-                                    <button class="btn-delete" data-id="${m.id}" title="Eliminar">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon-sm">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `).join('');
-                    
-                    initTableEvents();
-                }
+                members = Array.isArray(membersData) ? membersData : [];
+                renderMembers(members);
 
             } catch (error) {
                 console.error('Error al cargar datos del líder:', error);
             }
         }
 
-        function initTableEvents() {
-            const searchInput = document.querySelector('.search-box input');
-            const tableRows = document.querySelectorAll('.leader-table tbody tr');
-
-            if (searchInput) {
-                searchInput.addEventListener('input', function(e) {
-                    const term = e.target.value.toLowerCase();
-                    tableRows.forEach(row => {
-                        const name = row.querySelector('.user-name').textContent.toLowerCase();
-                        const role = row.querySelector('.role-badge').textContent.toLowerCase();
-                        row.style.display = (name.includes(term) || role.includes(term)) ? '' : 'none';
-                    });
-                });
-            }
-
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.onclick = function() {
-                    const row = this.closest('tr');
-                    const userId = this.getAttribute('data-id');
-                    // Aquí iría el llamado a la API para eliminar
-                    row.classList.add('row-fade-out');
-                    setTimeout(() => row.remove(), 400);
-                };
-            });
-        }
-
         loadLeaderData();
+        loadSpecialties();
     });
 </script>
 

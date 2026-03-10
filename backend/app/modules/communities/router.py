@@ -7,9 +7,11 @@ from . import schemas, service
 
 router = APIRouter(prefix="/communities", tags=["Communities"])
 
-# Creación protegida
+# Creación protegida — solo admin
 @router.post("/", response_model=schemas.CommunityResponse)
 def create_community(data: schemas.CommunityCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede crear comunidades")
     return service.create_community(db, data)
 
 # Subida de imagen a Cloudinary
@@ -35,12 +37,16 @@ def get_communities_with_logo(db: Session = Depends(get_db)):
 def get_communities(db: Session = Depends(get_db), current=Depends(get_current_user)):
     return service.list_communities(db, current_user=current)
 
-# Actualización protegida
+# Actualización protegida (solo admin)
 @router.patch("/{id}", response_model=schemas.CommunityResponse)
-def update_community(id: int, data: schemas.CommunityUpdate, db: Session = Depends(get_db)): #, current=Depends(get_current_user)):
+def update_community(id: int, data: schemas.CommunityUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede editar comunidades")
     return service.update_community(db, id, data)
 
-# Eliminación protegida
+# Eliminación protegida (solo admin)
 @router.delete("/{id}")
-def delete_community(id: int, db: Session = Depends(get_db)): #, current=Depends(get_current_user)):
+def delete_community(id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede eliminar comunidades")
     return service.delete_community(db, id)

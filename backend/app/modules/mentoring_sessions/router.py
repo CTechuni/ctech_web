@@ -9,7 +9,7 @@ router = APIRouter(prefix="/sessions", tags=["Mentoring Sessions"])
 @router.post("/", response_model=schemas.SessionResponse)
 def create(data: schemas.SessionCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
     session_data = data.model_dump()
-    session_data["mentor_id"] = current["user_id"]
+    session_data["mentor_id"] = current.id
     return repository.create(db, session_data)
 
 @router.get("/course/{course_id}", response_model=list[schemas.SessionResponse])
@@ -18,7 +18,7 @@ def get_by_course(course_id: int, db: Session = Depends(get_db)):
 
 @router.post("/{id}/reserve", response_model=schemas.SessionResponse)
 def reserve(id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    return service.book_session(db, id, current["user_id"])
+    return service.book_session(db, id, current.id)
 
 @router.delete("/{id}/cancel")
 def cancel(id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
