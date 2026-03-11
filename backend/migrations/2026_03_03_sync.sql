@@ -22,7 +22,6 @@ SELECT v.name, v.role_desc
 FROM (VALUES
     ('admin','Administrador'),
     ('leader','Leader role'),
-    ('mentor','Mentor role'),
     ('user','Usuario estándar')
 ) AS v(name, role_desc)
 ON CONFLICT (name_rol) DO NOTHING;
