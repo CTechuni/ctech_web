@@ -20,6 +20,10 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # Virtual Environment
 venv/
@@ -28,6 +32,8 @@ ENV/
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -35,7 +41,18 @@ ENV/
 
 # Logs
 *.log
+logs/
+
+# Temporary files
+tmp/
+temp/
 
 # IDEs
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
