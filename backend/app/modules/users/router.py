@@ -8,6 +8,12 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 # Público
 # Protegido
+@router.post("/", response_model=schemas.UserResponse)
+def create_user(data: schemas.UserCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede crear usuarios directamente")
+    return service.create_user(db, data)
+
 @router.get("/", response_model=schemas.UserPaginationResponse)
 def list_users(page: int = 1, limit: int = 6, role: str = "all", search: str = None, db: Session = Depends(get_db), current=Depends(get_current_user)):
     role_id = None
@@ -21,6 +27,11 @@ def list_users(page: int = 1, limit: int = 6, role: str = "all", search: str = N
 def get_me(current=Depends(get_current_user), db: Session = Depends(get_db)):
     return service.get_user(db, current.id)
 
+@router.patch("/me", response_model=schemas.UserResponse)
+def update_me(data: schemas.UserUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    # exclude_unset=True ensures only the fields sent in the request are included
+    return service.update_user(db, current.id, data.model_dump(exclude_unset=True))
+
 @router.patch("/me/password")
 def change_my_password(data: schemas.ChangePasswordRequest, db: Session = Depends(get_db), current=Depends(get_current_user)):
     from app.modules.auth.service import verify_password, get_password_hash
@@ -32,6 +43,8 @@ def change_my_password(data: schemas.ChangePasswordRequest, db: Session = Depend
 
 @router.delete("/me")
 def delete_me(db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id == 1:
+        raise HTTPException(status_code=403, detail="El administrador no puede eliminar su propia cuenta")
     service.delete_user(db, current.id)
     return {"message": "Cuenta eliminada correctamente"}
 

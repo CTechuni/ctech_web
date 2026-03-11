@@ -9,12 +9,14 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     rol_id: int
+    community_id: Optional[int] = None
 
 class UserUpdate(BaseModel):
     name_user: Optional[str] = None
     email: Optional[EmailStr] = None
     status: Optional[str] = None
     community_id: Optional[int] = None
+    rol_id: Optional[int] = None
 
 class ProfileResponse(BaseModel):
     bio: Optional[str] = None

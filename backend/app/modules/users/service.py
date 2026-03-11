@@ -17,21 +17,56 @@ def create_user(db: Session, user_data: schemas.UserCreate):
 
 def change_role(db: Session, user_id: int, new_role_id: int):
     user = repository.get_by_id(db, user_id)
-    old_role_id = user.rol_id if user else None
+    if not user:
+        return None
+        
+    old_role_id = user.rol_id
+    
+    # Si deja de ser líder, limpiar la comunidad
+    if old_role_id == 3 and new_role_id != 3:
+        db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+        db.commit()
     
     update_data = {"rol_id": new_role_id}
     updated_user = repository.update(db, user_id, update_data)
+    
+    # Si pasa a ser líder y tiene comunidad, sincronizar
+    if new_role_id == 3 and updated_user.community_id:
+        sync_community_leader(db, updated_user.community_id, user_id)
+        
     return updated_user
 
 def list_leaders(db: Session):
     return repository.get_leaders_enriched(db)
 
 def update_user(db: Session, user_id: int, user_data: dict):
+    if "email" in user_data and user_data["email"]:
+        from .models import User
+        existing = db.query(User).filter(User.email == user_data["email"], User.id != user_id).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="El correo electrónico ya se encuentra registrado por otro usuario")
+
     if "community_id" in user_data and user_data["community_id"]:
         validate_community_available(db, user_data["community_id"], exclude_leader_id=user_id)
+    user = repository.get_by_id(db, user_id)
+    old_role_id = user.rol_id if user else None
+    old_community_id = user.community_id if user else None
+
+    # Si deja de ser líder o cambia de comunidad
+    if old_role_id == 3:
+        new_rol = user_data.get("rol_id", old_role_id)
+        new_comm = user_data.get("community_id", old_community_id)
+        if new_rol != 3 or (new_comm != old_community_id and new_comm is not None):
+            db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+            db.commit()
+
     user = repository.update(db, user_id, user_data)
-    if user and user.rol_id == 3 and "community_id" in user_data:
-        sync_community_leader(db, user.community_id, user.id)
+    
+    # Si es/pasa a ser líder, sincronizar con la nueva comunidad
+    if user and user.rol_id == 3:
+        if "community_id" in user_data or "rol_id" in user_data:
+            if user.community_id:
+                sync_community_leader(db, user.community_id, user.id)
     return user
 
 def validate_community_available(db: Session, community_id: int, exclude_leader_id: int = None):
@@ -62,6 +97,9 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
         db.commit()
 
 def delete_user(db: Session, user_id: int):
+    # If user is a leader, clear the reference in the community first
+    db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+    db.commit()
     return repository.delete(db, user_id)
 
 def get_all(db: Session):

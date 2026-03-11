@@ -73,7 +73,17 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
 
     # Líder y admin: el evento se aprueba automáticamente
     auto_approve = current.rol_id in [1, 3]
-    return service.create_event(db, data, auto_approve=auto_approve)
+    event = service.create_event(db, data, auto_approve=auto_approve)
+    
+    # Notificación para administradores o líderes
+    from app.modules.notifications.service import add_notification
+    if not auto_approve:
+        add_notification(db, "Nuevo Evento Pendiente", f"Se ha creado un evento que requiere aprobación: {event.title}", "warning")
+    else:
+        # Notificar a la comunidad (podría ser opcional, por ahora solo info)
+        pass
+        
+    return event
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────
 # Líder/admin pueden editar cualquier evento de su comunidad
@@ -150,6 +160,17 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
         event_type=event.event_type or "Virtual",
         name_community=community.name_community if community else "CTech"
     )
+    # Notificar al líder de la comunidad
+    if community and community.leader_id:
+        from app.modules.notifications.service import add_notification
+        add_notification(
+            db, 
+            "Nueva Inscripción", 
+            f"Un usuario se ha registrado en tu evento: {event.title}", 
+            "event", 
+            recipient_id=community.leader_id
+        )
+
     return {"message": "Registro exitoso", "event_title": event.title}
 
 # ── DELETE eliminar evento ─────────────────────────────────────────────────────
@@ -164,7 +185,7 @@ def delete_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
 
 
 
-    elif current.rol_id == 3:
+    if current.rol_id == 3:
         if event.community_id != current.community_id:
             raise HTTPException(status_code=403, detail="Solo puedes eliminar eventos de tu comunidad")
 

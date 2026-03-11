@@ -38,7 +38,7 @@ class Profile(Base):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     bio = Column(Text, nullable=True)
     phone = Column(String(20), nullable=True)
     avatar_url = Column(String(255), nullable=True)
