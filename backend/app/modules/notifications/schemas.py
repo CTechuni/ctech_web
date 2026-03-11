@@ -5,7 +5,7 @@ from typing import Optional
 class NotificationBase(BaseModel):
     title: str
     message: str
-    type: str # course, role, event
+    type: str # role, event, system
 
 class NotificationCreate(NotificationBase):
     pass
