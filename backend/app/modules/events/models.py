@@ -16,5 +16,3 @@ class Event(Base):
     event_type = Column(String(50), name="type_event")
     capacity = Column(Integer)
     community_id = Column(Integer)
-    mentor_id = Column(Integer)
-    course_id = Column(Integer)

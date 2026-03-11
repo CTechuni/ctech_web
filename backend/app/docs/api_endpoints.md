@@ -53,7 +53,7 @@
   "user": {
     "id": 1,
     "email": "usuario@example.com",
-    "role": "admin | mentor | leader | user",
+    "role": "admin | leader | user",
     "name": "Nombre del usuario"
   }
 }
@@ -63,7 +63,6 @@
 | `rol_id` en BD | Nombre en token |
 |---|---|
 | 1 | `admin` |
-| 2 | `mentor` |
 | 3 | `leader` |
 | 4 | `user` |
 
@@ -101,62 +100,11 @@
 }
 ```
 
----
-
-## 📚 Courses — `/api/v1/courses`
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/courses/` | 🔓 | Lista todos los cursos (vista pública: solo fichas de cursos públicos) |
-| `POST` | `/courses/` | 🔐 | Crea un nuevo curso |
-| `GET` | `/courses/{id}` | 🔐 | Obtiene detalle completo de un curso |
-| `PUT` | `/courses/{id}` | 🔐 | Actualización completa de un curso |
-| `DELETE` | `/courses/{id}` | 🔐 | Elimina un curso |
-
-### Crear / Actualizar Curso — Body
-```json
-{
-  "title": "string",
-  "description": "string",
-  "is_premium": false,
-  "technologies": ["React", "TypeScript"],
-  "content_links": {
-    "pdfs": [],
-    "books": [],
-    "videos": []
-  },
-  "thumbnail_url": "string",
-  "mentor_id": "integer",
-  "community_id": "integer",
-  "specialty_id": "integer"
-}
-```
-
----
-
-## 🎓 Mentoring Sessions — `/api/v1/sessions`
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `POST` | `/sessions/` | 🔐 | Crea una sesión de mentoría. El `mentor_id` se toma automáticamente del token |
-| `GET` | `/sessions/course/{course_id}` | 🔓 | Lista sesiones disponibles para un curso |
-| `POST` | `/sessions/{id}/reserve` | 🔐 | Reserva una sesión disponible. El `student_id` se toma del token |
-| `DELETE` | `/sessions/{id}/cancel` | 🔐 | Cancela una sesión reservada |
-
-### Estados posibles de una sesión
-| Estado | Descripción |
-|---|---|
-| `available` | Sesión disponible para ser reservada |
-| `reserved` | Sesión ya reservada por un estudiante |
-| `cancelled` | Sesión cancelada |
-
----
-
 ## 📊 Metrics — `/api/v1/metrics`
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
-| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo (totales de usuarios, comunidades, cursos, eventos) |
+| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo (totales de usuarios, comunidades, eventos) |
 
 ---
 
@@ -165,32 +113,6 @@
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | `GET` | `/admin/` | 👑 | Verifica acceso al panel administrativo. Solo válido para rol `admin` |
-
----
-
-## 🗂️ Specialties — `/api/v1/specialties`
-
-> Endpoints para catalogar especialidades técnicas (Frontend, Backend, Data, etc.)
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/specialties/` | 🔓 | Lista todas las especialidades disponibles |
-| `POST` | `/specialties/` | 🔐 | Crea una nueva especialidad |
-| `PUT` | `/specialties/{id}` | 🔐 | Actualiza una especialidad |
-| `DELETE` | `/specialties/{id}` | 🔐 | Elimina una especialidad |
-
----
-
-## 💻 Technologies — `/api/v1/technologies`
-
-> Catálogo de tecnologías que se asocian a cursos.
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/technologies/` | 🔓 | Lista todas las tecnologías |
-| `POST` | `/technologies/` | 🔐 | Crea una nueva tecnología |
-| `PUT` | `/technologies/{id}` | 🔐 | Actualiza una tecnología |
-| `DELETE` | `/technologies/{id}` | 🔐 | Elimina una tecnología |
 
 ---
 
@@ -212,5 +134,5 @@
 | `400` | Datos inválidos (email duplicado, código incorrecto, nombre con caracteres no permitidos) |
 | `401` | Contraseña incorrecta o token inválido |
 | `403` | Acceso denegado por rol insuficiente |
-| `404` | Recurso no encontrado (usuario, comunidad, curso, sesión) |
+| `404` | Recurso no encontrado (usuario, comunidad, evento) |
 | `422` | Error de validación Pydantic (campo faltante o formato incorrecto) |

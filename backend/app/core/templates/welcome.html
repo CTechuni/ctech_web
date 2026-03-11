@@ -28,25 +28,13 @@
             max-width: 600px;
             border-spacing: 0;
             color: #1e293b;
-            border-radius: 24px;
             overflow: hidden;
             margin-top: 40px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
         }
 
-        .header {
-            background-color: #18457C;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .logo {
-            width: 140px;
-            height: auto;
-        }
-
         .content {
-            padding: 40px;
+            padding: 30px;
             line-height: 1.6;
         }
 
@@ -83,7 +71,7 @@
 
         .cta-container {
             text-align: center;
-            padding-top: 10px;
+            padding: 20px 0;
         }
 
         .btn {
@@ -95,7 +83,6 @@
             font-weight: 700;
             font-size: 16px;
             display: inline-block;
-            transition: background-color 0.2s;
         }
 
         .footer {
@@ -118,7 +105,7 @@
             display: inline-block;
             background: #eff6ff;
             color: #0073ff;
-            padding: 4px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -131,11 +118,6 @@
     <div class="wrapper">
         <table class="main">
             <tr>
-                <td class="header">
-                    <!-- Espacio para barra de color CTech -->
-                </td>
-            </tr>
-            <tr>
                 <td class="content">
                     <h1 class="welcome-title">¡Bienvenida a CTech!</h1>
                     <p class="intro-text">Estamos muy emocionados de tenerte con nosotros, <strong>{{ name_user
@@ -147,26 +129,27 @@
                             Tu Comunidad</p>
                         <h2 class="community-name">{{ name_community }}</h2>
                         <p style="color: #475569; font-size: 14px; margin-top: 8px;">Ya puedes empezar a conectar con
-                            grandes talentos y participar en proyectos innovadores.</p>
+                            grandes talentos y participar en proyectos innovadores, estamos listos para conectarte con lo mejor del ecosistema tech colombiano.</p>
                     </div>
 
                     <p>Como miembro de CTech, ahora tienes acceso a:</p>
                     <div style="margin-bottom: 30px;">
-                        <span class="benefit-tag">📄 Contenido Exclusivo</span>
-                        <span class="benefit-tag">🎥 Masterclasses</span>
-                        <span class="benefit-tag">🎟️ Eventos Privados</span>
+                        <span class="benefit-tag">Calendario global de eventos</span>
+                        <span class="benefit-tag">Networking real</span>
+                        <span class="benefit-tag">Eventos Privados</span>
+                        <span class="benefit-tag">Eventos Publicos</span>
                     </div>
 
                     <div class="cta-container">
-                        <a href="{{ platform_url }}/" class="btn">Explorar Contenido</a>
+                        <a href="{{ platform_url }}/" class="btn">Explorar la plataforma</a>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="footer">
-                    <span class="footer-highlight">Potenciando el Talento Tecnológico</span>
+                    <span class="footer-highlight">Conectaando comunidades Tecnológicas en Colombia</span>
                     <p>&copy; 2025 CTech Platform. Todos los derechos reservados.</p>
-                    <p style="margin-top: 16px;">Recibiste este correo porque te registraste en CTech.</p>
+                    <p style="margin-top: 16px;">Recibiste este correo por tu registro en la plataforma CTech mediante codigo de Comunidad.</p>
                 </td>
             </tr>
         </table>

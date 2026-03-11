@@ -34,13 +34,7 @@ def get_events(db: Session = Depends(get_db), current=Depends(get_optional_user)
         return service.list_by_community(db, current.community_id)
     return service.list_approved(db)
 
-# ── GET /events/my ────────────────────────────────────────────────────────────
-# Solo mentor: ve todos sus eventos (todos los estados)
-@router.get("/my", response_model=list[schemas.EventResponse])
-def get_my_events(db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id != 2:
-        raise HTTPException(status_code=403, detail="Solo los mentores pueden ver sus eventos")
-    return service.list_by_mentor(db, current.id)
+
 
 # ── GET /events/pending ───────────────────────────────────────────────────────
 # Líder: ve eventos pendientes de su comunidad; Admin: todos los pendientes
@@ -62,7 +56,7 @@ def get_upcoming_events(db: Session = Depends(get_db), current=Depends(get_optio
 @router.post("/upload-image")
 async def upload_event_image(file: UploadFile = File(...), current=Depends(get_current_user)):
     from app.core.cloudinary_service import upload_image
-    if current.rol_id not in [1, 2, 3]:
+    if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para subir imágenes")
     url = upload_image(file.file, folder="events")
     if not url:
@@ -76,36 +70,26 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
 # Mentor: status debe ser "draft" o "pending"
 @router.post("/", response_model=schemas.EventResponse)
 def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id not in [1, 2, 3]:
-        raise HTTPException(status_code=403, detail="No tienes permisos para crear eventos")
-
-    if current.rol_id in [2, 3]:
+    if current.rol_id == 3:
         data = data.model_copy(update={"community_id": current.community_id})
 
     # Líder y admin: el evento se aprueba automáticamente
     auto_approve = current.rol_id in [1, 3]
-    return service.create_event(db, data, creator_id=current.id, auto_approve=auto_approve)
+    return service.create_event(db, data, auto_approve=auto_approve)
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────
 # Mentor solo puede editar eventos en estado draft o pending
 # Líder/admin pueden editar cualquier evento de su comunidad
 @router.put("/{event_id}", response_model=schemas.EventResponse)
 def update_event(event_id: int, data: schemas.EventUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id not in [1, 2, 3]:
+    if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para editar eventos")
 
     event = repository.get_by_id(db, event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
 
-    if current.rol_id == 2:
-        # Mentor: solo puede editar sus propios eventos en estado draft/pending
-        if event.mentor_id != current.id:
-            raise HTTPException(status_code=403, detail="Solo puedes editar tus propios eventos")
-        if event.status not in ("draft", "pending"):
-            raise HTTPException(status_code=400, detail="No puedes editar un evento ya aprobado o rechazado")
-
-    elif current.rol_id == 3:
+    if current.rol_id == 3:
         # Líder: solo eventos de su comunidad
         if event.community_id != current.community_id:
             raise HTTPException(status_code=403, detail="Solo puedes editar eventos de tu comunidad")
@@ -174,18 +158,14 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
 # ── DELETE eliminar evento ─────────────────────────────────────────────────────
 @router.delete("/{event_id}")
 def delete_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id not in [1, 2, 3]:
+    if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para eliminar eventos")
 
     event = repository.get_by_id(db, event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
 
-    if current.rol_id == 2:
-        if event.mentor_id != current.id:
-            raise HTTPException(status_code=403, detail="Solo puedes eliminar tus propios eventos")
-        if event.status == "approved":
-            raise HTTPException(status_code=400, detail="No puedes eliminar un evento ya aprobado")
+
 
     elif current.rol_id == 3:
         if event.community_id != current.community_id:

@@ -30,13 +30,9 @@ backend/
 │   │   ├── users/               ← Usuarios y perfiles
 │   │   ├── communities/         ← Comunidades tecnológicas
 │   │   ├── events/              ← Eventos (públicos/privados)
-│   │   ├── courses/             ← Cursos y contenido educativo
-│   │   ├── mentoring_sessions/  ← Sesiones de mentoría
-│   │   ├── content/             ← Recursos y materiales educativos
 │   │   ├── metrics/             ← Métricas del dashboard admin
-│   │   ├── specialties/         ← Catálogo de especialidades
-│   │   ├── technologies/        ← Catálogo de tecnologías
-│   │   └── admin/               ← Panel de administración
+│   │   ├── notifications/       ← Notificaciones globales/admin
+│   │   └── admin/               ← Panel de administración (puntos de entrada admin)
 │   ├── docs/                    ← Esta documentación
 │   └── tests/                   ← Pruebas unitarias e integración
 ├── migrations/                  ← Scripts de migración SQL
@@ -59,8 +55,6 @@ módulo/
 ├── router.py      ← Rutas FastAPI (endpoints HTTP)
 └── service.py     ← Lógica de negocio (operaciones CRUD y reglas)
 ```
-
-> Algunos módulos como `mentoring_sessions` añaden un `repository.py` para separar la lógica de acceso a datos de la lógica de negocio.
 
 ---
 
@@ -96,7 +90,7 @@ Usa `pydantic_settings.BaseSettings` para leer variables del `.env`:
 2. seed_data(db)                     → Inserta roles y admin por defecto
 3. app = FastAPI(...)                → Instancia la aplicación
 4. app.add_middleware(CORS)          → Habilita CORS para cualquier origen
-5. app.include_router(...)           → Registra los 11 módulos en /api/v1
+<!-- 5. app.include_router(...)           → Registra los módulos en /api/v1 -->
 ```
 
 ---
@@ -139,7 +133,6 @@ Al iniciar el servidor, se ejecuta automáticamente un seed que garantiza:
 
 1. **Roles creados:**
    - `id=1` → `admin`
-   - `id=2` → `mentor`
    - `id=3` → `leader`
    - `id=4` → `user`
 
@@ -151,7 +144,7 @@ Al iniciar el servidor, se ejecuta automáticamente un seed que garantiza:
 
 ## Integración con Cloudinary
 
-Las imágenes de eventos y cursos se almacenan en **Cloudinary**. El módulo `core/cloudinary_service.py` centraliza la conexión. Los endpoints de subida de imágenes (`POST /events/upload`) reciben un `UploadFile` y retornan la URL pública de Cloudinary.
+Las imágenes de eventos se almacenan en **Cloudinary**. El módulo `core/cloudinary_service.py` centraliza la conexión. Los endpoints de subida de imágenes (`POST /events/upload`) reciben un `UploadFile` y retornan la URL pública de Cloudinary.
 
 ---
 
@@ -159,9 +152,9 @@ Las imágenes de eventos y cursos se almacenan en **Cloudinary**. El módulo `co
 
 | Aspecto | Convención |
 |---|---|
-| Nombres de tablas | `snake_case` en plural (`users`, `communities`, `mentoring_sessions`) |
+| Nombres de tablas | `snake_case` en plural (`users`, `communities`) |
 | Primary keys | `id` o `id_{entidad}` (ej: `id_community`, `id_rol`) |
-| Foreign keys | `{entidad}_id` (ej: `mentor_id`, `community_id`) |
+| Foreign keys | `{entidad}_id` (ej:`community_id`) |
 | Schemas de entrada | `{Entidad}Create` / `{Entidad}Update` |
 | Schemas de salida | `{Entidad}Response` |
 | Prefijo de rutas | `/api/v1/{módulo}` |

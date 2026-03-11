@@ -34,7 +34,7 @@ class EventResponse(EventBase):
     status: str = "pending"
     image_url: Optional[str] = None
     community_name: Optional[str] = None
-    mentor_id: Optional[int] = None
+
 
     class Config:
         from_attributes = True

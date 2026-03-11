@@ -15,51 +15,16 @@ def create_user(db: Session, user_data: schemas.UserCreate):
         sync_community_leader(db, user.community_id, user.id)
     return user
 
-def change_role(db: Session, user_id: int, new_role_id: int, specialty_id: int = None):
+def change_role(db: Session, user_id: int, new_role_id: int):
     user = repository.get_by_id(db, user_id)
     old_role_id = user.rol_id if user else None
     
     update_data = {"rol_id": new_role_id}
-    if specialty_id is not None:
-        update_data["specialty_id"] = specialty_id
-        
     updated_user = repository.update(db, user_id, update_data)
-    
-    if updated_user:
-        # Notificación si pasa a ser Mentor (rol_id 2)
-        if new_role_id == 2 and old_role_id != 2:
-            community_name = "Sin Comunidad"
-            if updated_user.community_id:
-                comm = db.query(Community).filter(Community.id_community == updated_user.community_id).first()
-                if comm: community_name = comm.name_community
-            
-            notification_service.add_notification(
-                db, 
-                "Nuevo Mentor Asignado", 
-                f"El usuario {updated_user.name_user} ha sido promovido a Mentor en la comunidad {community_name}.",
-                "role"
-            )
-        # Notificación si deja de ser Mentor y vuelve a ser Usuario (rol_id 4)
-        elif new_role_id == 4 and old_role_id == 2:
-            community_name = "Sin Comunidad"
-            if updated_user.community_id:
-                comm = db.query(Community).filter(Community.id_community == updated_user.community_id).first()
-                if comm: community_name = comm.name_community
-                
-            notification_service.add_notification(
-                db, 
-                "Mentor Revocado", 
-                f"El mentor {updated_user.name_user} ha sido designado nuevamente como usuario regular en la comunidad {community_name}.",
-                "role"
-            )
-            
     return updated_user
 
 def list_leaders(db: Session):
     return repository.get_leaders_enriched(db)
-
-def list_mentors(db: Session):
-    return repository.get_mentors_enriched(db)
 
 def update_user(db: Session, user_id: int, user_data: dict):
     if "community_id" in user_data and user_data["community_id"]:

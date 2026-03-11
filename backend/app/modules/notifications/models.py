@@ -7,6 +7,6 @@ class Notification(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     message = Column(Text, nullable=False)
-    type = Column(String(50)) # course, role, event
+    type = Column(String(50)) # role, event
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())

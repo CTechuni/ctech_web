@@ -64,50 +64,10 @@ erDiagram
         datetime created_at
     }
 
-    COURSES {
-        int id PK
-        string title
-        string description
-        bool is_premium
-        json technologies
-        json content_links
-        string thumbnail_url
-        int mentor_id FK
-        int community_id FK
-        int specialty_id FK
-        datetime created_at
-    }
-
-    MENTORING_SESSIONS {
-        int id PK
-        int course_id FK
-        int mentor_id FK
-        int student_id FK
-        datetime scheduled_at
-        string status
-        string meeting_link
-    }
-
-    SPECIALTIES {
-        int id PK
-        string name
-    }
-
-    TECHNOLOGIES {
-        int id PK
-        string name
-    }
-
     ROLES ||--o{ USERS : "tiene"
     USERS ||--o| PROFILES : "tiene"
     COMMUNITIES ||--o{ USERS : "pertenecen"
     USERS ||--o{ COMMUNITIES : "lidera"
-    COMMUNITIES ||--o{ COURSES : "tiene"
-    USERS ||--o{ COURSES : "imparte (mentor)"
-    SPECIALTIES ||--o{ COURSES : "clasifica"
-    COURSES ||--o{ MENTORING_SESSIONS : "tiene"
-    USERS ||--o{ MENTORING_SESSIONS : "es mentor"
-    USERS ||--o{ MENTORING_SESSIONS : "es estudiante"
 ```
 
 ---
@@ -120,7 +80,7 @@ Catálogo de roles del sistema. Se crea con el seed inicial.
 | Campo | Tipo | Descripción |
 |---|---|---|
 | `id_rol` | PK | Identificador del rol |
-| `name_rol` | VARCHAR(50) | Nombre único del rol (`admin`, `mentor`, `leader`, `user`) |
+| `name_rol` | VARCHAR(50) | Nombre único del rol (`admin`, `leader`, `user`) |
 | `description` | TEXT | Descripción del rol |
 
 ### `users`
@@ -187,53 +147,6 @@ Eventos tecnológicos (públicos o privados según lógica de negocio).
 | `location` | VARCHAR(255) | Lugar (dirección o enlace para virtuales) |
 | `image_url` | TEXT | Imagen del lugar del evento (Cloudinary) |
 | `created_at` | DATETIME | Fecha de registro |
-
-### `courses`
-Cursos educativos de cada comunidad.
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | PK | Identificador del curso |
-| `title` | VARCHAR(255) | Título del curso |
-| `description` | TEXT | Descripción del curso |
-| `is_premium` | BOOL | `false` = público (ficha visible), `true` = privado (solo miembros) |
-| `technologies` | JSONB | Lista de tecnologías del curso (ej: `["React","TypeScript"]`) |
-| `content_links` | JSONB | Recursos: `{"pdfs":[], "books":[], "videos":[]}` |
-| `thumbnail_url` | TEXT | Imagen de portada del curso |
-| `mentor_id` | FK → users | Mentor responsable del curso |
-| `community_id` | FK → communities | Comunidad dueña del curso |
-| `specialty_id` | FK → specialties | Especialidad asociada |
-| `created_at` | DATETIME | Fecha de creación |
-
-### `mentoring_sessions`
-Sesiones de mentoría programadas entre mentor y estudiante.
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | PK | Identificador de la sesión |
-| `course_id` | FK → courses | Curso relacionado |
-| `mentor_id` | FK → users | Mentor que ofrece la sesión |
-| `student_id` | FK → users | Estudiante que reserva (nullable hasta la reserva) |
-| `scheduled_at` | DATETIME | Fecha y hora programada |
-| `status` | VARCHAR(50) | Estado: `available`, `reserved`, `cancelled` |
-| `meeting_link` | TEXT | Enlace de videollamada (Google Meet, Zoom, etc.) |
-
-### `specialties`
-Catálogo de especialidades técnicas.
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | PK | Identificador |
-| `name` | VARCHAR(100) | Nombre único (ej: Frontend, Backend, Data, Cloud) |
-
-### `technologies`
-Catálogo de tecnologías.
-
-| Campo | Tipo | Descripción |
-|---|---|---|
-| `id` | PK | Identificador |
-| `name` | VARCHAR(100) | Nombre único (ej: React, FastAPI, PostgreSQL) |
-
 ---
 
 ## Relaciones Clave
@@ -244,7 +157,3 @@ Catálogo de tecnologías.
 | `users` → `profiles` | 1:1 | Cada usuario tiene un único perfil extendido |
 | `communities` → `users` | 1:N | Una comunidad tiene muchos miembros |
 | `users` (leader) → `communities` | 1:N | Un líder puede gestionar su comunidad |
-| `communities` → `courses` | 1:N | Una comunidad tiene muchos cursos |
-| `users` (mentor) → `courses` | 1:N | Un mentor puede dictar varios cursos |
-| `specialties` → `courses` | 1:N | Una especialidad clasifica muchos cursos |
-| `courses` → `mentoring_sessions` | 1:N | Un curso puede tener múltiples sesiones de mentoría |

@@ -27,7 +27,6 @@ def seed_data(db: Session):
         if not db.query(Role).first():
             roles = [
                 Role(name_rol="admin", description="Administrador del sistema"),
-                Role(name_rol="mentor", description="Mentor capacitador"),
                 Role(name_rol="leader", description="Líder de comunidad"),
                 Role(name_rol="user", description="Usuario regular")
             ]

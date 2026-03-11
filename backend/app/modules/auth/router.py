@@ -74,7 +74,7 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="La contraseña es incorrecta")
     
     # Mapeo de roles para el frontend
-    role_map = {1: "admin", 2: "mentor", 3: "leader", 4: "user"}
+    role_map = {1: "admin", 3: "leader", 4: "user"}
     role_name = role_map.get(user.rol_id, "user")
     
     token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})

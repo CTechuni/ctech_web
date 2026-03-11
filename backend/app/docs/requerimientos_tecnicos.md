@@ -112,7 +112,7 @@ CLOUDINARY_API_SECRET=tu_api_secret
 | Requerimiento | Detalle |
 |---|---|
 | **Servicio** | Cloudinary |
-| **Uso** | Imágenes de eventos, cursos y logos de comunidades |
+| **Uso** | Imágenes de eventos y logos de comunidades |
 | **Integración** | `core/cloudinary_service.py` centraliza la conexión |
 | **Configuración** | Variables `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` en `.env` |
 | **Retorno** | URL pública de la imagen almacenada en Cloudinary |
@@ -128,7 +128,7 @@ CLOUDINARY_API_SECRET=tu_api_secret
 | **Formato de datos** | JSON |
 | **Validación de entrada** | Pydantic v2 (schemas) |
 | **Documentación automática** | Swagger UI en `/docs`, ReDoc en `/redoc` |
-| **Módulos registrados** | 11 módulos (auth, users, communities, events, courses, sessions, content, metrics, specialties, technologies, admin) |
+| **Módulos registrados** | 7 módulos (auth, users, communities, events, metrics, notifications, admin) |
 
 ---
 
@@ -137,12 +137,11 @@ CLOUDINARY_API_SECRET=tu_api_secret
 | ID | Nombre | Permisos |
 |---|---|---|
 | 1 | `admin` | Acceso total al sistema, panel administrativo |
-| 2 | `mentor` | Gestión de sus sesiones de mentoría y cursos asignados |
-| 3 | `leader` | Gestión de su comunidad, creación de eventos y cursos |
-| 4 | `user` | Acceso a cursos y eventos de su comunidad, reserva de sesiones |
+| 3 | `leader` | Gestión de su comunidad y creación de eventos |
+| 4 | `user` | Acceso a eventos de su comunidad |
 
 - Los roles se crean automáticamente en el seed al iniciar el servidor.
-- El rol se incluye en el payload del JWT como `"role": "admin"|"mentor"|"leader"|"user"`.
+- El rol se incluye en el payload del JWT como `"role": "admin"|"leader"|"user"`.
 - FastAPI verifica el rol mediante el `Depends(get_current_user)` en cada endpoint protegido.
 
 ---
@@ -161,7 +160,7 @@ Al iniciar, el servidor:
 1. Conecta a PostgreSQL usando las variables del `.env`.
 2. Crea automáticamente todas las tablas si no existen.
 3. Ejecuta el seed (`init_db.py`) para garantizar roles y admin.
-4. Registra los 11 módulos bajo `/api/v1`.
+4. Registra los 7 módulos bajo `/api/v1`.
 5. Expone la API en `http://localhost:8000`.
 
 ---

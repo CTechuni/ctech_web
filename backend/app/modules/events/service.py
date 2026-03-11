@@ -19,22 +19,19 @@ def list_approved(db: Session):
 def list_all(db: Session):
     return _attach_names(repository.get_all(db))
 
-def list_by_mentor(db: Session, mentor_id: int):
-    return _attach_names(repository.get_by_mentor(db, mentor_id))
-
 def list_by_community(db: Session, community_id: int):
     return _attach_names(repository.get_by_community(db, community_id))
 
 def list_pending_by_community(db: Session, community_id: int):
     return _attach_names(repository.get_pending_by_community(db, community_id))
 
-def create_event(db: Session, data, creator_id: int = None, auto_approve: bool = False):
+def create_event(db: Session, data, auto_approve: bool = False):
     if data.status not in ("draft", "pending"):
         data = data.model_copy(update={"status": "pending"})
     if auto_approve:
         data = data.model_copy(update={"status": "approved"})
 
-    new_event = repository.create(db, data, mentor_id=creator_id)
+    new_event = repository.create(db, data)
 
     if new_event and new_event.status == "pending":
         community_name = "Todas"
