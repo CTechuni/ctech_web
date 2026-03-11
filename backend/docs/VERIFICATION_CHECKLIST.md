@@ -69,7 +69,6 @@ Use este checklist para verificar que todos los cambios están en lugar y funcio
 
 ### Autorización
 - [ ] `/users/` lista requiere role=admin
-- [ ] `/users/{id}/promote` requiere role=admin
 - [ ] `/users/{id}/delete` requiere role=admin
 - [ ] `/users/{id}/delete` no permite self-delete
 
@@ -86,7 +85,6 @@ Use este checklist para verificar que todos los cambios están en lugar y funcio
 ### Perfil
 - [ ] `/users/me` devuelve usuario actual
 - [ ] `/users/me` requiere autenticación
-- [ ] `/users/{id}/promote` requiere specialty_id
 - [ ] Solo admins pueden cambiar roles
 
 ### Eliminación
@@ -102,7 +100,6 @@ Use este checklist para verificar que todos los cambios están en lugar y funcio
 - [ ] Requiere autenticación
 - [ ] `created_by` se asigna al usuario actual
 - [ ] `capacity` debe ser > 0
-- [ ] `date_events` no puede ser pasado
 
 ### Upload
 - [ ] Solo tipos MIME permitidos

@@ -53,7 +53,6 @@
 
 ### 8. **Endpoints Mejorados**
 - [x] `/users/register` - Validación mejorada
-- [x] `/users/{id}/promote` - No permite self-promotion
 - [x] `/users/{id}/delete` - No permite self-deletion
 - [x] `/events` endpoints - Validación de autorización por creador
 - [x] `/events/upload` - Validación de tipo de archivo

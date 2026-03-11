@@ -21,7 +21,6 @@ def get_optional_user(token: str = Depends(_optional_bearer), db: Session = Depe
 # ── GET /events/ ──────────────────────────────────────────────────────────────
 # Sin auth        → solo aprobados + públicos
 # Autenticado(4)  → solo aprobados (ambas visibilidades)
-# Mentor(2)       → solo aprobados (sus eventos propios se ven en /my)
 # Líder(3)        → todos los de su comunidad
 # Admin(1)        → todos
 @router.get("/", response_model=list[schemas.EventResponse])
@@ -64,10 +63,9 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
     return {"url": url}
 
 # ── POST crear evento ──────────────────────────────────────────────────────────
-# Admin(1), líder(3), mentor(2) pueden crear eventos
-# Mentor y líder se auto-asignan a su comunidad
+# Admin(1), líder(3), pueden crear eventos
+# líder se auto-asignan a su comunidad
 # Líder: evento se aprueba automáticamente
-# Mentor: status debe ser "draft" o "pending"
 @router.post("/", response_model=schemas.EventResponse)
 def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
     if current.rol_id == 3:
@@ -78,7 +76,6 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
     return service.create_event(db, data, auto_approve=auto_approve)
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────
-# Mentor solo puede editar eventos en estado draft o pending
 # Líder/admin pueden editar cualquier evento de su comunidad
 @router.put("/{event_id}", response_model=schemas.EventResponse)
 def update_event(event_id: int, data: schemas.EventUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):

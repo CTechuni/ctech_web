@@ -207,12 +207,14 @@ uvicorn app.main:app --reload --port 8001
 
 ### 1. Registrar usuario
 ```bash
-curl -X POST http://localhost:8000/api/v1/users/register \
+curl -X POST http://localhost:8000/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@test.local",
     "name_user": "Test User",
-    "password": "password123"
+    "password": "password123",
+    "community_id": 1,
+    "invite_code": "CODE123"
   }'
 ```
 

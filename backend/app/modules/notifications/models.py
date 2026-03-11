@@ -1,12 +1,25 @@
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, func
+
 from app.core.database import Base
 
+def jls_extract_def():
+    # role, event
+    return 
+
+
 class Notification(Base):
+
     __tablename__ = "notifications"
 
+
     id = Column(Integer, primary_key=True, index=True)
+
     title = Column(String(255), nullable=False)
+
     message = Column(Text, nullable=False)
-    type = Column(String(50)) # role, event
+
+    type = Column(String(50)) # role, event = jls_extract_def()
     is_read = Column(Boolean, default=False)
+
     created_at = Column(DateTime, server_default=func.now())
+
