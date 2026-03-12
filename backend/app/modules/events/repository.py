@@ -1,3 +1,4 @@
+from datetime import date as date_type
 from sqlalchemy.orm import Session
 from . import models, schemas
 from app.modules.communities.models import Community
@@ -8,30 +9,50 @@ def _with_community(query):
 def _base_query(db: Session):
     return db.query(models.Event, Community.name_community.label("community_name"))
 
+def _apply_filters(query, upcoming_only: bool, community_id: int | None, event_type: str | None):
+    """Aplica filtros opcionales compartidos entre los listados."""
+    if upcoming_only:
+        query = query.filter(models.Event.event_date >= date_type.today())
+    if community_id is not None:
+        query = query.filter(models.Event.community_id == community_id)
+    if event_type is not None:
+        query = query.filter(models.Event.event_type == event_type)
+    return query
+
+def _paginate(query, skip: int, limit: int):
+    return query.order_by(models.Event.event_date.asc()).offset(skip).limit(limit).all()
+
 # ── Consultas de listado ───────────────────────────────────────────────────────
 
-def get_approved_public(db: Session):
+def get_approved_public(db: Session, skip: int = 0, limit: int = 20,
+                        upcoming_only: bool = True, community_id: int | None = None,
+                        event_type: str | None = None):
     """Eventos aprobados y públicos — para visitantes sin auth."""
-    return _with_community(_base_query(db)).filter(
+    q = _with_community(_base_query(db)).filter(
         models.Event.status == "approved",
         models.Event.visibility == "publico"
-    ).order_by(models.Event.event_date.asc()).all()
+    )
+    return _paginate(_apply_filters(q, upcoming_only, community_id, event_type), skip, limit)
 
-def get_approved(db: Session):
+def get_approved(db: Session, skip: int = 0, limit: int = 20,
+                 upcoming_only: bool = True, community_id: int | None = None,
+                 event_type: str | None = None):
     """Eventos aprobados (cualquier visibilidad) — para usuarios autenticados."""
-    return _with_community(_base_query(db)).filter(
-        models.Event.status == "approved"
-    ).order_by(models.Event.event_date.asc()).all()
+    q = _with_community(_base_query(db)).filter(models.Event.status == "approved")
+    return _paginate(_apply_filters(q, upcoming_only, community_id, event_type), skip, limit)
 
-def get_all(db: Session):
+def get_all(db: Session, skip: int = 0, limit: int = 20,
+            upcoming_only: bool = False, community_id: int | None = None,
+            event_type: str | None = None):
     """Todos los eventos — solo admin."""
-    return _with_community(_base_query(db)).order_by(models.Event.event_date.asc()).all()
+    q = _with_community(_base_query(db))
+    return _paginate(_apply_filters(q, upcoming_only, community_id, event_type), skip, limit)
 
-def get_by_community(db: Session, community_id: int):
+def get_by_community(db: Session, community_id: int, skip: int = 0, limit: int = 20,
+                     upcoming_only: bool = False, event_type: str | None = None):
     """Todos los eventos de una comunidad — para el líder."""
-    return _with_community(_base_query(db)).filter(
-        models.Event.community_id == community_id
-    ).order_by(models.Event.event_date.asc()).all()
+    q = _with_community(_base_query(db)).filter(models.Event.community_id == community_id)
+    return _paginate(_apply_filters(q, upcoming_only, None, event_type), skip, limit)
 
 def get_pending_by_community(db: Session, community_id: int):
     """Eventos pendientes de aprobación de una comunidad."""

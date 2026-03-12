@@ -10,17 +10,24 @@ def _attach_names(results):
         events.append(event)
     return events
 
-def list_approved_public(db: Session):
-    return _attach_names(repository.get_approved_public(db))
+def list_approved_public(db: Session, skip: int = 0, limit: int = 20,
+                         upcoming_only: bool = True, community_id: int | None = None,
+                         event_type: str | None = None):
+    return _attach_names(repository.get_approved_public(db, skip, limit, upcoming_only, community_id, event_type))
 
-def list_approved(db: Session):
-    return _attach_names(repository.get_approved(db))
+def list_approved(db: Session, skip: int = 0, limit: int = 20,
+                  upcoming_only: bool = True, community_id: int | None = None,
+                  event_type: str | None = None):
+    return _attach_names(repository.get_approved(db, skip, limit, upcoming_only, community_id, event_type))
 
-def list_all(db: Session):
-    return _attach_names(repository.get_all(db))
+def list_all(db: Session, skip: int = 0, limit: int = 20,
+             upcoming_only: bool = False, community_id: int | None = None,
+             event_type: str | None = None):
+    return _attach_names(repository.get_all(db, skip, limit, upcoming_only, community_id, event_type))
 
-def list_by_community(db: Session, community_id: int):
-    return _attach_names(repository.get_by_community(db, community_id))
+def list_by_community(db: Session, community_id: int, skip: int = 0, limit: int = 20,
+                      upcoming_only: bool = False, event_type: str | None = None):
+    return _attach_names(repository.get_by_community(db, community_id, skip, limit, upcoming_only, event_type))
 
 def list_pending_by_community(db: Session, community_id: int):
     return _attach_names(repository.get_pending_by_community(db, community_id))

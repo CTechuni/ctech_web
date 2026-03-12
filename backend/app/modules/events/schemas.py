@@ -27,8 +27,8 @@ class EventUpdate(BaseModel):
     location: Optional[str] = None
     capacity: Optional[int] = None
     visibility: Optional[str] = None
-    status: Optional[str] = None       # draft | pending
     image_url: Optional[str] = None
+    # status excluido — los cambios de estado solo van por /approve y /reject
 
 class EventResponse(EventBase):
     id: int

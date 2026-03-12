@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, File, UploadFile, Query
 from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.auth.router import get_current_user
@@ -24,14 +25,22 @@ def get_optional_user(token: str = Depends(_optional_bearer), db: Session = Depe
 # Líder(3)        → todos los de su comunidad
 # Admin(1)        → todos
 @router.get("/", response_model=list[schemas.EventResponse])
-def get_events(db: Session = Depends(get_db), current=Depends(get_optional_user)):
+def get_events(
+    db: Session = Depends(get_db),
+    current=Depends(get_optional_user),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    upcoming_only: bool = Query(True, description="Solo eventos futuros (event_date >= hoy)"),
+    community_id: Optional[int] = Query(None, description="Filtrar por comunidad"),
+    event_type: Optional[str] = Query(None, description="Filtrar por tipo: presencial | virtual"),
+):
     if current is None:
-        return service.list_approved_public(db)
+        return service.list_approved_public(db, skip, limit, upcoming_only, community_id, event_type)
     if current.rol_id == 1:
-        return service.list_all(db)
+        return service.list_all(db, skip, limit, upcoming_only, community_id, event_type)
     if current.rol_id == 3:
-        return service.list_by_community(db, current.community_id)
-    return service.list_approved(db)
+        return service.list_by_community(db, current.community_id, skip, limit, upcoming_only, event_type)
+    return service.list_approved(db, skip, limit, upcoming_only, community_id, event_type)
 
 
 
