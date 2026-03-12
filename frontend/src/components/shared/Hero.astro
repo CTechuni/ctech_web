@@ -4,13 +4,10 @@
 
 <section id="hero-section" class="hero-section">
     <div class="hero-badge">Plataforma Tecnológica Comunitaria</div>
-    <h1>Aprende. <span class="highlight">Conecta.</span><br />
-        <span class="gradient-text">Lidera.</span></h1>
-    <p class="hero-sub">CTech es la plataforma donde las comunidades tecnológicas crecen juntas,
-        con cursos, mentores, eventos y rutas de aprendizaje estructuradas.</p>
+    <h1>Aprende, <span class="highlight">Conecta</span>, <span class="gradient-text">Lidera.</span></h1>
+    <p class="hero-sub">CTech es la plataforma donde las comunidades tecnológicas crecen juntas a través de eventos</p>
     <div class="hero-cta">
         <button class="cta-primary" onclick="openModal('signupModal')">Comenzar gratis →</button>
-        <a href="#courses-preview" class="cta-secondary"><span class="cta-icon" aria-hidden="true">▷</span> Ver cursos</a>
     </div>
     <slot />
 </section>
@@ -68,29 +65,19 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
-    .hero-cta .cta-primary,
-    .hero-cta .cta-secondary {
+    .hero-cta .cta-primary {
         padding: 0.9rem 1.8rem;
         border-radius: 9999px;
         font-weight: 600;
         text-decoration: none;
         transition: background 0.2s, color 0.2s, transform 0.2s;
         white-space: nowrap;
-    }
-    .hero-cta .cta-primary {
         background: var(--color-azure-radiant);
         color: #fff;
         border: none;
         cursor: pointer;
     }
     .hero-cta .cta-primary:hover { background: #005ceb; transform: translateY(-2px); }
-    .hero-cta .cta-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: #fff;
-    }
-    .hero-cta .cta-secondary:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255,255,255,0.5); color: #fff; transform: translateY(-2px); }
-    .cta-icon { font-size: 0.85em; margin-right: 0.25rem; opacity: 0.9; }
 
     /* RESPONSIVE */
     @media (max-width: 1200px) {
