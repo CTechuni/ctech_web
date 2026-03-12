@@ -1,7 +1,7 @@
 -- CTech Database Dump (Standardized)
--- Created on: 2026-03-11
--- This file reflects the current architecture with 3 active roles (Admin, Leader, User)
--- and remove deprecated modules (Courses, Mentorships, etc.)
+-- Updated: 2026-03-12
+-- 3 roles activos: Admin (1), Leader (3), User (4)
+-- Módulos eliminados: courses, mentoring_sessions, specialties, technologies, content
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -50,7 +50,8 @@ CREATE TABLE public.users (
     is_email_verified boolean DEFAULT false,
     reset_token character varying(255) UNIQUE,
     reset_token_expires timestamp without time zone,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    last_login timestamp without time zone
 );
 
 -- 4. PROFILES
@@ -72,26 +73,36 @@ CREATE TABLE public.events (
     date_events date,
     time_events time without time zone,
     place character varying(255),
-    image character varying(255),
-    status character varying(50) DEFAULT 'pending',
-    visibility character varying(20) DEFAULT 'publico',
-    type_event character varying(50),
+    image text,
+    status character varying(50) DEFAULT 'pending',   -- draft | pending | approved | rejected
+    visibility character varying(20) DEFAULT 'publico', -- publico | privado
+    type_event character varying(50),                  -- presencial | virtual
     capacity integer,
     community_id integer REFERENCES public.communities(id_community),
-    created_by integer REFERENCES public.users(id)
+    creator_id integer REFERENCES public.users(id)
 );
 
--- 6. NOTIFICATIONS
+-- 6. EVENT REGISTRATIONS
+CREATE TABLE public.event_registrations (
+    id SERIAL PRIMARY KEY,
+    event_id integer NOT NULL REFERENCES public.events(id_event) ON DELETE CASCADE,
+    user_id integer NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    registered_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_event_user UNIQUE (event_id, user_id)
+);
+
+-- 7. NOTIFICATIONS
 CREATE TABLE public.notifications (
     id SERIAL PRIMARY KEY,
     title character varying(255) NOT NULL,
     message text NOT NULL,
     type character varying(50),
     is_read boolean DEFAULT false,
+    recipient_id integer REFERENCES public.users(id) ON DELETE CASCADE,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. TOKEN BLOCKLIST
+-- 8. TOKEN BLOCKLIST
 CREATE TABLE public.token_blocklist (
     id SERIAL PRIMARY KEY,
     token text NOT NULL,
@@ -102,6 +113,11 @@ CREATE TABLE public.token_blocklist (
 CREATE INDEX idx_users_email ON public.users(email);
 CREATE INDEX idx_users_reset_token ON public.users(reset_token);
 CREATE INDEX idx_token_blocklist_token ON public.token_blocklist(token);
+CREATE INDEX idx_event_registrations_event ON public.event_registrations(event_id);
+CREATE INDEX idx_event_registrations_user ON public.event_registrations(user_id);
+CREATE INDEX idx_notifications_recipient ON public.notifications(recipient_id);
 
--- FOREIGN KEY FOR COMMUNITIES (Circular reference handled after tables creation)
-ALTER TABLE public.communities ADD CONSTRAINT fk_communities_leader FOREIGN KEY (leader_id) REFERENCES public.users(id) ON DELETE SET NULL;
+-- FOREIGN KEY (referencia circular communities → users)
+ALTER TABLE public.communities
+    ADD CONSTRAINT fk_communities_leader
+    FOREIGN KEY (leader_id) REFERENCES public.users(id) ON DELETE SET NULL;
