@@ -5,8 +5,9 @@ from app.modules.communities.models import Community
 
 def _attach_names(results):
     events = []
-    for event, community_name in results:
+    for event, community_name, registered_count in results:
         event.community_name = community_name
+        event.registered_count = registered_count
         events.append(event)
     return events
 
@@ -34,6 +35,9 @@ def list_pending_by_community(db: Session, community_id: int):
 
 def list_all_pending(db: Session):
     return _attach_names(repository.get_all_pending(db))
+
+def list_by_creator(db: Session, creator_id: int, skip: int = 0, limit: int = 20):
+    return _attach_names(repository.get_by_creator(db, creator_id, skip, limit))
 
 def create_event(db: Session, data, auto_approve: bool = False):
     if data.status not in ("draft", "pending"):

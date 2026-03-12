@@ -1,5 +1,6 @@
 from datetime import date as date_type
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from . import models, schemas
 from app.modules.communities.models import Community
 
@@ -7,7 +8,17 @@ def _with_community(query):
     return query.outerjoin(Community, models.Event.community_id == Community.id_community)
 
 def _base_query(db: Session):
-    return db.query(models.Event, Community.name_community.label("community_name"))
+    registered_count = (
+        db.query(func.count(models.EventRegistration.id))
+        .filter(models.EventRegistration.event_id == models.Event.id)
+        .correlate(models.Event)
+        .scalar_subquery()
+    )
+    return db.query(
+        models.Event,
+        Community.name_community.label("community_name"),
+        registered_count.label("registered_count")
+    )
 
 def _apply_filters(query, upcoming_only: bool, community_id: int | None, event_type: str | None):
     """Aplica filtros opcionales compartidos entre los listados."""
@@ -66,6 +77,11 @@ def get_all_pending(db: Session):
     return _with_community(_base_query(db)).filter(
         models.Event.status == "pending"
     ).order_by(models.Event.event_date.asc()).all()
+
+def get_by_creator(db: Session, creator_id: int, skip: int = 0, limit: int = 20):
+    """Eventos creados por un usuario específico."""
+    q = _with_community(_base_query(db)).filter(models.Event.creator_id == creator_id)
+    return _paginate(q, skip, limit)
 
 # ── CRUD ──────────────────────────────────────────────────────────────────────
 

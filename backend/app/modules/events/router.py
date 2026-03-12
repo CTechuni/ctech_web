@@ -60,6 +60,16 @@ def get_upcoming_events(db: Session = Depends(get_db), current=Depends(get_optio
     public_only = current is None
     return service.get_upcoming_events(db, limit=5, public_only=public_only)
 
+# ── GET mis eventos (creados por el usuario actual) ────────────────────────────
+@router.get("/my", response_model=list[schemas.EventResponse])
+def get_my_events(
+    db: Session = Depends(get_db),
+    current=Depends(get_current_user),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+):
+    return service.list_by_creator(db, current.id, skip, limit)
+
 # ── GET evento por ID ──────────────────────────────────────────────────────────
 @router.get("/{event_id}", response_model=schemas.EventResponse)
 def get_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_optional_user)):
@@ -86,7 +96,17 @@ def get_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_
     from app.modules.communities.models import Community
     comm = db.query(Community).filter(Community.id_community == event.community_id).first()
     event.community_name = comm.name_community if comm else None
+    event.registered_count = repository.count_registrations(db, event_id)
     return event
+
+# ── GET verificar si el usuario está registrado ────────────────────────────────
+@router.get("/{event_id}/registration")
+def check_registration(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    registered = repository.get_registration(db, event_id, current.id) is not None
+    return {"registered": registered, "event_id": event_id}
 
 # ── POST subir imagen de evento ────────────────────────────────────────────────
 @router.post("/upload-image")
