@@ -209,8 +209,8 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     function getState(userId) {
         try {
             const raw = localStorage.getItem(STORAGE_KEY_PREFIX + userId);
-            return raw ? JSON.parse(raw) : { seen: { pendingEventIds: [], pendingCourseIds: [] }, unread: [] };
-        } catch { return { seen: { pendingEventIds: [], pendingCourseIds: [] }, unread: [] }; }
+            return raw ? JSON.parse(raw) : { seen: { pendingEventIds: [] }, unread: [] };
+        } catch { return { seen: { pendingEventIds: [] }, unread: [] }; }
     }
 
     function saveState(userId, state) {
@@ -230,11 +230,7 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
         const state = getState(userId);
 
         try {
-            // Fetch eventos pendientes y cursos pendientes de la comunidad del líder
-            const [pendingEvents, pendingCourses] = await Promise.all([
-                AuthManager.fetch('/events/pending').catch(() => []),
-                AuthManager.fetch('/courses/pending').catch(() => []),
-            ]);
+            const pendingEvents = await AuthManager.fetch('/events/pending').catch(() => []);
 
             const newItems = [];
 
@@ -249,30 +245,13 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
                         icon: '📅',
                         title: 'Evento pendiente de aprobación',
                         body: ev?.title || `Evento #${id}`,
-                        time: timeAgo(),
-                    });
-                }
-            });
-
-            // Detectar nuevos cursos pendientes
-            const coIds = Array.isArray(pendingCourses) ? pendingCourses.map(c => c.id) : [];
-            coIds.forEach(id => {
-                if (!state.seen.pendingCourseIds.includes(id)) {
-                    const co = pendingCourses.find(c => c.id === id);
-                    newItems.push({
-                        id: `co_${id}`,
-                        type: 'course',
-                        icon: '📚',
-                        title: 'Curso pendiente de aprobación',
-                        body: co?.title || `Curso #${id}`,
-                        time: timeAgo(),
+                        time: timeAgo('now'),
                     });
                 }
             });
 
             // Actualizar seen
-            state.seen.pendingEventIds  = evIds;
-            state.seen.pendingCourseIds = coIds;
+            state.seen.pendingEventIds = evIds;
 
             // Prepend nuevos al listado unread
             if (newItems.length) {

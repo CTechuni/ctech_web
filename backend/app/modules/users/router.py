@@ -16,11 +16,22 @@ def create_user(data: schemas.UserCreate, db: Session = Depends(get_db), current
 
 @router.get("/", response_model=schemas.UserPaginationResponse)
 def list_users(page: int = 1, limit: int = 6, role: str = "all", search: str = None, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    # Líder: solo ve los miembros de su propia comunidad
+    if current.rol_id == 3:
+        if not current.community_id:
+            return {"users": [], "total": 0}
+        members = service.get_all_by_community(db, current.community_id)
+        return {"users": members, "total": len(members)}
+
+    # Solo admin puede ver el listado global
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="No tienes permisos para ver el listado de usuarios")
+
     role_id = None
     if role != "all":
         role_map = {"admin": 1, "leader": 3, "user": 4}
         role_id = role_map.get(role.lower())
-        
+
     return service.get_paginated(db, page, limit, role_id, search)
 
 @router.get("/me", response_model=schemas.UserResponse)
@@ -52,6 +63,15 @@ def delete_me(db: Session = Depends(get_db), current=Depends(get_current_user)):
 def get_leaders(db: Session = Depends(get_db), current=Depends(get_current_user)):
     return service.list_leaders(db)
 
+@router.patch("/{user_id}/role", response_model=schemas.UserResponse)
+def change_user_role(user_id: int, data: schemas.ChangeRoleRequest, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede cambiar roles")
+    user = service.change_role(db, user_id, data.rol_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return user
+
 @router.patch("/{user_id}", response_model=schemas.UserResponse)
 def update_user(user_id: int, data: schemas.UserUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
     # exclude_unset=True ensures only the fields sent in the request are included
@@ -59,6 +79,8 @@ def update_user(user_id: int, data: schemas.UserUpdate, db: Session = Depends(ge
 
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede eliminar usuarios")
     user = service.delete_user(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

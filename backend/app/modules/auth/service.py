@@ -38,9 +38,7 @@ def create_access_token(data: dict):
 
 def block_token(db: Session, token: str):
     """Registra el token en la tabla de bloqueo."""
-    db_token = models.TokenBlocklist(token=token)
-    db.add(db_token)
-    db.commit()
+    repository.add_token_to_blocklist(db, token)
 
 # --- LA PIEZA QUE FALTA: Validación de Usuario Actual ---
 
@@ -54,6 +52,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         detail="No se pudo validar el acceso",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    if repository.is_token_blacklisted(db, token):
+        raise credentials_exception
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
@@ -61,8 +62,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-        
-    # Buscamos al usuario en el repositorio
+
     user = repository.get_user_by_email(db, email=email)
     if user is None:
         raise credentials_exception

@@ -28,6 +28,7 @@ class User(Base):
     reset_token = Column(String(255), unique=True, nullable=True, index=True)
     reset_token_expires = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
+    last_login = Column(DateTime, nullable=True)
 
     # Relaciones
     role = relationship("Role", back_populates="users")

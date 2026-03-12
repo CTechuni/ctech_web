@@ -30,8 +30,9 @@ def change_role(db: Session, user_id: int, new_role_id: int):
     update_data = {"rol_id": new_role_id}
     updated_user = repository.update(db, user_id, update_data)
     
-    # Si pasa a ser líder y tiene comunidad, sincronizar
+    # Si pasa a ser líder y tiene comunidad, validar y sincronizar
     if new_role_id == 3 and updated_user.community_id:
+        validate_community_available(db, updated_user.community_id, exclude_leader_id=user_id)
         sync_community_leader(db, updated_user.community_id, user_id)
         
     return updated_user
@@ -46,22 +47,35 @@ def update_user(db: Session, user_id: int, user_data: dict):
         if existing:
             raise HTTPException(status_code=400, detail="El correo electrónico ya se encuentra registrado por otro usuario")
 
-    if "community_id" in user_data and user_data["community_id"]:
-        validate_community_available(db, user_data["community_id"], exclude_leader_id=user_id)
+    # Fetch early to use old values in validations
     user = repository.get_by_id(db, user_id)
     old_role_id = user.rol_id if user else None
     old_community_id = user.community_id if user else None
 
-    # Si deja de ser líder o cambia de comunidad
+    new_rol = user_data.get("rol_id", old_role_id)
+    new_comm = user_data.get("community_id", old_community_id)
+
+    # Comunidad → solo un líder:
+    # Validar cuando cambia community_id O cuando el usuario pasa a ser líder (con comunidad ya asignada)
+    if new_comm and ("community_id" in user_data or (new_rol == 3 and old_role_id != 3)):
+        validate_community_available(db, new_comm, exclude_leader_id=user_id)
+
+    # Líder → solo una comunidad:
+    # Bloquear si ya es líder de una comunidad diferente a la nueva
+    if new_rol == 3 and old_role_id == 3 and old_community_id and new_comm and old_community_id != new_comm:
+        raise HTTPException(
+            status_code=400,
+            detail="Este usuario ya es líder de otra comunidad. Debe ser removido primero."
+        )
+
+    # Si deja de ser líder o cambia de comunidad, limpiar referencia antigua
     if old_role_id == 3:
-        new_rol = user_data.get("rol_id", old_role_id)
-        new_comm = user_data.get("community_id", old_community_id)
         if new_rol != 3 or (new_comm != old_community_id and new_comm is not None):
             db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
             db.commit()
 
     user = repository.update(db, user_id, user_data)
-    
+
     # Si es/pasa a ser líder, sincronizar con la nueva comunidad
     if user and user.rol_id == 3:
         if "community_id" in user_data or "rol_id" in user_data:

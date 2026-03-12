@@ -37,6 +37,7 @@ class UserResponse(UserBase):
     member_count: Optional[int] = None
     status: str
     created_at: datetime
+    last_login: Optional[datetime] = None
     profile: Optional[ProfileResponse] = None
 
 class UserPaginationResponse(BaseModel):
@@ -47,3 +48,6 @@ class UserPaginationResponse(BaseModel):
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str
+
+class ChangeRoleRequest(BaseModel):
+    rol_id: int

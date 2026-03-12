@@ -92,6 +92,11 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     role_name = role_map.get(user.rol_id, "user")
     
     token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})
+
+    # Registrar último login
+    from datetime import datetime
+    user.last_login = datetime.utcnow()
+    db.commit()
     
     # Obtener nombre de la comunidad si existe
     community_name = "Sin Comunidad"

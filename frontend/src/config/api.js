@@ -17,12 +17,10 @@ export const API_CONFIG = {
         CHANGE_PASSWORD: '/users/me/password',
         LIST: '/users/',             // ?page=1&limit=6&role=all&search=
         LEADERS: '/users/leaders',
-        MENTORS: '/users/mentors',
         BY_COMMUNITY: '/users/community/',   // + community_id
         UPDATE: '/users/',             // + user_id  PATCH
         DELETE: '/users/',             // + user_id  DELETE
-        PROMOTE: '/users/',             // + user_id + /promote  PATCH
-        DEMOTE: '/users/',             // + user_id + /demote   PATCH
+        ROLE: '/users/',             // + user_id + /role  PATCH (solo admin)
     },
 
     COMMUNITIES: {
@@ -37,10 +35,9 @@ export const API_CONFIG = {
 
     EVENTS: {
         LIST: '/events/',            // GET — sin auth: aprobados+públicos; auth: aprobados; líder: su comunidad; admin: todos
-        MY: '/events/my',          // GET — solo mentor: sus propios eventos (todos estados)
         PENDING: '/events/pending',     // GET — líder: pendientes de su comunidad
         UPCOMING: '/events/upcoming',
-        CREATE: '/events/',            // POST — admin(1), líder(3), mentor(2)
+        CREATE: '/events/',            // POST — admin(1), líder(3)
         UPDATE: '/events/',            // + event_id  PUT
         APPROVE: '/events/',            // + event_id + /approve  PATCH (líder/admin)
         REJECT: '/events/',            // + event_id + /reject   PATCH (líder/admin)
@@ -48,21 +45,8 @@ export const API_CONFIG = {
         DELETE: '/events/',            // + event_id  DELETE
     },
 
-    COURSES: {
-        LIST: '/courses/',           // solo aprobados (público)
-        PENDING: '/courses/pending',    // líder y admin
-        ALL: '/courses/all',        // solo admin
-        DETAIL: '/courses/',           // + id  GET
-        CREATE: '/courses/',           // solo mentor
-        UPDATE: '/courses/',           // + id  PUT (solo mentor dueño)
-        DELETE: '/courses/',           // + id  DELETE (mentor dueño o admin)
-        APPROVE: '/courses/',           // + id + /approve  PATCH (líder/admin)
-        REJECT: '/courses/',           // + id + /reject   PATCH (líder/admin)
-    },
-
     METRICS: {
         ADMIN: '/metrics/admin',
-        MENTOR: '/metrics/mentor',
         COMMUNITY: '/metrics/community/', // + community_id
     },
 
@@ -80,22 +64,6 @@ export const API_CONFIG = {
         DELETE: '/contenido/',         // + content_id  DELETE
     },
 
-    SPECIALTIES: {
-        LIST: '/specialties/',
-        CREATE: '/specialties/',       // solo admin
-    },
-
-    TECHNOLOGIES: {
-        LIST: '/technologies/',
-        CREATE: '/technologies/',      // admin o líder
-    },
-
-    SESSIONS: {
-        CREATE: '/sessions/',
-        BY_COURSE: '/sessions/course/',   // + course_id
-        RESERVE: '/sessions/',          // + id + /reserve  POST
-        CANCEL: '/sessions/',          // + id + /cancel   DELETE
-    },
 };
 
 // Construye la URL completa: BASE_URL + /api/v1 + endpoint
