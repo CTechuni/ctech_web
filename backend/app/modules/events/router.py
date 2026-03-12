@@ -42,7 +42,7 @@ def get_pending_events(db: Session = Depends(get_db), current=Depends(get_curren
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="Solo líder o admin")
     if current.rol_id == 1:
-        return service.list_all(db)  # admin ve todo
+        return service.list_all_pending(db)
     return service.list_pending_by_community(db, current.community_id)
 
 # ── GET próximos eventos ───────────────────────────────────────────────────────
@@ -73,6 +73,8 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
 
     if current.rol_id == 3:
         data = data.model_copy(update={"community_id": current.community_id})
+
+    data = data.model_copy(update={"creator_id": current.id})
 
     # Líder y admin: el evento se aprueba automáticamente
     auto_approve = current.rol_id in [1, 3]
@@ -141,18 +143,17 @@ def reject_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
 def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
     from app.modules.users.models import User
     from app.modules.communities.models import Community
+    from app.modules.notifications.service import add_notification
+
+    # Valida duplicado, capacidad y status — lanza HTTPException si falla
+    service.register_user_to_event(db, event_id, current.id)
 
     event = repository.get_by_id(db, event_id)
-    if not event:
-        raise HTTPException(status_code=404, detail="Evento no encontrado")
-
     user = db.query(User).filter(User.id == current.id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    from app.core.email_service import email_service
     community = db.query(Community).filter(Community.id_community == event.community_id).first()
 
+    # Email de confirmación al usuario
+    from app.core.email_service import email_service
     background_tasks.add_task(
         email_service.send_event_registration_email,
         recipient_email=user.email,
@@ -163,28 +164,49 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
         event_type=event.event_type or "Virtual",
         name_community=community.name_community if community else "CTech"
     )
-    # Notificar al líder de la comunidad
+
+    # Notificar al líder
     if community and community.leader_id:
-        from app.modules.notifications.service import add_notification
+        total = repository.count_registrations(db, event_id)
         add_notification(
-            db, 
-            "Nueva Inscripción", 
-            f"Un usuario se ha registrado en tu evento: {event.title}", 
-            "event", 
+            db,
+            "Nueva Inscripción",
+            f"{user.name_user} se registró en '{event.title}'. Total inscritos: {total}/{event.capacity or '∞'}",
+            "event",
             recipient_id=community.leader_id
         )
-    
-    # Notificación de confirmación para el usuario
-    from app.modules.notifications.service import add_notification
+
+    # Notificar al usuario
     add_notification(
         db,
         "¡Inscripción Exitosa!",
-        f"Te has registrado correctamente al evento: {event.title}. Revisa tu correo para más detalles.",
+        f"Te registraste en '{event.title}'. Revisa tu correo para más detalles.",
         "info",
         recipient_id=current.id
     )
 
     return {"message": "Registro exitoso", "event_title": event.title}
+
+
+# ── DELETE cancelar registro a un evento ───────────────────────────────────────
+@router.delete("/{event_id}/register")
+def unregister_from_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    service.unregister_user_from_event(db, event_id, current.id)
+    return {"message": "Registro cancelado correctamente"}
+
+
+# ── GET asistentes de un evento ────────────────────────────────────────────────
+# Solo líder de la comunidad o admin
+@router.get("/{event_id}/attendees")
+def get_event_attendees(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id not in [1, 3]:
+        raise HTTPException(status_code=403, detail="Solo líder o admin puede ver los asistentes")
+    result = service.get_event_attendees(db, event_id, current.rol_id, current.community_id)
+    return {
+        "total": result["total"],
+        "capacity": result["capacity"],
+        "attendees": [{"id": u.id, "name": u.name_user, "email": u.email} for u in result["attendees"]]
+    }
 
 # ── DELETE eliminar evento ─────────────────────────────────────────────────────
 @router.delete("/{event_id}")

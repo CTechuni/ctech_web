@@ -40,6 +40,12 @@ def get_pending_by_community(db: Session, community_id: int):
         models.Event.community_id == community_id
     ).order_by(models.Event.event_date.asc()).all()
 
+def get_all_pending(db: Session):
+    """Todos los eventos pendientes — solo admin."""
+    return _with_community(_base_query(db)).filter(
+        models.Event.status == "pending"
+    ).order_by(models.Event.event_date.asc()).all()
+
 # ── CRUD ──────────────────────────────────────────────────────────────────────
 
 def get_by_id(db: Session, event_id: int):
@@ -89,3 +95,38 @@ def delete(db: Session, event_id: int):
         db.commit()
         return True
     return False
+
+# ── Registros de asistentes ────────────────────────────────────────────────────
+
+def get_registration(db: Session, event_id: int, user_id: int):
+    return db.query(models.EventRegistration).filter(
+        models.EventRegistration.event_id == event_id,
+        models.EventRegistration.user_id == user_id
+    ).first()
+
+def count_registrations(db: Session, event_id: int) -> int:
+    return db.query(models.EventRegistration).filter(
+        models.EventRegistration.event_id == event_id
+    ).count()
+
+def create_registration(db: Session, event_id: int, user_id: int):
+    reg = models.EventRegistration(event_id=event_id, user_id=user_id)
+    db.add(reg)
+    db.commit()
+    db.refresh(reg)
+    return reg
+
+def delete_registration(db: Session, event_id: int, user_id: int):
+    reg = get_registration(db, event_id, user_id)
+    if reg:
+        db.delete(reg)
+        db.commit()
+        return True
+    return False
+
+def get_registrations_by_event(db: Session, event_id: int):
+    from app.modules.users.models import User
+    return db.query(User).join(
+        models.EventRegistration,
+        models.EventRegistration.user_id == User.id
+    ).filter(models.EventRegistration.event_id == event_id).all()

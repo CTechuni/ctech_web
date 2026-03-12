@@ -16,6 +16,7 @@ class EventBase(BaseModel):
 
 class EventCreate(EventBase):
     status: str = "pending"            # "draft" | "pending"
+    creator_id: Optional[int] = None
 
 class EventUpdate(BaseModel):
     title: Optional[str] = None

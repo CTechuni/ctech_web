@@ -25,6 +25,9 @@ def list_by_community(db: Session, community_id: int):
 def list_pending_by_community(db: Session, community_id: int):
     return _attach_names(repository.get_pending_by_community(db, community_id))
 
+def list_all_pending(db: Session):
+    return _attach_names(repository.get_all_pending(db))
+
 def create_event(db: Session, data, auto_approve: bool = False):
     if data.status not in ("draft", "pending"):
         data = data.model_copy(update={"status": "pending"})
@@ -54,24 +57,30 @@ def create_event(db: Session, data, auto_approve: bool = False):
 def approve_event(db: Session, event_id: int):
     event = repository.approve(db, event_id)
     if event:
-        notification_service.add_notification(
-            db,
-            "Evento aprobado ✅",
-            f"El evento '{event.title}' fue aprobado y ya es visible para la comunidad.",
-            "event"
-        )
+        # Notificar al creador del evento
+        if event.creator_id:
+            notification_service.add_notification(
+                db,
+                "Evento aprobado ✅",
+                f"Tu evento '{event.title}' fue aprobado y ya es visible para la comunidad.",
+                "event",
+                recipient_id=event.creator_id
+            )
         notify_event_published(db, event)
     return event
 
 def reject_event(db: Session, event_id: int):
     event = repository.reject(db, event_id)
     if event:
-        notification_service.add_notification(
-            db,
-            "Evento rechazado ❌",
-            f"El evento '{event.title}' fue rechazado por el líder de la comunidad.",
-            "event"
-        )
+        # Notificar al creador del evento
+        if event.creator_id:
+            notification_service.add_notification(
+                db,
+                "Evento rechazado ❌",
+                f"Tu evento '{event.title}' fue rechazado por el líder de la comunidad.",
+                "event",
+                recipient_id=event.creator_id
+            )
     return event
 
 def notify_event_published(db: Session, event):
@@ -107,3 +116,47 @@ def get_upcoming_events(db: Session, limit: int = 5, public_only: bool = False):
 
 def delete_event(db: Session, event_id: int):
     return repository.delete(db, event_id)
+
+# ── Registro de asistentes ─────────────────────────────────────────────────────
+
+def register_user_to_event(db: Session, event_id: int, user_id: int):
+    from fastapi import HTTPException
+
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    if event.status != "approved":
+        raise HTTPException(status_code=400, detail="Solo puedes registrarte a eventos aprobados")
+
+    if repository.get_registration(db, event_id, user_id):
+        raise HTTPException(status_code=409, detail="Ya estás registrado en este evento")
+
+    if event.capacity is not None:
+        count = repository.count_registrations(db, event_id)
+        if count >= event.capacity:
+            raise HTTPException(status_code=400, detail="El evento ya no tiene cupos disponibles")
+
+    return repository.create_registration(db, event_id, user_id)
+
+def unregister_user_from_event(db: Session, event_id: int, user_id: int):
+    from fastapi import HTTPException
+
+    if not repository.get_registration(db, event_id, user_id):
+        raise HTTPException(status_code=404, detail="No estás registrado en este evento")
+
+    return repository.delete_registration(db, event_id, user_id)
+
+def get_event_attendees(db: Session, event_id: int, requester_rol_id: int, requester_community_id: int):
+    from fastapi import HTTPException
+
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    if requester_rol_id == 3 and event.community_id != requester_community_id:
+        raise HTTPException(status_code=403, detail="No tienes acceso a este evento")
+
+    attendees = repository.get_registrations_by_event(db, event_id)
+    count = repository.count_registrations(db, event_id)
+    return {"total": count, "capacity": event.capacity, "attendees": attendees}
