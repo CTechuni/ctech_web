@@ -60,13 +60,52 @@ def get_upcoming_events(db: Session = Depends(get_db), current=Depends(get_optio
     public_only = current is None
     return service.get_upcoming_events(db, limit=5, public_only=public_only)
 
+# ── GET evento por ID ──────────────────────────────────────────────────────────
+@router.get("/{event_id}", response_model=schemas.EventResponse)
+def get_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_optional_user)):
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    # Visitante: solo eventos aprobados y públicos
+    if current is None:
+        if event.status != "approved" or event.visibility != "publico":
+            raise HTTPException(status_code=404, detail="Evento no encontrado")
+    # Admin: ve todo
+    elif current.rol_id == 1:
+        pass
+    # Líder: ve su comunidad
+    elif current.rol_id == 3:
+        if event.community_id != current.community_id and event.status != "approved":
+            raise HTTPException(status_code=404, detail="Evento no encontrado")
+    # Usuario autenticado: solo aprobados
+    else:
+        if event.status != "approved":
+            raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    from app.modules.communities.models import Community
+    comm = db.query(Community).filter(Community.id_community == event.community_id).first()
+    event.community_name = comm.name_community if comm else None
+    return event
+
 # ── POST subir imagen de evento ────────────────────────────────────────────────
 @router.post("/upload-image")
 async def upload_event_image(file: UploadFile = File(...), current=Depends(get_current_user)):
     from app.core.cloudinary_service import upload_image
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para subir imágenes")
-    url = upload_image(file.file, folder="events")
+
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    MAX_SIZE_MB = 5
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Tipo de archivo no permitido. Usa JPG, PNG, WEBP o GIF")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"La imagen no puede superar {MAX_SIZE_MB}MB")
+
+    import io
+    url = upload_image(io.BytesIO(contents), folder="events")
     if not url:
         raise HTTPException(status_code=500, detail="Error al subir la imagen a Cloudinary")
     return {"url": url}
