@@ -85,23 +85,24 @@ def reject_event(db: Session, event_id: int):
 
 def notify_event_published(db: Session, event):
     """
-    Notifica a los usuarios sobre un nuevo evento publicado.
-    - Si es público: Notifica a todos.
-    - Si es privado: Solo a miembros de la comunidad.
+    Notifica a usuarios sobre un nuevo evento publicado.
+    - Privado: solo miembros de la comunidad (rol_id=4)
+    - Público: todos los usuarios regulares (rol_id=4) del sistema
+    En ambos casos excluye admins (1) y líderes (3).
     """
     from app.modules.users.models import User
     from app.modules.communities.models import Community
-    
-    query = db.query(User.id)
-    
+
+    query = db.query(User.id).filter(User.rol_id == 4)
+
     if event.visibility == "privado" and event.community_id:
         query = query.filter(User.community_id == event.community_id)
-    
+
     user_ids = [r[0] for r in query.all()]
-    
+
     comm = db.query(Community).filter(Community.id_community == event.community_id).first()
     comm_name = comm.name_community if comm else "CTech"
-    
+
     for uid in user_ids:
         notification_service.add_notification(
             db,
