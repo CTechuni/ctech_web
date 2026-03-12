@@ -61,13 +61,27 @@ erDiagram
         datetime event_date
         string location
         string image_url
+        string visibility
+        int community_id FK
+        datetime created_at
+    }
+
+    NOTIFICATIONS {
+        int id PK
+        string title
+        string message
+        string type
+        bool is_read
+        int recipient_id FK
         datetime created_at
     }
 
     ROLES ||--o{ USERS : "tiene"
     USERS ||--o| PROFILES : "tiene"
     COMMUNITIES ||--o{ USERS : "pertenecen"
-    USERS ||--o{ COMMUNITIES : "lidera"
+    COMMUNITIES ||--o{ EVENTS : "contiene"
+    USERS ||--o{ NOTIFICATIONS : "recibe"
+    USERS ||--o| COMMUNITIES : "lidera"
 ```
 
 ---
@@ -146,7 +160,22 @@ Eventos tecnológicos (públicos o privados según lógica de negocio).
 | `event_date` | DATETIME | Fecha y hora del evento |
 | `location` | VARCHAR(255) | Lugar (dirección o enlace para virtuales) |
 | `image_url` | TEXT | Imagen del lugar del evento (Cloudinary) |
+| `visibility` | VARCHAR(50) | `publico` o `privado` |
+| `community_id` | FK → communities | Comunidad a la que pertenece |
 | `created_at` | DATETIME | Fecha de registro |
+
+### `notifications`
+Alertas del sistema para administradores, líderes y usuarios.
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `id` | PK | Identificador |
+| `title` | VARCHAR(150) | Título de la alerta |
+| `message` | TEXT | Cuerpo de la notificación |
+| `type` | VARCHAR(50) | Categoría (`event`, `user`, `info`) |
+| `is_read` | BOOL | Estado de lectura |
+| `recipient_id` | FK → users | Usuario que recibe la alerta (null = admin) |
+| `created_at` | DATETIME | Fecha de envío |
 ---
 
 ## Relaciones Clave
@@ -156,4 +185,6 @@ Eventos tecnológicos (públicos o privados según lógica de negocio).
 | `roles` → `users` | 1:N | Un rol puede tener muchos usuarios |
 | `users` → `profiles` | 1:1 | Cada usuario tiene un único perfil extendido |
 | `communities` → `users` | 1:N | Una comunidad tiene muchos miembros |
-| `users` (leader) → `communities` | 1:N | Un líder puede gestionar su comunidad |
+| `communities` → `events` | 1:N | Una comunidad agrupa múltiples eventos |
+| `users` (recipient) → `notifications` | 1:N | Un usuario recibe múltiples alertas segmentadas |
+| `communities` → `users` (leader) | 1:1 | Restricción lógica de un líder por comunidad |

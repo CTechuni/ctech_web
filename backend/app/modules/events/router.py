@@ -68,6 +68,9 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
 # Líder: evento se aprueba automáticamente
 @router.post("/", response_model=schemas.EventResponse)
 def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id not in [1, 3]:
+        raise HTTPException(status_code=403, detail="No tienes permisos para crear eventos")
+
     if current.rol_id == 3:
         data = data.model_copy(update={"community_id": current.community_id})
 
@@ -170,6 +173,16 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
             "event", 
             recipient_id=community.leader_id
         )
+    
+    # Notificación de confirmación para el usuario
+    from app.modules.notifications.service import add_notification
+    add_notification(
+        db,
+        "¡Inscripción Exitosa!",
+        f"Te has registrado correctamente al evento: {event.title}. Revisa tu correo para más detalles.",
+        "info",
+        recipient_id=current.id
+    )
 
     return {"message": "Registro exitoso", "event_title": event.title}
 

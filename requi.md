@@ -64,16 +64,16 @@ useCaseDiagram
 | **RF11** | Registro Líder-Comunidad| Restricción de un líder por comunidad (1:1). |
 | **RF12** | Catálogo Tecnologías | Gestión de lenguajes y herramientas del sistema. |
 | **RF13** | Creación de Eventos | Mentores pueden proponer eventos virtuales/presenciales. |
-| **RF14** | Workflow Aprobación | Eventos de Mentores requieren vobo de Líder/Admin. |
+| **RF14** | Workflow Aprobación | Los eventos de terceros (si se habilitan) requieren revisión; lo creado por Admin/Líder es inmediato. |
 | **RF15** | Visibilidad Pública | Fichas informativas de eventos para visitantes sin cuenta. |
-| **RF16** | Inscripción Eventos | Registro de asistencia para usuarios de la comunidad. |
+| **RF16** | Inscripción Eventos | El usuario recibe confirmación inmediata y el líder una notificación de registro. |
 | **RF17** | Agenda de Mentoría | Los mentores habilitan slots de tiempo para citas. |
 | **RF18** | Reserva 1-a-1 | Estudiantes pueden agendar citas con mentores. |
 | **RF19** | Enlaces Dinámicos | Los links de Meet/Zoom solo se ven tras la reserva confirmada. |
 | **RF20** | Áreas Temáticas | Clasificación de cursos (ej. Web, Mobile, Data). |
 | **RF21** | Niveles LMS | Contenido categorizado como Básico, Intermedio o Avanzado. |
 | **RF22** | Gestión Cursos | Creación de rutas de aprendizaje modulares. |
-| **RF23** | Notificaciones | Alertas para líderes sobre contenido pendiente. |
+| **RF23** | Notificaciones Targeted| Alertas segmentadas por `recipient_id` para líderes y usuarios (miembros). |
 | **RF24** | Dashboard Admin | Métricas globales de usuarios y comunidades. |
 | **RF25** | Dashboard Líder | Estadísticas de participación en su comunidad. |
 | **RF26** | Dashboard Mentor | Seguimiento de sus cursos y sesiones reservadas. |
@@ -109,23 +109,16 @@ Describe el proceso desde que un Mentor crea un evento hasta su publicación.
 ```mermaid
 activityDiagram
     start
-    :Mentor crea propuesta de evento;
-    :Sistema guarda como 'Pending';
-    if (¿Creado por Admin o Líder?) then (Sí)
-        :Auto-Aprobación;
-        :Estado = 'Approved';
-    else (No)
-        :Notificar a Líder de comunidad;
-        if (¿Líder Aprueba?) then (Sí)
-            :Estado = 'Approved';
-        else (No)
-            :Estado = 'Rejected';
-            :Notificar a Mentor;
-            stop
-        endif
-    endif
-    :Publicar en Calendario;
-    :Notificar a miembros de comunidad;
+    :Líder o Admin crea evento;
+    :Sistema lo marca como 'Approved' (Auto-Aprobación);
+    :Guardar en Base de Datos;
+    :Sincronizar vinculación Líder-Comunidad;
+    fork
+        :Notificar a todos los Usuarios (si es Público);
+    orchestrate
+        :Notificar a miembros de la Comunidad (si es Privado);
+    end fork
+    :Enviar correo de confirmación al Creador;
     stop
 ```
 

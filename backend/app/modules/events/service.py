@@ -45,6 +45,10 @@ def create_event(db: Session, data, auto_approve: bool = False):
             f"'{new_event.title}' fue enviado a revisión. Comunidad: {community_name}.",
             "event"
         )
+    
+    if new_event and new_event.status == "approved":
+        notify_event_published(db, new_event)
+
     return new_event
 
 def approve_event(db: Session, event_id: int):
@@ -56,6 +60,7 @@ def approve_event(db: Session, event_id: int):
             f"El evento '{event.title}' fue aprobado y ya es visible para la comunidad.",
             "event"
         )
+        notify_event_published(db, event)
     return event
 
 def reject_event(db: Session, event_id: int):
@@ -68,6 +73,34 @@ def reject_event(db: Session, event_id: int):
             "event"
         )
     return event
+
+def notify_event_published(db: Session, event):
+    """
+    Notifica a los usuarios sobre un nuevo evento publicado.
+    - Si es público: Notifica a todos.
+    - Si es privado: Solo a miembros de la comunidad.
+    """
+    from app.modules.users.models import User
+    from app.modules.communities.models import Community
+    
+    query = db.query(User.id)
+    
+    if event.visibility == "privado" and event.community_id:
+        query = query.filter(User.community_id == event.community_id)
+    
+    user_ids = [r[0] for r in query.all()]
+    
+    comm = db.query(Community).filter(Community.id_community == event.community_id).first()
+    comm_name = comm.name_community if comm else "CTech"
+    
+    for uid in user_ids:
+        notification_service.add_notification(
+            db,
+            "Nuevo Evento Publicado 📢",
+            f"Se ha publicado un nuevo evento: '{event.title}' en la comunidad {comm_name}.",
+            "event",
+            recipient_id=uid
+        )
 
 def get_upcoming_events(db: Session, limit: int = 5, public_only: bool = False):
     return _attach_names(repository.get_upcoming(db, limit, public_only))

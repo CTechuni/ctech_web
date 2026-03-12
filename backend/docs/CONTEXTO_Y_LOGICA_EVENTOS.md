@@ -41,17 +41,28 @@ Para evitar que un usuario manipule roles o sesiones en múltiples pestañas del
 
 ---
 
+### 3. Sincronización de Notificaciones Targeted
+El sistema ha evolucionado de alertas globales a notificaciones inteligentes basadas en roles:
+- **Liderazgo Informado**: El líder recibe notificaciones de "Nuevo Miembro" y "Inscripción en Evento" solo de su comunidad.
+- **Confirmación al Usuario**: El usuario recibe una alerta de éxito al inscribirse, reforzando la interacción.
+- **Aviso Masivo**: Se implementó una lógica de difusión para que nuevos eventos públicos alerten a toda la base de usuarios.
+
+### 4. Vínculo Líder-Comunidad (Integridad)
+Se garantiza la relación 1-a-1 mediante:
+- **Sincronización en Cascada**: Al cambiar un líder en la tabla de comunidades, se actualiza automáticamente el perfil del usuario (rol y community_id).
+- **Limpieza de Huérfanos**: La eliminación de un usuario líder limpia automáticamente la referencia en la comunidad para permitir una nueva asignación.
+
+---
+
 ## 📁 Registro Técnico de Cambios por Archivo
 
 | Componente | Archivo | Mejoras Aplicadas |
 |---|---|---|
 | **Core** | `config.py` | Variables de entorno requeridas, remoción de defaults inseguros. |
-| **Core** | `security.py` | Validación de entrada en hashes, remoción de fallback plaintext. |
-| **Core** | `logger.py` | Implementación de logs rotativos para auditoría. |
-| **Auth** | `router.py` | Tokens con expiración (EXP claim), validación de cuenta activa. |
-| **Auth** | `service.py` | Seguridad en Reset Password con tokens temporales. |
-| **Users** | `models.py` | Campos de auditoría (`registration_date`, `status`, `is_email_verified`). |
-| **Events** | `router.py` | Validación de tipos MIME y autorización creador/admin. |
+| **Auth** | `router.py` | Registro restringido a Rol 4; notificaciones dirigidas a líderes. |
+| **Users** | `service.py` | Lógica de sincronización bi-directional Líder <-> Comunidad. |
+| **Events** | `service.py` | Automatización de notificaciones por visibilidad (`publico`/`privado`). |
+| **Notifications**| `models.py` | Adición de `recipient_id` para segmentación de alertas. |
 
 ---
 

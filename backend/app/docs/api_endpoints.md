@@ -28,12 +28,12 @@
 ### Registro — Body `POST /auth/register`
 ```json
 {
-  "name_user": "string (solo letras y espacios)",
-  "email": "string (único en BD)",
+  "name_user": "string",
+  "email": "string",
   "password": "string",
   "community_id": "integer",
-  "invite_code": "string (debe coincidir con community.code)",
-  "rol_id": "integer (opcional, default: 4 = user)"
+  "invite_code": "string",
+  "rol_id": "integer (Opcional, forzado a 4 en registro público)"
 }
 ```
 
@@ -86,8 +86,9 @@
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | `GET` | `/events/` | 🔓 | Lista todos los eventos (públicos y privados, filtrado a nivel de lógica) |
-| `POST` | `/events/` | 🔐 | Crea un nuevo evento |
-| `POST` | `/events/upload` | 🔐 | Sube imagen del evento a Cloudinary. Retorna URL pública |
+| `POST` | `/events/` | 🔐 | Crea un nuevo evento (Solo Admin/Líder) |
+| `POST` | `/events/upload` | 🔐 | Sube imagen del evento a Cloudinary |
+| `POST` | `/events/{id}/register` | 🔐 | Inscribe al usuario en un evento. Dispara notificaciones |
 
 ### Crear Evento — Body `POST /events/`
 ```json
@@ -100,11 +101,16 @@
 }
 ```
 
-## 📊 Metrics — `/api/v1/metrics`
+| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo |
+
+---
+
+## 🔔 Notifications — `/api/v1/notifications`
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
-| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo (totales de usuarios, comunidades, eventos) |
+| `GET` | `/notifications/` | 🔐 | Lista notificaciones del usuario (o todas si es Admin) |
+| `PATCH`| `/notifications/{id}/read` | 🔐 | Marca una notificación como leída |
 
 ---
 
@@ -121,9 +127,11 @@
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | `GET` | `/users/` | 🔐 | Lista todos los usuarios |
+| `POST` | `/users/` | 👑 | Crea un nuevo usuario/líder (Solo Admin) |
 | `GET` | `/users/{id}` | 🔐 | Obtiene un usuario por ID |
-| `PATCH` | `/users/{id}` | 🔐 | Actualización parcial del perfil de un usuario |
-| `DELETE` | `/users/{id}` | 👑 | Elimina un usuario (solo admin) |
+| `PATCH` | `/users/{id}` | 🔐 | Actualización parcial del perfil |
+| `DELETE` | `/users/{id}` | 👑 | Elimina un usuario |
+| `DELETE` | `/users/me` | 🔐 | El usuario elimina su propia cuenta (Admin bloqueado) |
 
 ---
 
