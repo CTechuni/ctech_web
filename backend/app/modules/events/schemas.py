@@ -26,7 +26,7 @@ class EventUpdate(BaseModel):
     location: Optional[str] = None
     capacity: Optional[int] = None
     visibility: Optional[str] = None
-    status: Optional[str] = None       # draft | pending (mentor puede cambiar)
+    status: Optional[str] = None       # draft | pending
     image_url: Optional[str] = None
 
 class EventResponse(EventBase):
@@ -34,7 +34,7 @@ class EventResponse(EventBase):
     status: str = "pending"
     image_url: Optional[str] = None
     community_name: Optional[str] = None
-    mentor_id: Optional[int] = None
+
 
     class Config:
         from_attributes = True

@@ -5,7 +5,7 @@ import { API_CONFIG, buildApiUrl } from '../config/api.js';
 // sessionStorage nunca se comparte entre pestañas del mismo dominio,
 // lo que permite tener 4 roles distintos abiertos simultáneamente.
 const TOKEN_KEY = 'authToken';
-const USER_KEY  = 'user';
+const USER_KEY = 'user';
 
 export class AuthManager {
     constructor() {
@@ -68,7 +68,7 @@ export class AuthManager {
             // atob() solo acepta base64 estándar, hay que convertir primero
             const base64url = token.split('.')[1];
             const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-            const padded  = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+            const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
             const payload = JSON.parse(atob(padded));
             return payload.exp ? payload.exp < Date.now() / 1000 : false;
         } catch {
@@ -82,10 +82,9 @@ export class AuthManager {
         if (typeof window === 'undefined') return { role: null };
         const path = window.location.pathname;
         let role = null;
-        if (path.startsWith('/admin'))       role = 'admin';
-        else if (path.startsWith('/mentor')) role = 'mentor';
+        if (path.startsWith('/admin')) role = 'admin';
         else if (path.startsWith('/leader')) role = 'leader';
-        else if (path.startsWith('/user'))   role = 'user';
+        else if (path.startsWith('/user')) role = 'user';
         return { role };
     }
 
@@ -221,14 +220,13 @@ export function requireRole(expectedRole) {
     const normalize = (r) => {
         if (!r) return '';
         const nr = String(r).toLowerCase().trim();
-        if (nr.includes('mentor')) return 'mentor';
-        if (nr.includes('admin'))  return 'admin';
+        if (nr.includes('admin')) return 'admin';
         if (nr.includes('leader') || nr.includes('lider')) return 'leader';
         if (nr === 'user' || nr === 'usuario' || nr === 'standard') return 'usuario';
         return nr;
     };
 
-    const userRole   = normalize(user?.role || pathRole || '');
+    const userRole = normalize(user?.role || pathRole || '');
     const targetRole = normalize(expectedRole);
 
     if (userRole === targetRole) return true;

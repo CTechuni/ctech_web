@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateT
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
-# --- AGREGA ESTO ---
 class Role(Base):
     __tablename__ = "roles"
     __table_args__ = {'extend_existing': True}
@@ -14,7 +13,6 @@ class Role(Base):
     # Relación inversa: Un rol tiene muchos usuarios
     users = relationship("User", back_populates="role")
 
-# --- TU CLASE USER ACTUALIZADA ---
 class User(Base):
     __tablename__ = "users"
     __table_args__ = {'extend_existing': True}
@@ -24,25 +22,24 @@ class User(Base):
     password_hash = Column(Text, nullable=False)
     name_user = Column(String(150))
     rol_id = Column(Integer, ForeignKey("roles.id_rol")) 
-    community_id = Column(Integer, ForeignKey("communities.id_community"), nullable=True) # <--- Added linkage
-    specialty_id = Column(Integer, ForeignKey("specialties.id"), nullable=True) # <--- Added specialty linkage
+    community_id = Column(Integer, ForeignKey("communities.id_community"), nullable=True)
     status = Column(String(50), default="active")
     is_email_verified = Column(Boolean, default=False)
     reset_token = Column(String(255), unique=True, nullable=True, index=True)
     reset_token_expires = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
+    last_login = Column(DateTime, nullable=True)
 
     # Relaciones
     role = relationship("Role", back_populates="users")
     profile = relationship("Profile", back_populates="user", uselist=False)
-    specialty = relationship("app.modules.specialties.models.Specialty")
 
 class Profile(Base):
     __tablename__ = "profiles"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     bio = Column(Text, nullable=True)
     phone = Column(String(20), nullable=True)
     avatar_url = Column(String(255), nullable=True)

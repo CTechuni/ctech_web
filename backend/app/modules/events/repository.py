@@ -27,12 +27,6 @@ def get_all(db: Session):
     """Todos los eventos — solo admin."""
     return _with_community(_base_query(db)).order_by(models.Event.event_date.asc()).all()
 
-def get_by_mentor(db: Session, mentor_id: int):
-    """Todos los eventos creados por un mentor (todos los estados)."""
-    return _with_community(_base_query(db)).filter(
-        models.Event.mentor_id == mentor_id
-    ).order_by(models.Event.event_date.asc()).all()
-
 def get_by_community(db: Session, community_id: int):
     """Todos los eventos de una comunidad — para el líder."""
     return _with_community(_base_query(db)).filter(
@@ -51,10 +45,8 @@ def get_pending_by_community(db: Session, community_id: int):
 def get_by_id(db: Session, event_id: int):
     return db.query(models.Event).filter(models.Event.id == event_id).first()
 
-def create(db: Session, event_data: schemas.EventCreate, mentor_id: int = None):
+def create(db: Session, event_data: schemas.EventCreate):
     data = event_data.model_dump()
-    if mentor_id:
-        data["mentor_id"] = mentor_id
     db_event = models.Event(**data)
     db.add(db_event)
     db.commit()

@@ -41,12 +41,13 @@ Al igual que los cursos, los eventos tienen dos estados de visibilidad:
 
 | Estado | Visibilidad | Acceso al detalle |
 |---|---|---|
-| 🌐 **Público** | Visible para cualquier visitante sin registro | Solo muestra la **ficha informativa** del evento (imagen del lugar, nombre, fecha, tipo). El visitante **no puede inscribirse ni acceder al contenido** |
-| 🔒 **Privado** | Solo visible para miembros registrados de la comunidad | Acceso completo: descripción, inscripción, recursos del evento y materiales asociados |
+| 🌐 **Público** | Visible para cualquier visitante sin registro | Solo muestra la **ficha informativa**. Miembros de CTech reciben notificación al publicarse. |
+| 🔒 **Privado** | Solo visible para miembros registrados de la comunidad | Acceso completo. Miembros de la comunidad reciben notificación al publicarse. |
 
 **Reglas de acceso:**
 - **Visitante (sin cuenta):** ve los eventos públicos como fichas visuales — sirven para atraer e informar, no para participar.
 - **Usuario registrado con código de comunidad:** accede a **todos los eventos** de la comunidad (públicos y privados), con capacidad de inscribirse y ver todo el detalle.
+- **Sistema proactivo**: El usuario recibe una notificación en su panel y un correo al confirmar su inscripción.
 
 > 🔑 Los eventos públicos son la puerta de entrada. El acceso completo a inscripciones, detalles y recursos requiere ser miembro registrado de la comunidad.
 

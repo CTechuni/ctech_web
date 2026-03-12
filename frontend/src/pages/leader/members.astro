@@ -37,26 +37,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     </div>
 </div>
 
-<!-- Modal Promover -->
-<div class="m-overlay" id="promoteModal">
-    <div class="promote-card">
-        <div class="promote-icon"><i class="fa-solid fa-user-graduate"></i></div>
-        <h4 id="promoteTitle">Promover a Mentor</h4>
-        <p>Selecciona la especialidad del nuevo mentor.</p>
-        <input type="hidden" id="promoteUserId" />
-        <div class="fg">
-            <label>Especialidad <span style="color:#ef4444">*</span></label>
-            <select id="promoteSpecialty" class="promote-select">
-                <option value="">Selecciona una especialidad...</option>
-            </select>
-        </div>
-        <div class="promote-actions">
-            <button class="btn-ghost" id="btnCancelPromote">Cancelar</button>
-            <button class="btn-confirm" id="btnConfirmPromote" disabled>
-                <i class="fa-solid fa-user-graduate"></i> Promover
-            </button>
-        </div>
-    </div>
 </div>
 </LeaderLayout>
 

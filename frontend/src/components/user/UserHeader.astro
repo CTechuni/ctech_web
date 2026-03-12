@@ -258,32 +258,30 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     }
 
     // ── Notificaciones ────────────────────────────────────────────────────────
+    let notifications = [];
 
-    const STORAGE_KEY_PREFIX = 'user_notif_';
-
-    function getStorageKey() {
+    async function loadHeaderProfile() {
         const user = authManager.getUser();
-        return user?.id ? `${STORAGE_KEY_PREFIX}${user.id}` : null;
-    }
-
-    /** Estado: { seen: { maxEventId, courseModules: {id: count} }, unread: [{id,type,title,msg,time}] } */
-    function loadState() {
-        const key = getStorageKey();
-        if (!key) return null;
+        if (!user) return;
+        applyUser(user);
         try {
-            const raw = localStorage.getItem(key);
-            return raw ? JSON.parse(raw) : { seen: { maxEventId: 0, courseModules: {} }, unread: [] };
-        } catch { return { seen: { maxEventId: 0, courseModules: {} }, unread: [] }; }
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'user' });
+                applyUser(fresh);
+            }
+        } catch (_) {}
     }
 
-    function saveState(state) {
-        const key = getStorageKey();
-        if (key) localStorage.setItem(key, JSON.stringify(state));
-    }
-
-    function fmtDate(d) {
-        if (!d) return '';
-        return new Date(d + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    async function loadNotifications() {
+        try {
+            const data = await AuthManager.fetch('/notifications/');
+            notifications = data || [];
+            renderBadge(notifications.filter(n => !n.is_read).length);
+            renderList(notifications);
+        } catch (e) {
+            console.error('Error cargando notificaciones:', e);
+        }
     }
 
     function renderBadge(count) {
@@ -297,11 +295,11 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         }
     }
 
-    function renderList(unread) {
+    function renderList(items) {
         const list = document.getElementById('notifList');
         if (!list) return;
 
-        if (!unread.length) {
+        if (!items.length) {
             list.innerHTML = `
                 <div class="notif-empty">
                     <div class="notif-empty-icon">🔔</div>
@@ -310,108 +308,39 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
             return;
         }
 
-        list.innerHTML = unread.map(n => `
-            <div class="notif-item unread">
-                <div class="notif-icon ${n.type}">${n.type === 'event' ? '🗓️' : '📚'}</div>
+        list.innerHTML = items.map(n => `
+            <div class="notif-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
+                <div class="notif-icon ${n.type || 'info'}">${n.type === 'event' ? '🗓️' : '📚'}</div>
                 <div class="notif-body">
                     <p class="notif-item-title">${n.title}</p>
-                    <p class="notif-item-msg">${n.msg}</p>
-                    <span class="notif-item-time">${n.time}</span>
+                    <p class="notif-item-msg">${n.message}</p>
+                    <span class="notif-item-time">${formatDate(n.created_at)}</span>
                 </div>
-                <div class="notif-dot"></div>
+                ${!n.is_read ? '<div class="notif-dot"></div>' : ''}
             </div>`).join('');
-    }
 
-    async function loadNotifications() {
-        const user = authManager.getUser();
-        if (!user) return;
-
-        const state = loadState();
-        if (!state) return;
-
-        const communityId = user.community_id;
-
-        // Fetch events y courses en paralelo
-        const [events, courses] = await Promise.all([
-            AuthManager.fetch('/events/').catch(() => []),
-            AuthManager.fetch('/courses/').catch(() => [])
-        ]);
-
-        const newNotifs = [];
-        const now = new Date().toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-
-        // ── Eventos nuevos ────────────────────────────────────────────────────
-        const myEvents = (events || []).filter(e =>
-            !communityId || e.community_id === communityId
-        );
-
-        const newMaxEventId = myEvents.reduce((m, e) => Math.max(m, e.id), state.seen.maxEventId);
-
-        myEvents
-            .filter(e => e.id > state.seen.maxEventId)
-            .sort((a, b) => b.id - a.id)
-            .slice(0, 5)
-            .forEach(e => {
-                const notifId = `ev_${e.id}`;
-                if (!state.unread.find(u => u.id === notifId)) {
-                    newNotifs.push({
-                        id: notifId,
-                        type: 'event',
-                        title: 'Nuevo evento disponible',
-                        msg: `${e.title}${e.event_date ? ' · ' + fmtDate(e.event_date) : ''}`,
-                        time: now
-                    });
+        list.querySelectorAll('.notif-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const id = item.getAttribute('data-id');
+                try {
+                    await AuthManager.fetch(`/notifications/${id}/read`, { method: 'PATCH' });
+                    await loadNotifications();
+                } catch (e) {
+                    console.error('Error al marcar notificación:', e);
                 }
             });
-
-        // ── Cursos y módulos nuevos ───────────────────────────────────────────
-        const myCourses = (courses || []).filter(c =>
-            !communityId || c.community_id === communityId
-        );
-
-        myCourses.forEach(c => {
-            const currentMods = Array.isArray(c.modules) ? c.modules.length : 0;
-            const prevMods    = state.seen.courseModules[c.id];
-
-            if (prevMods === undefined) {
-                // Curso nuevo
-                const notifId = `cr_${c.id}`;
-                if (!state.unread.find(u => u.id === notifId)) {
-                    newNotifs.push({
-                        id: notifId,
-                        type: 'course',
-                        title: 'Nuevo curso disponible',
-                        msg: c.title || 'Curso sin título',
-                        time: now
-                    });
-                }
-            } else if (currentMods > prevMods) {
-                // Módulo nuevo en curso existente
-                const notifId = `mod_${c.id}_${currentMods}`;
-                if (!state.unread.find(u => u.id === notifId)) {
-                    newNotifs.push({
-                        id: notifId,
-                        type: 'course',
-                        title: 'Nuevo módulo disponible',
-                        msg: c.title || 'Curso sin título',
-                        time: now
-                    });
-                }
-            }
         });
+    }
 
-        // Actualizar seen
-        state.seen.maxEventId = newMaxEventId;
-        myCourses.forEach(c => {
-            state.seen.courseModules[c.id] = Array.isArray(c.modules) ? c.modules.length : 0;
-        });
-
-        // Agregar nuevas al frente del array unread
-        state.unread = [...newNotifs, ...state.unread].slice(0, 20);
-        saveState(state);
-
-        renderBadge(state.unread.length);
-        renderList(state.unread);
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
+        
+        if (diff < 60000) return 'Ahora mismo';
+        if (diff < 3600000) return `${Math.floor(diff/60000)}m atrás`;
+        if (diff < 86400000) return `${Math.floor(diff/3600000)}h atrás`;
+        return date.toLocaleDateString();
     }
 
     // ── Dropdown toggle ───────────────────────────────────────────────────────
@@ -441,13 +370,13 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     });
 
     // ── Marcar todo como leído ────────────────────────────────────────────────
-    document.getElementById('notifMarkAll')?.addEventListener('click', () => {
-        const state = loadState();
-        if (!state) return;
-        state.unread = [];
-        saveState(state);
-        renderBadge(0);
-        renderList([]);
+    document.getElementById('notifMarkAll')?.addEventListener('click', async () => {
+        try {
+            await AuthManager.fetch('/notifications/read-all', { method: 'POST' });
+            await loadNotifications();
+        } catch (e) {
+            console.error('Error al marcar todas como leídas:', e);
+        }
     });
 
     // ── Init ──────────────────────────────────────────────────────────────────
@@ -455,8 +384,9 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         window.dispatchEvent(new CustomEvent('toggleSidebar'));
     });
 
-    loadHeaderProfile();
-
-    // Cargar notificaciones después del perfil (necesita community_id del usuario)
-    loadHeaderProfile().then(() => loadNotifications()).catch(() => loadNotifications());
+    // Cargar notificaciones después del perfil (necesita token activo)
+    loadHeaderProfile().then(() => {
+        loadNotifications();
+        setInterval(loadNotifications, 30000);
+    });
 </script>

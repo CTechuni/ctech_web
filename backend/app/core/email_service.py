@@ -56,32 +56,7 @@ class EmailService:
             logger.error(f"Error al renderizar plantilla de bienvenida: {str(e)}")
             return False
 
-    def send_promotion_email(self, recipient_email: str, name_user: str, specialty: str, name_community: str):
-        try:
-            template = self.env.get_template("promotion.html")
-            html_content = template.render(
-                name_user=name_user,
-                specialty_name=specialty,
-                name_community=name_community,
-                platform_url=settings.PLATFORM_URL
-            )
-            return self._send_email(recipient_email, "¡Felicitaciones! Eres nuevo Mentor en CTech", html_content)
-        except Exception as e:
-            logger.error(f"Error al renderizar plantilla de promoción: {str(e)}")
-            return False
 
-    def send_designation_email(self, recipient_email: str, name_user: str, name_community: str = "CTech"):
-        try:
-            template = self.env.get_template("designation.html")
-            html_content = template.render(
-                name_user=name_user,
-                name_community=name_community,
-                platform_url=settings.PLATFORM_URL
-            )
-            return self._send_email(recipient_email, "Actualización de tu rol en CTech", html_content)
-        except Exception as e:
-            logger.error(f"Error al renderizar plantilla de designación: {str(e)}")
-            return False
 
     def send_event_registration_email(self, recipient_email: str, name_user: str, event_name: str, event_date: str, event_time: str, event_type: str, name_community: str):
         try:

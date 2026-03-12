@@ -12,11 +12,7 @@ def get_admin_metrics(db: Session = Depends(get_db), current=Depends(get_current
         raise HTTPException(status_code=403, detail="Acceso restringido al administrador")
     return service.get_admin_dashboard(db)
 
-@router.get("/mentor")
-def get_mentor_metrics(db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id != 2:
-        raise HTTPException(status_code=403, detail="Solo mentores pueden acceder a estas métricas")
-    return service.get_mentor_dashboard(db, current.id, current.community_id)
+
 
 @router.get("/community/{community_id}")
 def get_community_metrics(community_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):

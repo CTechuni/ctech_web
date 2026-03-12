@@ -15,58 +15,72 @@ def create_user(db: Session, user_data: schemas.UserCreate):
         sync_community_leader(db, user.community_id, user.id)
     return user
 
-def change_role(db: Session, user_id: int, new_role_id: int, specialty_id: int = None):
+def change_role(db: Session, user_id: int, new_role_id: int):
     user = repository.get_by_id(db, user_id)
-    old_role_id = user.rol_id if user else None
+    if not user:
+        return None
+        
+    old_role_id = user.rol_id
+    
+    # Si deja de ser líder, limpiar la comunidad
+    if old_role_id == 3 and new_role_id != 3:
+        db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+        db.commit()
     
     update_data = {"rol_id": new_role_id}
-    if specialty_id is not None:
-        update_data["specialty_id"] = specialty_id
-        
     updated_user = repository.update(db, user_id, update_data)
     
-    if updated_user:
-        # Notificación si pasa a ser Mentor (rol_id 2)
-        if new_role_id == 2 and old_role_id != 2:
-            community_name = "Sin Comunidad"
-            if updated_user.community_id:
-                comm = db.query(Community).filter(Community.id_community == updated_user.community_id).first()
-                if comm: community_name = comm.name_community
-            
-            notification_service.add_notification(
-                db, 
-                "Nuevo Mentor Asignado", 
-                f"El usuario {updated_user.name_user} ha sido promovido a Mentor en la comunidad {community_name}.",
-                "role"
-            )
-        # Notificación si deja de ser Mentor y vuelve a ser Usuario (rol_id 4)
-        elif new_role_id == 4 and old_role_id == 2:
-            community_name = "Sin Comunidad"
-            if updated_user.community_id:
-                comm = db.query(Community).filter(Community.id_community == updated_user.community_id).first()
-                if comm: community_name = comm.name_community
-                
-            notification_service.add_notification(
-                db, 
-                "Mentor Revocado", 
-                f"El mentor {updated_user.name_user} ha sido designado nuevamente como usuario regular en la comunidad {community_name}.",
-                "role"
-            )
-            
+    # Si pasa a ser líder y tiene comunidad, validar y sincronizar
+    if new_role_id == 3 and updated_user.community_id:
+        validate_community_available(db, updated_user.community_id, exclude_leader_id=user_id)
+        sync_community_leader(db, updated_user.community_id, user_id)
+        
     return updated_user
 
 def list_leaders(db: Session):
     return repository.get_leaders_enriched(db)
 
-def list_mentors(db: Session):
-    return repository.get_mentors_enriched(db)
-
 def update_user(db: Session, user_id: int, user_data: dict):
-    if "community_id" in user_data and user_data["community_id"]:
-        validate_community_available(db, user_data["community_id"], exclude_leader_id=user_id)
+    if "email" in user_data and user_data["email"]:
+        from .models import User
+        existing = db.query(User).filter(User.email == user_data["email"], User.id != user_id).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="El correo electrónico ya se encuentra registrado por otro usuario")
+
+    # Fetch early to use old values in validations
+    user = repository.get_by_id(db, user_id)
+    old_role_id = user.rol_id if user else None
+    old_community_id = user.community_id if user else None
+
+    new_rol = user_data.get("rol_id", old_role_id)
+    new_comm = user_data.get("community_id", old_community_id)
+
+    # Comunidad → solo un líder:
+    # Validar cuando cambia community_id O cuando el usuario pasa a ser líder (con comunidad ya asignada)
+    if new_comm and ("community_id" in user_data or (new_rol == 3 and old_role_id != 3)):
+        validate_community_available(db, new_comm, exclude_leader_id=user_id)
+
+    # Líder → solo una comunidad:
+    # Bloquear si ya es líder de una comunidad diferente a la nueva
+    if new_rol == 3 and old_role_id == 3 and old_community_id and new_comm and old_community_id != new_comm:
+        raise HTTPException(
+            status_code=400,
+            detail="Este usuario ya es líder de otra comunidad. Debe ser removido primero."
+        )
+
+    # Si deja de ser líder o cambia de comunidad, limpiar referencia antigua
+    if old_role_id == 3:
+        if new_rol != 3 or (new_comm != old_community_id and new_comm is not None):
+            db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+            db.commit()
+
     user = repository.update(db, user_id, user_data)
-    if user and user.rol_id == 3 and "community_id" in user_data:
-        sync_community_leader(db, user.community_id, user.id)
+
+    # Si es/pasa a ser líder, sincronizar con la nueva comunidad
+    if user and user.rol_id == 3:
+        if "community_id" in user_data or "rol_id" in user_data:
+            if user.community_id:
+                sync_community_leader(db, user.community_id, user.id)
     return user
 
 def validate_community_available(db: Session, community_id: int, exclude_leader_id: int = None):
@@ -97,6 +111,9 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
         db.commit()
 
 def delete_user(db: Session, user_id: int):
+    # If user is a leader, clear the reference in the community first
+    db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+    db.commit()
     return repository.delete(db, user_id)
 
 def get_all(db: Session):

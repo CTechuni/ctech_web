@@ -7,18 +7,6 @@ import UserLayout from '../../layouts/UserLayout.astro';
     <!-- Quick Stats -->
     <div class="dashboard-grid">
         <div class="stat-card">
-            <div class="stat-icon blue">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">3</span>
-                <span class="stat-label">Cursos en Progreso</span>
-            </div>
-        </div>
-
-        <div class="stat-card">
             <div class="stat-icon purple">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -29,79 +17,9 @@ import UserLayout from '../../layouts/UserLayout.astro';
                 <span class="stat-label">Eventos Próximos</span>
             </div>
         </div>
-
-        <div class="stat-card">
-            <div class="stat-icon orange">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">42h</span>
-                <span class="stat-label">Tiempo de Estudio</span>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon green">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-1.533-3.011A3.75 3.75 0 0012 18z" />
-                </svg>
-            </div>
-            <div class="stat-content">
-                <span class="stat-value">15</span>
-                <span class="stat-label">Días de Racha</span>
-            </div>
-        </div>
     </div>
 
-    <!-- Main Content Sections -->
     <div class="user-sections">
-        <!-- Courses Section -->
-        <div class="section-card main-area">
-            <div class="section-header">
-                <h2>Cursos de tu comunidad</h2>
-                <a href="/explore/courses" class="see-all-btn">Ver todos</a>
-            </div>
-            
-            <div class="courses-vertical-list">
-                <div class="course-item">
-                    <div class="course-img">
-                        <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&q=80" alt="react" />
-                    </div>
-                    <div class="course-info">
-                        <div class="course-meta">Frontend • Mentor: Carlos R.</div>
-                        <h3>Mastering React 18 & Ecosystem</h3>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 65%"></div>
-                            </div>
-                            <span class="progress-text">65% completado</span>
-                        </div>
-                    </div>
-                    <a href="#" class="continue-btn">Continuar</a>
-                </div>
-
-                <div class="course-item">
-                    <div class="course-img">
-                        <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=400&q=80" alt="python" />
-                    </div>
-                    <div class="course-info">
-                        <div class="course-meta">Data Science • Mentor: Ana P.</div>
-                        <h3>Python para Data Science Avanzado</h3>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 15%"></div>
-                            </div>
-                            <span class="progress-text">15% completado</span>
-                        </div>
-                    </div>
-                    <a href="#" class="continue-btn">Continuar</a>
-                </div>
-            </div>
-        </div>
-
         <!-- Sidebar Section: Upcoming Events -->
         <div class="section-card sidebar-area">
             <div class="section-header">
@@ -336,12 +254,11 @@ import UserLayout from '../../layouts/UserLayout.astro';
         }
     }
 
-    // 3. Cargar cursos disponibles en la comunidad
+    // 3. Cargar datos de la comunidad
     async function loadCommunityData() {
         const user = authManager.getUser();
         if (!user) return;
 
-        // community_id puede estar ausente en sesiones antiguas → obtenerlo del servidor
         let communityId = user.community_id;
         if (!communityId) {
             const me = await AuthManager.fetch('/users/me').catch(() => null);
@@ -349,59 +266,9 @@ import UserLayout from '../../layouts/UserLayout.astro';
         }
 
         try {
-            const [courses, metrics] = await Promise.all([
-                AuthManager.fetch('/courses/'),
-                communityId ? AuthManager.fetch(`/metrics/community/${communityId}`) : Promise.resolve(null),
-            ]);
-
-            // Actualizar stat de cursos
-            const commCourses = Array.isArray(courses)
-                ? (communityId ? courses.filter(c => c.community_id === communityId) : courses)
-                : [];
-            const coursesStat = document.querySelector('.stat-card:first-child .stat-value');
-            if (coursesStat) coursesStat.textContent = commCourses.length;
-
-            // Actualizar label del primer stat
-            const coursesLabel = document.querySelector('.stat-card:first-child .stat-label');
-            if (coursesLabel) coursesLabel.textContent = 'Cursos disponibles';
-
-            // Mentores (si hay métricas)
-            if (metrics) {
-                const mentorsStat = document.querySelector('.stat-card:nth-child(4) .stat-value');
-                if (mentorsStat) mentorsStat.textContent = metrics.total_mentors || 0;
-                const mentorsLabel = document.querySelector('.stat-card:nth-child(4) .stat-label');
-                if (mentorsLabel) mentorsLabel.textContent = 'Mentores activos';
-            }
-
-            // Render cursos en la sección principal
-            const coursesList = document.querySelector('.courses-vertical-list');
-            if (coursesList && commCourses.length > 0) {
-                const preview = commCourses.slice(0, 3);
-                coursesList.innerHTML = preview.map(c => {
-                    const mods = Array.isArray(c.modules) ? c.modules.length : 0;
-                    const lvlMap = { basico:'Básico', intermedio:'Intermedio', avanzado:'Avanzado' };
-                    return `
-                    <div class="course-item">
-                        <div class="course-img" style="background:linear-gradient(135deg,#eff6ff,#f5f3ff);display:flex;align-items:center;justify-content:center">
-                            ${c.thumbnail_url
-                                ? `<img src="${c.thumbnail_url}" alt="${c.title}" style="width:100%;height:100%;object-fit:cover">`
-                                : `<i class="fas fa-book-open" style="font-size:1.8rem;color:#c7d2fe"></i>`}
-                        </div>
-                        <div class="course-info">
-                            <div class="course-meta">${c.specialty_name || 'General'} • ${lvlMap[c.level] || 'Básico'}</div>
-                            <h3>${c.title}</h3>
-                            <div class="progress-container">
-                                <div style="font-size:.78rem;color:#94a3b8;display:flex;align-items:center;gap:4px">
-                                    <i class="fas fa-layer-group"></i> ${mods} módulo${mods !== 1 ? 's' : ''}
-                                    &nbsp;•&nbsp; <i class="fas fa-user-tie"></i> ${c.mentor_name || 'CTech'}
-                                </div>
-                            </div>
-                        </div>
-                        <a href="/explore/courses/${c.id}" class="continue-btn">Ver</a>
-                    </div>`;
-                }).join('');
-            } else if (coursesList && commCourses.length === 0) {
-                coursesList.innerHTML = '<p style="color:#94a3b8;font-size:.88rem;padding:16px 0">No hay cursos disponibles en tu comunidad aún.</p>';
+            if (communityId) {
+                const metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
+                // Podríamos mostrar algo más aquí si fuera necesario
             }
         } catch(e) {
             console.warn('[Dashboard] Error cargando datos:', e);

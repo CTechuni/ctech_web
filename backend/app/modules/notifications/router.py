@@ -9,9 +9,8 @@ router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 @router.get("/", response_model=List[schemas.NotificationResponse])
 def get_notifications(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
-    # Restringir a admin si es necesario, por ahora cualquier usuario autenticado puede verlas
-    # pero el frontend admin solo las consumirá en el panel correspondiente.
-    return service.list_notifications(db)
+    is_admin = current_user.rol_id == 1
+    return service.list_notifications(db, user_id=current_user.id, is_admin=is_admin)
 
 @router.patch("/{id}/read", response_model=schemas.NotificationResponse)
 def mark_as_read(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):

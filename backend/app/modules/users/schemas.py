@@ -9,13 +9,14 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     rol_id: int
+    community_id: Optional[int] = None
 
 class UserUpdate(BaseModel):
     name_user: Optional[str] = None
     email: Optional[EmailStr] = None
     status: Optional[str] = None
     community_id: Optional[int] = None
-    specialty_id: Optional[int] = None
+    rol_id: Optional[int] = None
 
 class ProfileResponse(BaseModel):
     bio: Optional[str] = None
@@ -33,22 +34,20 @@ class UserResponse(UserBase):
     community_id: Optional[int] = None
     community_name: Optional[str] = None
     community_code: Optional[str] = None
-    specialty_id: Optional[int] = None
-    specialty_name: Optional[str] = None
     member_count: Optional[int] = None
-    courses_count: Optional[int] = None
-    students_count: Optional[int] = None
     status: str
     created_at: datetime
+    last_login: Optional[datetime] = None
     profile: Optional[ProfileResponse] = None
 
 class UserPaginationResponse(BaseModel):
     users: list[UserResponse]
     total: int
 
-class UserPromoteRequest(BaseModel):
-    specialty_id: int
 
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str
+
+class ChangeRoleRequest(BaseModel):
+    rol_id: int

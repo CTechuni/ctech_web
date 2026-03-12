@@ -7,3 +7,5 @@ pydantic-settings
 python-dotenv
 email-validator
 jinja2
+cloudinary
+passlib[bcrypt]

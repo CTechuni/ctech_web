@@ -28,12 +28,12 @@
 ### Registro — Body `POST /auth/register`
 ```json
 {
-  "name_user": "string (solo letras y espacios)",
-  "email": "string (único en BD)",
+  "name_user": "string",
+  "email": "string",
   "password": "string",
   "community_id": "integer",
-  "invite_code": "string (debe coincidir con community.code)",
-  "rol_id": "integer (opcional, default: 4 = user)"
+  "invite_code": "string",
+  "rol_id": "integer (Opcional, forzado a 4 en registro público)"
 }
 ```
 
@@ -53,7 +53,7 @@
   "user": {
     "id": 1,
     "email": "usuario@example.com",
-    "role": "admin | mentor | leader | user",
+    "role": "admin | leader | user",
     "name": "Nombre del usuario"
   }
 }
@@ -63,7 +63,6 @@
 | `rol_id` en BD | Nombre en token |
 |---|---|
 | 1 | `admin` |
-| 2 | `mentor` |
 | 3 | `leader` |
 | 4 | `user` |
 
@@ -87,8 +86,9 @@
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | `GET` | `/events/` | 🔓 | Lista todos los eventos (públicos y privados, filtrado a nivel de lógica) |
-| `POST` | `/events/` | 🔐 | Crea un nuevo evento |
-| `POST` | `/events/upload` | 🔐 | Sube imagen del evento a Cloudinary. Retorna URL pública |
+| `POST` | `/events/` | 🔐 | Crea un nuevo evento (Solo Admin/Líder) |
+| `POST` | `/events/upload` | 🔐 | Sube imagen del evento a Cloudinary |
+| `POST` | `/events/{id}/register` | 🔐 | Inscribe al usuario en un evento. Dispara notificaciones |
 
 ### Crear Evento — Body `POST /events/`
 ```json
@@ -101,62 +101,16 @@
 }
 ```
 
----
-
-## 📚 Courses — `/api/v1/courses`
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/courses/` | 🔓 | Lista todos los cursos (vista pública: solo fichas de cursos públicos) |
-| `POST` | `/courses/` | 🔐 | Crea un nuevo curso |
-| `GET` | `/courses/{id}` | 🔐 | Obtiene detalle completo de un curso |
-| `PUT` | `/courses/{id}` | 🔐 | Actualización completa de un curso |
-| `DELETE` | `/courses/{id}` | 🔐 | Elimina un curso |
-
-### Crear / Actualizar Curso — Body
-```json
-{
-  "title": "string",
-  "description": "string",
-  "is_premium": false,
-  "technologies": ["React", "TypeScript"],
-  "content_links": {
-    "pdfs": [],
-    "books": [],
-    "videos": []
-  },
-  "thumbnail_url": "string",
-  "mentor_id": "integer",
-  "community_id": "integer",
-  "specialty_id": "integer"
-}
-```
+| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo |
 
 ---
 
-## 🎓 Mentoring Sessions — `/api/v1/sessions`
+## 🔔 Notifications — `/api/v1/notifications`
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
-| `POST` | `/sessions/` | 🔐 | Crea una sesión de mentoría. El `mentor_id` se toma automáticamente del token |
-| `GET` | `/sessions/course/{course_id}` | 🔓 | Lista sesiones disponibles para un curso |
-| `POST` | `/sessions/{id}/reserve` | 🔐 | Reserva una sesión disponible. El `student_id` se toma del token |
-| `DELETE` | `/sessions/{id}/cancel` | 🔐 | Cancela una sesión reservada |
-
-### Estados posibles de una sesión
-| Estado | Descripción |
-|---|---|
-| `available` | Sesión disponible para ser reservada |
-| `reserved` | Sesión ya reservada por un estudiante |
-| `cancelled` | Sesión cancelada |
-
----
-
-## 📊 Metrics — `/api/v1/metrics`
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo (totales de usuarios, comunidades, cursos, eventos) |
+| `GET` | `/notifications/` | 🔐 | Lista notificaciones del usuario (o todas si es Admin) |
+| `PATCH`| `/notifications/{id}/read` | 🔐 | Marca una notificación como leída |
 
 ---
 
@@ -168,40 +122,16 @@
 
 ---
 
-## 🗂️ Specialties — `/api/v1/specialties`
-
-> Endpoints para catalogar especialidades técnicas (Frontend, Backend, Data, etc.)
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/specialties/` | 🔓 | Lista todas las especialidades disponibles |
-| `POST` | `/specialties/` | 🔐 | Crea una nueva especialidad |
-| `PUT` | `/specialties/{id}` | 🔐 | Actualiza una especialidad |
-| `DELETE` | `/specialties/{id}` | 🔐 | Elimina una especialidad |
-
----
-
-## 💻 Technologies — `/api/v1/technologies`
-
-> Catálogo de tecnologías que se asocian a cursos.
-
-| Método | Ruta | Acceso | Descripción |
-|---|---|---|---|
-| `GET` | `/technologies/` | 🔓 | Lista todas las tecnologías |
-| `POST` | `/technologies/` | 🔐 | Crea una nueva tecnología |
-| `PUT` | `/technologies/{id}` | 🔐 | Actualiza una tecnología |
-| `DELETE` | `/technologies/{id}` | 🔐 | Elimina una tecnología |
-
----
-
 ## 👤 Users — `/api/v1/users`
 
 | Método | Ruta | Acceso | Descripción |
 |---|---|---|---|
 | `GET` | `/users/` | 🔐 | Lista todos los usuarios |
+| `POST` | `/users/` | 👑 | Crea un nuevo usuario/líder (Solo Admin) |
 | `GET` | `/users/{id}` | 🔐 | Obtiene un usuario por ID |
-| `PATCH` | `/users/{id}` | 🔐 | Actualización parcial del perfil de un usuario |
-| `DELETE` | `/users/{id}` | 👑 | Elimina un usuario (solo admin) |
+| `PATCH` | `/users/{id}` | 🔐 | Actualización parcial del perfil |
+| `DELETE` | `/users/{id}` | 👑 | Elimina un usuario |
+| `DELETE` | `/users/me` | 🔐 | El usuario elimina su propia cuenta (Admin bloqueado) |
 
 ---
 
@@ -212,5 +142,5 @@
 | `400` | Datos inválidos (email duplicado, código incorrecto, nombre con caracteres no permitidos) |
 | `401` | Contraseña incorrecta o token inválido |
 | `403` | Acceso denegado por rol insuficiente |
-| `404` | Recurso no encontrado (usuario, comunidad, curso, sesión) |
+| `404` | Recurso no encontrado (usuario, comunidad, evento) |
 | `422` | Error de validación Pydantic (campo faltante o formato incorrecto) |

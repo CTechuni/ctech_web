@@ -34,7 +34,7 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
         email=data.email,
         password_hash=service.get_password_hash(data.password),
         name_user=data.name_user,
-        rol_id=data.rol_id or 4, # 4 es User estándar
+        rol_id=4, # Público siempre es User estándar
         community_id=data.community_id
     )
     db.add(new_user)
@@ -62,6 +62,20 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
         name_community=community.name_community
     )
 
+    # 7. Notificaciones
+    if new_user.community_id:
+        from app.modules.communities.models import Community
+        from app.modules.notifications.service import add_notification
+        comm = db.query(Community).filter(Community.id_community == new_user.community_id).first()
+        if comm and comm.leader_id:
+            add_notification(
+                db, 
+                "Nuevo Miembro", 
+                f"El usuario {new_user.name_user} se ha unido a tu comunidad: {comm.name_community}", 
+                "info", 
+                recipient_id=comm.leader_id
+            )
+
     return {"message": "Usuario registrado exitosamente"}
 
 @router.post("/login", response_model=schemas.Token)
@@ -74,10 +88,15 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="La contraseña es incorrecta")
     
     # Mapeo de roles para el frontend
-    role_map = {1: "admin", 2: "mentor", 3: "leader", 4: "user"}
+    role_map = {1: "admin", 3: "leader", 4: "user"}
     role_name = role_map.get(user.rol_id, "user")
     
     token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})
+
+    # Registrar último login
+    from datetime import datetime
+    user.last_login = datetime.utcnow()
+    db.commit()
     
     # Obtener nombre de la comunidad si existe
     community_name = "Sin Comunidad"

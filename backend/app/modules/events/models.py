@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Date, Time
+from sqlalchemy import Column, Integer, String, Text, Date, Time, ForeignKey
 from app.core.database import Base
 
 class Event(Base):
@@ -15,6 +15,4 @@ class Event(Base):
     visibility = Column(String(20), default="publico") # publico | privado
     event_type = Column(String(50), name="type_event")
     capacity = Column(Integer)
-    community_id = Column(Integer)
-    mentor_id = Column(Integer)
-    course_id = Column(Integer)
+    community_id = Column(Integer, ForeignKey("communities.id_community"))
