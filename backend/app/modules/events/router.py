@@ -148,14 +148,6 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
     auto_approve = current.rol_id in [1, 3]
     event = service.create_event(db, data, auto_approve=auto_approve)
     
-    # Notificación para administradores o líderes
-    from app.modules.notifications.service import add_notification
-    if not auto_approve:
-        add_notification(db, "Nuevo Evento Pendiente", f"Se ha creado un evento que requiere aprobación: {event.title}", "warning")
-    else:
-        # Notificar a la comunidad (podría ser opcional, por ahora solo info)
-        pass
-        
     return event
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────

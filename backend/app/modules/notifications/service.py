@@ -20,5 +20,5 @@ def list_notifications(db: Session, user_id: int = None, is_admin: bool = False,
 def mark_as_read(db: Session, notification_id: int):
     return repository.mark_as_read(db, notification_id)
 
-def mark_all_as_read(db: Session):
-    return repository.mark_all_as_read(db)
+def mark_all_as_read(db: Session, user_id: int):
+    return repository.mark_all_as_read(db, user_id)

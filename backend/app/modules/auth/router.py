@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from . import schemas, service, models
-from .service import get_current_user
+from fastapi.security import HTTPAuthorizationCredentials
+from .service import get_current_user, oauth2_scheme
 
 router = APIRouter(tags=["Auth"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -78,6 +78,22 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
 
     return {"message": "Usuario registrado exitosamente"}
 
+@router.post("/token", include_in_schema=False)
+def token_for_swagger(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Endpoint exclusivo para autenticación en Swagger UI (OAuth2PasswordFlow)."""
+    user = db.query(models.User).filter(models.User.email == form_data.username).first()
+    if not user or not service.verify_password(form_data.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credenciales incorrectas",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    role_map = {1: "admin", 3: "leader", 4: "user"}
+    role_name = role_map.get(user.rol_id, "user")
+    token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})
+    return {"access_token": token, "token_type": "bearer"}
+
+
 @router.post("/login", response_model=schemas.Token)
 def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == data.email).first()
@@ -121,8 +137,8 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     }
 
 @router.post("/logout")
-def logout(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    service.block_token(db, token)
+def logout(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    service.block_token(db, credentials.credentials)
     return {"message": "Sesión cerrada exitosamente"}
 
 import secrets

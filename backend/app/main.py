@@ -26,7 +26,8 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="CTech API",
     description="Plataforma LMS para comunidades tecnológicas en Colombia",
-    version="1.0.0"
+    version="1.0.0",
+    swagger_ui_parameters={"persistAuthorization": True}
 )
 
 # Configuración de CORS

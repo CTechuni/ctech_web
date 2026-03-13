@@ -3,7 +3,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.database import get_db
 from app.core.config import get_settings
 from . import models, repository
@@ -13,7 +13,7 @@ settings = get_settings()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = settings.JWT_SECRET_KEY
 ALGORITHM = settings.ALGORITHM
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/token")
+oauth2_scheme = HTTPBearer()
 
 # --- Funciones de Contraseña ---
 
@@ -42,7 +42,8 @@ def block_token(db: Session, token: str):
 
 # --- LA PIEZA QUE FALTA: Validación de Usuario Actual ---
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    token = credentials.credentials
     """
     Esta función es la que pedía el error. 
     Valida el token y devuelve el usuario logueado.

@@ -18,5 +18,5 @@ def mark_as_read(id: int, db: Session = Depends(get_db), current_user = Depends(
 
 @router.post("/read-all")
 def mark_all_as_read(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
-    service.mark_all_as_read(db)
+    service.mark_all_as_read(db, user_id=current_user.id)
     return {"message": "Todas las notificaciones marcadas como leídas"}

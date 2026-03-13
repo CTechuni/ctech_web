@@ -49,15 +49,18 @@ def create_event(db: Session, data, auto_approve: bool = False):
 
     if new_event and new_event.status == "pending":
         community_name = "Todas"
+        leader_id = None
         if new_event.community_id:
             comm = db.query(Community).filter(Community.id_community == new_event.community_id).first()
             if comm:
                 community_name = comm.name_community
+                leader_id = comm.leader_id
         notification_service.add_notification(
             db,
             "Evento pendiente de aprobación",
             f"'{new_event.title}' fue enviado a revisión. Comunidad: {community_name}.",
-            "event"
+            "event",
+            recipient_id=leader_id
         )
     
     if new_event and new_event.status == "approved":
