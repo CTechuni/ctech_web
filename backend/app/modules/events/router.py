@@ -40,7 +40,7 @@ def get_events(
         return service.list_all(db, skip, limit, upcoming_only, community_id, event_type)
     if current.rol_id == 3:
         return service.list_by_community(db, current.community_id, skip, limit, upcoming_only, event_type)
-    return service.list_approved(db, skip, limit, upcoming_only, community_id, event_type)
+    return service.list_approved_for_user(db, current.community_id, skip, limit, upcoming_only, event_type)
 
 
 

@@ -21,6 +21,10 @@ def list_approved(db: Session, skip: int = 0, limit: int = 20,
                   event_type: str | None = None):
     return _attach_names(repository.get_approved(db, skip, limit, upcoming_only, community_id, event_type))
 
+def list_approved_for_user(db: Session, user_community_id: int | None, skip: int = 0, limit: int = 20,
+                           upcoming_only: bool = True, event_type: str | None = None):
+    return _attach_names(repository.get_approved_for_user(db, user_community_id, skip, limit, upcoming_only, event_type))
+
 def list_all(db: Session, skip: int = 0, limit: int = 20,
              upcoming_only: bool = False, community_id: int | None = None,
              event_type: str | None = None):
