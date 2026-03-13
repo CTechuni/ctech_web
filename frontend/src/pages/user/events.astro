@@ -45,7 +45,7 @@ const title = "Eventos";
         return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    let allEvents = [];
+    let allEvents: any[] = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
         const user = authManager.getUser();
@@ -53,9 +53,7 @@ const title = "Eventos";
         try {
             const events = await AuthManager.fetch('/events/');
             allEvents = events || [];
-            const communityId = user.community_id;
-            const filtered = allEvents.filter(e => e.status === 'approved');
-            renderEvents(filtered);
+            renderEvents(allEvents);
         } catch (err) {
             console.error('Error loading events for user:', err);
             const c = document.getElementById('userEventsContainer');
@@ -87,7 +85,7 @@ const title = "Eventos";
         events.forEach(ev => {
             const card = document.createElement('div');
             card.className = 'event-card';
-            const reg = regs[ev.id] || 0;
+            const reg = ev.is_registered ?? (regs[ev.id] || 0);
             const registered = ev.registered_count || 0;
             const available = ev.capacity ? ev.capacity - registered : null;
             card.innerHTML = `
@@ -114,11 +112,11 @@ const title = "Eventos";
     }
 
     async function toggleRegistration(eventId) {
-        const regs = getRegistrationMap();
-        const already = regs[eventId] || 0;
         const ev = allEvents.find(e => e.id === eventId);
         if (!ev) return;
 
+        const regs = getRegistrationMap();
+        const already = ev.is_registered ?? (regs[eventId] || 0);
         const cap = ev.capacity || 0;
 
         if (!already) {
@@ -130,6 +128,7 @@ const title = "Eventos";
                 });
 
                 if (response && (response.message === "Registro exitoso" || response.event_title)) {
+                    ev.is_registered = true;
                     regs[eventId] = 1;
                     setRegistrationMap(regs);
                     alert(`¡Inscripción exitosa a "${ev.title}"! Se ha enviado una confirmación a tu correo.`);
@@ -143,6 +142,7 @@ const title = "Eventos";
         } else {
             try {
                 await cancelRegistration(eventId);
+                ev.is_registered = false;
                 alert("Has cancelado tu registro al evento.");
             } catch (err) {
                 console.error('Error cancelling registration:', err);
@@ -150,11 +150,7 @@ const title = "Eventos";
             }
         }
 
-        // Re-renderizar lista filtrada
-        const user = authManager.getUser();
-        if (user) {
-            const filtered = allEvents.filter(e => e.status === 'approved');
-            renderEvents(filtered);
-        }
+        // Re-renderizar lista
+        renderEvents(allEvents);
     }
 </script>

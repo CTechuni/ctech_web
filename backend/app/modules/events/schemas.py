@@ -50,6 +50,7 @@ class EventResponse(EventBase):
     image_url: Optional[str] = None
     community_name: Optional[str] = None
     registered_count: Optional[int] = None
+    is_registered: Optional[bool] = None
 
     class Config:
         from_attributes = True

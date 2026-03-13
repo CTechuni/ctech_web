@@ -3,11 +3,13 @@ from . import repository
 from app.modules.notifications import service as notification_service
 from app.modules.communities.models import Community
 
-def _attach_names(results):
+def _attach_names(results, registered_ids: set | None = None):
     events = []
     for event, community_name, registered_count in results:
         event.community_name = community_name
         event.registered_count = registered_count
+        if registered_ids is not None:
+            event.is_registered = event.id in registered_ids
         events.append(event)
     return events
 
@@ -22,8 +24,13 @@ def list_approved(db: Session, skip: int = 0, limit: int = 20,
     return _attach_names(repository.get_approved(db, skip, limit, upcoming_only, community_id, event_type))
 
 def list_approved_for_user(db: Session, user_community_id: int | None, skip: int = 0, limit: int = 20,
-                           upcoming_only: bool = True, event_type: str | None = None):
-    return _attach_names(repository.get_approved_for_user(db, user_community_id, skip, limit, upcoming_only, event_type))
+                           upcoming_only: bool = True, event_type: str | None = None,
+                           user_id: int | None = None):
+    registered_ids = repository.get_registered_event_ids(db, user_id) if user_id else None
+    return _attach_names(
+        repository.get_approved_for_user(db, user_community_id, skip, limit, upcoming_only, event_type),
+        registered_ids=registered_ids
+    )
 
 def list_all(db: Session, skip: int = 0, limit: int = 20,
              upcoming_only: bool = False, community_id: int | None = None,

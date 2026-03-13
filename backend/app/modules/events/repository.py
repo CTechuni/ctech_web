@@ -151,6 +151,12 @@ def delete(db: Session, event_id: int):
 
 # ── Registros de asistentes ────────────────────────────────────────────────────
 
+def get_registered_event_ids(db: Session, user_id: int) -> set:
+    rows = db.query(models.EventRegistration.event_id).filter(
+        models.EventRegistration.user_id == user_id
+    ).all()
+    return {r[0] for r in rows}
+
 def get_registration(db: Session, event_id: int, user_id: int):
     return db.query(models.EventRegistration).filter(
         models.EventRegistration.event_id == event_id,
