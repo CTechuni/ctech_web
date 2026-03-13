@@ -41,6 +41,10 @@ const title = "Eventos";
 <script>
     import { authManager, AuthManager } from '../../utils/auth.js';
 
+    function escapeHtml(str: unknown) {
+        return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     let allEvents = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -83,19 +87,20 @@ const title = "Eventos";
         events.forEach(ev => {
             const card = document.createElement('div');
             card.className = 'event-card';
-            const reg = regs[ev.id_event] || 0;
-            const available = (ev.capacity || 0) - reg;
+            const reg = regs[ev.id] || 0;
+            const registered = ev.registered_count || 0;
+            const available = ev.capacity ? ev.capacity - registered : null;
             card.innerHTML = `
                 <h3>${escapeHtml(ev.title)}</h3>
-                <p><strong>Tipo:</strong> ${escapeHtml(ev.type_event)}</p>
-                <p><strong>Fecha:</strong> ${escapeHtml(ev.date_events)} ${escapeHtml(ev.time_events || '')}</p>
-                <p><strong>Cupos:</strong> ${available <= 0 ? '<span style="color:#ef4444;">0</span>' : available}</p>
-                <button class="btn register-btn">${reg ? 'Cancelar Registro' : (available<=0 ? 'No hay disponibilidad' : 'Registrarme')}</button>
+                <p><strong>Tipo:</strong> ${escapeHtml(ev.event_type)}</p>
+                <p><strong>Fecha:</strong> ${escapeHtml(ev.event_date)} ${escapeHtml(ev.event_time || '')}</p>
+                <p><strong>Cupos:</strong> ${available === null ? 'Sin límite' : available <= 0 ? '<span style="color:#ef4444;">0</span>' : available}</p>
+                <button class="btn register-btn">${reg ? 'Cancelar Registro' : (available !== null && available <= 0 ? 'No hay disponibilidad' : 'Registrarme')}</button>
             `;
-            const btn = card.querySelector('button.register-btn');
+            const btn = card.querySelector('button.register-btn') as HTMLButtonElement | null;
             if (btn) {
-                if (available <= 0 && !reg) btn.disabled = true;
-                btn.addEventListener('click', () => toggleRegistration(ev.id_event));
+                if (available !== null && available <= 0 && !reg) btn.disabled = true;
+                btn.addEventListener('click', () => toggleRegistration(ev.id));
             }
             container.appendChild(card);
         });
