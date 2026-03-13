@@ -1,0 +1,59 @@
+---
+import Navbar from '../components/shared/Navbar.astro';
+import SmoothScroll from '../components/shared/SmoothScroll.astro';
+import '../styles/globals.css';
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+---
+
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="generator" content={Astro.generator} />
+
+        <title>{title}</title>
+        <link rel="icon" type="image/svg+xml" href="/LogoCTech.svg">
+
+
+        
+        <!-- Material Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <body>
+        <Navbar />
+
+        <main>
+            <slot />
+        </main>
+        <SmoothScroll />
+    </body>
+</html>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    body {
+        font-family: 'Segoe UI', 'Inter', Arial, sans-serif;
+        line-height: 1.6;
+        color: #fff;
+        background-color: #0e0f17;
+        padding-top: 57px; /* Altura real del navbar fijo */
+    }
+
+    main {
+        min-height: 100vh;
+    }
+</style>

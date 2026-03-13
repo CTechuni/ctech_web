@@ -1,0 +1,1236 @@
+---
+// AdminCommunitySection.astro
+// Gestión de comunidades — Rediseño Card Grid Minimalista + CRUD Completo
+---
+
+<div class="communities-section">
+    <!-- TOOLBAR -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div class="input-group" style="max-width: 380px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 10px 0 0 10px; border-color: #e2e8f0; font-size: 0.85rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar por nombre o código..." id="communitySearch" style="border-radius: 0 10px 10px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.85rem;">
+        </div>
+        <button class="btn btn-primary d-flex align-items-center gap-2" id="addCommunityBtn" style="border-radius: 10px; padding: 0.6rem 1.25rem; font-weight: 600; font-size: 0.9rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
+                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+            </svg>
+            Nueva Comunidad
+        </button>
+    </div>
+
+    <!-- GRID -->
+    <div class="row g-4" id="communitiesGrid">
+        <div class="col-12 d-flex justify-content-center align-items-center" style="min-height: 300px;">
+            <div class="text-center">
+                <div class="comm-sync-loader mx-auto mb-3"></div>
+                <p class="text-muted mb-0">Cargando comunidades...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: Nueva / Editar Comunidad                                       -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="comm-modal-overlay" id="communityModal">
+    <div class="comm-modal">
+        <!-- Header -->
+        <div class="comm-modal-header">
+            <h5 class="comm-modal-title" id="modalTitle">Nueva Comunidad</h5>
+            <button class="comm-modal-close" id="modalCloseX" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <form id="communityForm" novalidate>
+            <!-- Logo upload -->
+            <div class="comm-form-group">
+                <label class="comm-label">Logo de la Comunidad <span class="comm-optional">(Opcional)</span></label>
+                <div class="comm-upload-area" id="uploadArea">
+                    <input type="file" id="logoInput" accept="image/svg+xml, .svg, image/jpeg, .jpg, .jpeg" hidden>
+                    <!-- Empty state -->
+                    <div class="comm-upload-placeholder" id="uploadPlaceholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:32px;height:32px;color:#94a3b8;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21zM8.25 8.625a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" />
+                        </svg>
+                        <span class="comm-upload-text">Clic para subir imagen</span>
+                        <span class="comm-upload-hint">SVG o JPG</span>
+                    </div>
+                    <!-- Preview state -->
+                    <div class="comm-upload-preview" id="uploadPreview" style="display:none;">
+                        <img id="previewImg" src="" alt="Preview">
+                        <div id="previewInitials" class="comm-icon-box bg-soft-blue" style="display:none; width: 60px; height: 60px; border-radius: 12px; font-size: 1.4rem; font-weight: 700; color: #3b82f6;"></div>
+                        <button type="button" class="comm-preview-remove" id="removePreview" aria-label="Eliminar imagen">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="comm-form-group">
+                <label class="comm-label" for="commName">Nombre de la Comunidad <span class="comm-required">*</span></label>
+                <input type="text" id="commName" class="comm-input" placeholder="Ej: DevFront Colombia" minlength="4" maxlength="25">
+                <div class="comm-field-error" id="commNameError"></div>
+                <div class="comm-field-hint">Entre 4 y 25 caracteres</div>
+            </div>
+
+            <!-- Code -->
+            <div class="comm-form-group">
+                <label class="comm-label" for="commCode">Código Único <span class="comm-required">*</span></label>
+                <input type="text" id="commCode" class="comm-input" placeholder="Ej: DvF#2024c" minlength="7" maxlength="15">
+                <div class="comm-field-error" id="commCodeError"></div>
+                <div class="comm-field-hint">7-15 caracteres: mayúscula, minúscula, número y signo especial</div>
+            </div>
+
+            <!-- Leader -->
+            <div class="comm-form-group" id="leaderGroup">
+                <label class="comm-label" for="commLeader">Líder Asignado <span class="comm-optional">(Opcional)</span></label>
+                <select id="commLeader" class="comm-input comm-select">
+                    <option value="">Cargando líderes...</option>
+                </select>
+                <div class="comm-field-error" id="commLeaderError"></div>
+            </div>
+
+            <!-- Status -->
+            <div class="comm-form-group" id="statusGroup" style="display:none;">
+                <label class="comm-label" for="commStatus">Estado de la Comunidad <span class="comm-required">*</span></label>
+                <select id="commStatus" class="comm-input comm-select">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+                <div class="comm-field-error" id="commStatusError"></div>
+            </div>
+
+            <!-- Footer buttons -->
+            <div class="comm-modal-footer">
+                <button type="button" class="comm-btn-cancel" id="modalCancelBtn">Cancelar</button>
+                <button type="submit" class="comm-btn-submit" id="modalSubmitBtn">Crear Comunidad</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: Detalle de Comunidad (Solo Lectura) -->
+<div class="comm-modal-overlay" id="communityDetailModal">
+    <div class="comm-modal" style="max-width: 440px;">
+        <div class="comm-modal-header border-0 pb-0">
+            <h5 class="comm-modal-title">Ficha de Comunidad</h5>
+            <button class="comm-modal-close" id="detailModalCloseX" type="button" aria-label="Cerrar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="comm-detail-content px-4 pb-4 pt-2">
+            <!-- Header/Avatar -->
+            <div class="text-center mb-4">
+                <div class="comm-detail-avatar-container mx-auto" id="detailAvatarContainer">
+                    <!-- Logo or initials dynamic -->
+                </div>
+                <h4 class="mt-3 mb-1 fw-bold text-dark" id="detailName"></h4>
+                <div id="detailStatusBadge" class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill" style="font-size: 0.75rem; font-weight: 600;">
+                    <span class="comm-status-dot" id="detailStatusDot"></span>
+                    <span id="detailStatusText"></span>
+                </div>
+            </div>
+
+            <!-- Info Rows -->
+            <div class="comm-detail-info-list d-flex flex-column gap-3">
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Código Único</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailCode"></div>
+                </div>
+                
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Líder Responsable</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailLeader"></div>
+                </div>
+
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Fecha de Creación</span>
+                    <div class="comm-detail-value fw-semibold text-dark" id="detailCreatedAt"></div>
+                </div>
+            </div>
+            
+            <!-- Footer Action -->
+            <div class="mt-5 text-center">
+                <button type="button" class="btn btn-light w-100 py-2 fw-bold" id="detailModalCloseBtn" style="border-radius: 12px; border: 1.5px solid #e2e8f0; color: #64748b;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style is:global>
+    .communities-section {
+        padding-top: 0.25rem;
+    }
+
+    /* Loader */
+    .comm-sync-loader {
+        width: 32px;
+        height: 32px;
+        border: 3px solid #f1f5f9;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: commSpin 0.8s linear infinite;
+    }
+    @keyframes commSpin { to { transform: rotate(360deg); } }
+
+    /* ═══════════ CARD GRID ═══════════ */
+    .comm-card {
+        background: #ffffff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .comm-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        transform: translateY(-2px);
+    }
+    .comm-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    .comm-card-identity {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+    }
+    .comm-status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+    }
+    .comm-icon-box {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        min-height: 46px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .comm-initials {
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+    }
+    .comm-icon-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .comm-icon-box svg {
+        width: 22px !important;
+        height: 22px !important;
+        flex-shrink: 0;
+    }
+    .comm-name {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.3;
+    }
+    .comm-code {
+        display: inline-block;
+        margin-top: 0.2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #94a3b8;
+        background: #f8fafc;
+        padding: 0.1rem 0.45rem;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .comm-actions {
+        display: flex;
+        gap: 0.3rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .comm-card:hover .comm-actions {
+        opacity: 1;
+    }
+    .comm-action-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        transition: color 0.15s, background 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .comm-action-btn:hover {
+        color: #475569;
+        background: #f1f5f9;
+    }
+    .comm-action-btn svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    .comm-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 0.85rem;
+        border-top: 1px solid #f1f5f9;
+    }
+    .comm-leader {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+    }
+    .comm-leader-label {
+        color: #94a3b8;
+        font-weight: 500;
+    }
+    .comm-members {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #3b82f6;
+    }
+    .comm-icon-box.bg-soft-blue   { background: #e7f1ff; color: #3b82f6; }
+    .comm-icon-box.bg-soft-purple { background: #f3eeff; color: #8b5cf6; }
+    .comm-icon-box.bg-soft-teal   { background: #e6faf6; color: #0d9488; }
+    .comm-icon-box.bg-soft-indigo { background: #eef2ff; color: #4f46e5; }
+    .comm-icon-box.bg-soft-rose   { background: #fff0f1; color: #e11d48; }
+    .comm-icon-box.bg-soft-orange { background: #fff5ea; color: #ea580c; }
+    .comm-icon-box.bg-white       { background: #ffffff; border: 1px solid #f1f5f9; }
+
+    /* ═══════════ MODAL ═══════════ */
+    .comm-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .comm-modal-overlay.active {
+        display: flex;
+    }
+    .comm-modal {
+        background: #ffffff;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        transform: translateY(0) scale(1);
+        transition: transform 0.25s ease;
+    }
+
+    /* Header */
+    .comm-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .comm-modal-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .comm-modal-close {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s, background 0.15s;
+    }
+    .comm-modal-close:hover {
+        color: #475569;
+        background: #f1f5f9;
+    }
+
+    /* Form */
+    #communityForm {
+        padding: 1.5rem;
+    }
+    .comm-form-group {
+        margin-bottom: 1.25rem;
+    }
+    .comm-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 0.4rem;
+    }
+    .comm-required { color: #ef4444; }
+    .comm-optional { color: #94a3b8; font-weight: 400; font-size: 0.8rem; }
+
+    .comm-input {
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #1e293b;
+        background: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        pointer-events: auto !important; /* Force clicks even if parent has issues */
+    }
+    .comm-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .comm-input.is-invalid {
+        border-color: #ef4444;
+    }
+    .comm-input.is-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+    .comm-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+
+    .comm-field-error {
+        font-size: 0.78rem;
+        color: #ef4444;
+        margin-top: 0.3rem;
+        min-height: 0;
+        transition: min-height 0.15s;
+    }
+    .comm-field-hint {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.2rem;
+    }
+
+    /* Upload area */
+    .comm-upload-area {
+        border: 2px dashed #e2e8f0;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+        overflow: hidden;
+    }
+    .comm-upload-area:hover {
+        border-color: #3b82f6;
+        background: #f8fafc;
+    }
+    .comm-upload-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        gap: 0.4rem;
+    }
+    .comm-upload-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+    }
+    .comm-upload-hint {
+        font-size: 0.75rem;
+        color: #94a3b8;
+    }
+    .comm-upload-preview {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        min-height: 100px;
+    }
+    .comm-upload-preview img {
+        max-width: 80px;
+        max-height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    .comm-preview-remove {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        background: #0f172a;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+    }
+    .comm-preview-remove:hover {
+        background: #000000;
+    }
+
+    /* Footer */
+    .comm-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f1f5f9;
+        margin-top: 0.5rem;
+    }
+    .comm-btn-cancel {
+        background: transparent;
+        border: 1.5px solid #e2e8f0;
+        color: #64748b;
+        padding: 0.55rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .comm-btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+    .comm-btn-submit {
+        background: #3b82f6;
+        border: none;
+        color: white;
+        padding: 0.55rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .comm-btn-submit:hover {
+        background: #2563eb;
+    }
+    .comm-btn-submit:disabled {
+        background: #93c5fd;
+        cursor: not-allowed;
+    }
+
+    /* ═══════════ DETAIL MODAL SPECIFIC ═══════════ */
+    .comm-detail-avatar-container {
+        width: 100px;
+        height: 100px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        font-size: 2.2rem;
+        font-weight: 800;
+    }
+    .comm-detail-avatar-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .comm-detail-row {
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .letter-spacing-1 {
+        letter-spacing: 0.05em;
+    }
+    #detailStatusBadge.bg-success-subtle { background: #ecfdf5; color: #059669; }
+    #detailStatusBadge.bg-danger-subtle { background: #fef2f2; color: #dc2626; }
+
+    /* Interactive Card */
+    .comm-card {
+        cursor: pointer;
+    }
+    /* Ensure action buttons are always on top and clickable */
+    .comm-actions {
+        position: relative;
+        z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+        .communities-section .input-group {
+            max-width: 100% !important;
+            order: 2;
+        }
+        .communities-section #addCommunityBtn {
+            width: 100%;
+            order: 1;
+        }
+    }
+</style>
+
+<script>
+    import { AuthManager } from '../../utils/auth.js';
+
+    // ═══════════ STATE ═══════════
+    let listStore: any[] = [];
+    let selectedFile: File | null = null;
+    let editingId: number | null = null;
+    let originalData: any = null; // Store state before editing
+
+    // ═══════════ VISUAL CONFIG ═══════════
+    const visualConfig = [
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.92 17.92 0 0 1-8.716-2.247m0 0A8.966 8.966 0 0 1 3 12c0-1.264.26-2.467.732-3.558"/></svg>`, theme: 'bg-soft-blue' },
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"/></svg>`, theme: 'bg-soft-purple' },
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5"/></svg>`, theme: 'bg-soft-teal' },
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>`, theme: 'bg-soft-indigo' },
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"/></svg>`, theme: 'bg-soft-rose' },
+        { icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25c.621 0 1.125.504 1.125 1.125v4.072M6.75 21a3.75 3.75 0 0 0 3.75-3.75V8.197M6.75 21h13.125c.621 0 1.125-.504 1.125-1.125v-5.25c0-.621-.504-1.125-1.125-1.125h-4.072M10.5 8.197l2.88-2.88c.438-.439 1.15-.439 1.59 0l3.712 3.713c.44.44.44 1.152 0 1.59l-2.879 2.88M6.75 17.25h.008v.008H6.75v-.008Z"/></svg>`, theme: 'bg-soft-orange' }
+    ];
+
+    const editIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>`;
+    const deleteIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0"/></svg>`;
+
+    // ═══════════ DOM REFS ═══════════
+    const modal = document.getElementById('communityModal')!;
+    const form = document.getElementById('communityForm') as HTMLFormElement;
+    const modalTitle = document.getElementById('modalTitle')!;
+    const modalSubmitBtn = document.getElementById('modalSubmitBtn') as HTMLButtonElement;
+
+    const logoInput = document.getElementById('logoInput') as HTMLInputElement;
+    const uploadArea = document.getElementById('uploadArea')!;
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder')!;
+    const uploadPreview = document.getElementById('uploadPreview')!;
+    const previewImg = document.getElementById('previewImg') as HTMLImageElement;
+    const previewInitials = document.getElementById('previewInitials')!;
+
+    const nameInput = document.getElementById('commName') as HTMLInputElement;
+    const codeInput = document.getElementById('commCode') as HTMLInputElement;
+    const leaderSelect = document.getElementById('commLeader') as HTMLSelectElement;
+    const leaderGroup = document.getElementById('leaderGroup')!;
+
+    const nameError = document.getElementById('commNameError')!;
+    const codeError = document.getElementById('commCodeError')!;
+    const leaderError = document.getElementById('commLeaderError')!;
+    const statusSelect = document.getElementById('commStatus') as HTMLSelectElement;
+    const statusGroup = document.getElementById('statusGroup')!;
+    const grid = document.getElementById('communitiesGrid')!;
+
+    // ═══════════ MODAL OPEN/CLOSE ═══════════
+    function openModal(mode: 'create' | 'edit' = 'create', data: any = null) {
+        editingId = mode === 'edit' ? data.id_community : null;
+        originalData = mode === 'edit' ? { ...data } : null;
+        modalTitle.textContent = mode === 'edit' ? 'Editar Comunidad' : 'Nueva Comunidad';
+        modalSubmitBtn.textContent = mode === 'edit' ? 'Guardar Cambios' : 'Crear Comunidad';
+        
+        // Hide leader selection in edit mode if already assigned (simplified for now, following request)
+        // Actually request says "precargado", so we show it.
+        
+        statusGroup.style.display = mode === 'edit' ? '' : 'none';
+        
+        // Toggle mandatory indicators (*) based on mode
+        const requiredIndicators = modal.querySelectorAll<HTMLElement>('.comm-required');
+        requiredIndicators.forEach(span => {
+            span.style.display = mode === 'edit' ? 'none' : '';
+        });
+
+        if (mode === 'edit') {
+            nameInput.value = data.name_community;
+            codeInput.value = data.code;
+            if (data.logo_url) {
+                previewImg.style.display = 'block';
+                previewImg.src = data.logo_url;
+                previewInitials.style.display = 'none';
+                uploadPlaceholder.style.display = 'none';
+                uploadPreview.style.display = '';
+            } else {
+                previewImg.style.display = 'none';
+                updateInitialsPreview();
+                previewInitials.style.display = 'flex';
+                uploadPlaceholder.style.display = 'none';
+                uploadPreview.style.display = '';
+            }
+            // Temporarily set leader option so it's visible while loading list
+            leaderSelect.innerHTML = `<option value="${data.leader_id || ''}" selected>${data.leader_name || 'Sin líder'}</option>`;
+            // Normalize status to 'Activo'/'Inactivo' for pre-loading
+            let currentStatus = data.status_community || 'Activo';
+            if (currentStatus.toLowerCase() === 'active') currentStatus = 'Activo';
+            if (currentStatus.toLowerCase() === 'inactive') currentStatus = 'Inactivo';
+            statusSelect.value = currentStatus;
+        } else {
+            resetForm();
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Robustness: ensure fields are enabled
+        modalSubmitBtn.disabled = false;
+        nameInput.disabled = false;
+        codeInput.disabled = false;
+        statusSelect.disabled = false;
+        
+        loadLeaders(editingId !== null);
+        
+        // Auto-focus the name field
+        setTimeout(() => nameInput.focus(), 100);
+    }
+
+    // ═══════════ DETAIL MODAL LOGIC ═══════════
+    const detailModal = document.getElementById('communityDetailModal')!;
+    const detailAvatar = document.getElementById('detailAvatarContainer')!;
+    const detailName = document.getElementById('detailName')!;
+    const detailStatusBadge = document.getElementById('detailStatusBadge')!;
+    const detailStatusDot = document.getElementById('detailStatusDot')!;
+    const detailStatusText = document.getElementById('detailStatusText')!;
+    const detailCode = document.getElementById('detailCode')!;
+    const detailLeader = document.getElementById('detailLeader')!;
+    const detailCreatedAt = document.getElementById('detailCreatedAt')!;
+
+    function formatDate(dateStr: string) {
+        if (!dateStr) return 'No disponible';
+        try {
+            const date = new Date(dateStr);
+            return new Intl.DateTimeFormat('es-ES', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        } catch {
+            return dateStr;
+        }
+    }
+
+    function openDetailModal(data: any) {
+        detailName.textContent = data.name_community;
+        detailCode.textContent = data.code;
+        detailLeader.textContent = data.leader_name || 'Sin asignar';
+        detailCreatedAt.textContent = formatDate(data.created_at);
+
+        // Status
+        const isActive = data.status_community !== 'Inactivo';
+        detailStatusText.textContent = isActive ? 'Activo' : 'Inactivo';
+        detailStatusBadge.className = `d-inline-flex align-items-center gap-2 px-2 py-1 rounded-pill ${isActive ? 'bg-success-subtle' : 'bg-danger-subtle'}`;
+        detailStatusDot.className = `comm-status-dot ${isActive ? 'bg-success' : 'bg-danger'}`;
+
+        // Avatar
+        const config = visualConfig[listStore.indexOf(data) % visualConfig.length] || visualConfig[0];
+        if (data.logo_url) {
+            detailAvatar.innerHTML = `<img src="${data.logo_url}" alt="${data.name_community}">`;
+            detailAvatar.className = 'comm-detail-avatar-container mx-auto bg-white';
+        } else {
+            const initials = data.name_community ? data.name_community.substring(0, 2).toUpperCase() : 'CT';
+            detailAvatar.innerHTML = initials;
+            detailAvatar.className = `comm-detail-avatar-container mx-auto ${config.theme}`;
+        }
+
+        detailModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailModal() {
+        detailModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('detailModalCloseX')?.addEventListener('click', closeDetailModal);
+    document.getElementById('detailModalCloseBtn')?.addEventListener('click', closeDetailModal);
+    detailModal.addEventListener('click', (e) => {
+        if (e.target === detailModal) closeDetailModal();
+    });
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        resetForm();
+    }
+
+    function resetForm() {
+        form.reset();
+        selectedFile = null;
+        logoInput.value = '';
+        uploadPlaceholder.style.display = '';
+        uploadPreview.style.display = 'none';
+        previewImg.src = '';
+        previewInitials.textContent = '';
+        editingId = null;
+        statusSelect.value = 'Activo';
+        clearErrors();
+    }
+
+    function updateInitialsPreview() {
+        const name = nameInput.value.trim();
+        const initials = name ? name.substring(0, 2).toUpperCase() : 'CT';
+        previewInitials.textContent = initials;
+    }
+
+    nameInput.addEventListener('input', () => {
+        if (!selectedFile && (previewInitials.style.display !== 'none' || uploadPlaceholder.style.display !== 'none')) {
+            updateInitialsPreview();
+            if (nameInput.value.trim()) {
+                uploadPlaceholder.style.display = 'none';
+                uploadPreview.style.display = '';
+                previewInitials.style.display = 'flex';
+                previewImg.style.display = 'none';
+            }
+        }
+    });
+
+    document.getElementById('addCommunityBtn')?.addEventListener('click', () => openModal('create'));
+    document.getElementById('modalCloseX')?.addEventListener('click', closeModal);
+    document.getElementById('modalCancelBtn')?.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // ═══════════ IMAGE UPLOAD ═══════════
+    uploadArea.addEventListener('click', () => logoInput.click());
+
+    document.getElementById('removePreview')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedFile = null;
+        logoInput.value = '';
+        previewImg.src = '';
+        previewImg.style.display = 'none';
+        
+        const name = nameInput.value.trim();
+        if (name) {
+            updateInitialsPreview();
+            previewInitials.style.display = 'flex';
+        } else {
+            uploadPreview.style.display = 'none';
+            uploadPlaceholder.style.display = 'flex';
+        }
+    });
+
+    logoInput.addEventListener('change', () => {
+        const file = logoInput.files?.[0];
+        if (!file) return;
+
+        const validTypes = ['image/svg+xml', 'image/jpeg', 'image/jpg'];
+        const isValidExt = /\.(svg|jpg|jpeg)$/i.test(file.name);
+
+        if (!validTypes.includes(file.type) && !isValidExt) {
+            alert('Formato no válido. Solo se permiten archivos .svg o .jpg');
+            logoInput.value = '';
+            return;
+        }
+
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            previewImg.src = ev.target?.result as string;
+            previewImg.style.display = 'block';
+            previewInitials.style.display = 'none';
+            uploadPlaceholder.style.display = 'none';
+            uploadPreview.style.display = '';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ═══════════ LOAD LEADERS ═══════════
+    async function loadLeaders(isEdit = false) {
+        try {
+            console.debug('Loading leaders (Auth Bypassed)...');
+            const leaders = await AuthManager.fetch('/users/leaders');
+            
+            if (leaders === null) {
+                console.warn('Network error or endpoint unreachable');
+                leaderSelect.innerHTML = '<option value="">Error al cargar líderes</option>';
+                return;
+            }
+
+            const currentVal = leaderSelect.value;
+            const currentText = leaderSelect.options[0]?.textContent;
+
+            leaderSelect.innerHTML = '<option value="">Seleccionar líder...</option>';
+            
+            if (isEdit && currentVal) {
+                const opt = document.createElement('option');
+                opt.value = currentVal;
+                opt.textContent = currentText || 'Líder actual';
+                opt.selected = true;
+                leaderSelect.appendChild(opt);
+            }
+
+            if (Array.isArray(leaders)) {
+                leaders.forEach((l: any) => {
+                    if (String(l.id) !== currentVal) {
+                        const opt = document.createElement('option');
+                        opt.value = l.id;
+                        opt.textContent = `${l.name_user || l.email}`;
+                        leaderSelect.appendChild(opt);
+                    }
+                });
+            } else {
+                 console.warn('Leaders API returned non-array or unauthorized:', leaders);
+                 if (!isEdit) {
+                    leaderSelect.innerHTML = '<option value="">Sin acceso a líderes</option>';
+                 }
+            }
+        } catch (err: any) {
+            console.error('Error loading leaders:', err);
+            if (!isEdit) {
+                leaderSelect.innerHTML = `<option value="">${err.message.includes('401') ? 'No autorizado (Login expirado)' : 'Error al cargar'}</option>`;
+            }
+        }
+    }
+
+    // ═══════════ VALIDATION ═══════════
+    const CODE_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{7,15}$/;
+
+    function clearErrors() {
+        nameError.textContent = '';
+        codeError.textContent = '';
+        leaderError.textContent = '';
+        nameInput.classList.remove('is-invalid');
+        codeInput.classList.remove('is-invalid');
+        leaderSelect.classList.remove('is-invalid');
+    }
+
+    function validateForm(): boolean {
+        clearErrors();
+        let valid = true;
+        const isEdit = editingId !== null;
+
+        const name = nameInput.value.trim();
+        // Required only in create mode. 
+        if (!isEdit && !name) {
+            nameError.textContent = 'El nombre es obligatorio';
+            nameInput.classList.add('is-invalid');
+            valid = false;
+        } else if (name !== "") {
+            if (name.length < 4 || name.length > 25) {
+                nameError.textContent = 'Entre 4 y 25 caracteres';
+                nameInput.classList.add('is-invalid');
+                valid = false;
+            }
+        }
+
+        const code = codeInput.value.trim();
+        if (!isEdit && !code) {
+            codeError.textContent = 'El código es obligatorio';
+            codeInput.classList.add('is-invalid');
+            valid = false;
+        } else if (code !== "") {
+            const item = listStore.find(c => c.id_community === editingId);
+            const isOriginal = isEdit && item && item.code === code;
+
+            if (!isOriginal) {
+                if (code.length < 7 || code.length > 15) {
+                    codeError.textContent = 'Debe tener entre 7 y 15 caracteres';
+                    valid = false;
+                } else if (!/[A-Z]/.test(code)) {
+                    codeError.textContent = 'Falta una letra mayúscula';
+                    valid = false;
+                } else if (!/[a-z]/.test(code)) {
+                    codeError.textContent = 'Falta una letra minúscula';
+                    valid = false;
+                } else if (!/\d/.test(code)) {
+                    codeError.textContent = 'Falta un número';
+                    valid = false;
+                } else if (!/[^a-zA-Z0-9]/.test(code)) {
+                    codeError.textContent = 'Falta un signo especial (ej: #, $, !)';
+                    valid = false;
+                }
+                
+                if (!valid) codeInput.classList.add('is-invalid');
+            }
+        }
+
+        // Leader optional
+
+        if (!valid) {
+            alert('Por favor, revisa los errores en el formulario antes de continuar.');
+        }
+        return valid;
+    }
+
+    // ═══════════ ACTIONS (DELETE/EDIT) ═══════════
+    async function deleteCommunity(id: number, name: string) {
+        console.debug('Attempting to delete community:', id, name);
+        if (!confirm(`¿Está seguro de eliminar la comunidad "${name}"? Esta acción no se puede deshacer.`)) return;
+
+        try {
+            await AuthManager.fetch(`/communities/${id}`, { method: 'DELETE' });
+            listStore = listStore.filter(c => c.id_community !== id);
+            render();
+            console.log('Community deleted successfully:', id);
+        } catch (err: any) {
+            console.error('Delete error:', err);
+            alert('Error al eliminar: ' + err.message);
+        }
+    }
+
+    // Event delegation for grid actions
+    grid.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        
+        // Action buttons
+        const editBtn = target.closest('.comm-edit-btn');
+        const deleteBtn = target.closest('.comm-delete-btn');
+
+        if (editBtn) {
+            e.stopPropagation();
+            const idStr = editBtn.getAttribute('data-id');
+            const id = idStr ? parseInt(idStr) : null;
+            const item = listStore.find(c => c.id_community === id);
+            if (item) openModal('edit', item);
+            return;
+        }
+
+        if (deleteBtn) {
+            e.stopPropagation();
+            const idStr = deleteBtn.getAttribute('data-id');
+            const id = idStr ? parseInt(idStr) : null;
+            const item = listStore.find(c => c.id_community === id);
+            if (item && id !== null) deleteCommunity(id, item.name_community);
+            return;
+        }
+
+        // Card click (Detail view)
+        const card = target.closest('.comm-card');
+        if (card) {
+            const idStr = card.getAttribute('data-id');
+            const id = idStr ? parseInt(idStr) : null;
+            const item = listStore.find(c => c.id_community === id);
+            if (item) openDetailModal(item);
+        }
+    });
+
+    // ═══════════ SUBMIT ═══════════
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        modalSubmitBtn.disabled = true;
+        
+        try {
+            const currentName = nameInput.value.trim();
+            const currentCode = codeInput.value.trim();
+            const currentStatus = statusSelect.value;
+            const leadVal = parseInt(leaderSelect.value);
+            const currentLeaderId = isNaN(leadVal) ? null : leadVal;
+            let logoUrl = editingId ? (originalData.logo_url || '') : '';
+
+            // Handle Cloudinary Upload if a new file is selected
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                
+                const uploadData = await AuthManager.fetch('/communities/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!uploadData || !uploadData.url) throw new Error('Fallo al subir la imagen a Cloudinary');
+                logoUrl = uploadData.url;
+            }
+
+            // Define payload based on mode
+            let payload: any = {};
+            let hasChanges = false;
+
+            if (editingId && originalData) {
+                // DIRTY CHECKING (Edit Mode)
+                if (currentName !== originalData.name_community) {
+                    payload.name_community = currentName;
+                    hasChanges = true;
+                }
+                if (currentCode !== originalData.code) {
+                    payload.code = currentCode;
+                    if (!originalData.access_code || originalData.access_code === originalData.code) {
+                        payload.access_code = currentCode;
+                    }
+                    hasChanges = true;
+                }
+                
+                let origStatus = originalData.status_community || 'Activo';
+                if (origStatus.toLowerCase() === 'active') origStatus = 'Activo';
+                if (origStatus.toLowerCase() === 'inactive') origStatus = 'Inactivo';
+                
+                if (currentStatus !== origStatus) {
+                    payload.status_community = currentStatus;
+                    hasChanges = true;
+                }
+
+                if (currentLeaderId !== originalData.leader_id) {
+                    payload.leader_id = currentLeaderId;
+                    hasChanges = true;
+                }
+
+                if (logoUrl !== originalData.logo_url) {
+                    payload.logo_url = logoUrl;
+                    hasChanges = true;
+                }
+
+                if (!hasChanges) {
+                    console.log('No modifications detected. Closing modal.');
+                    closeModal();
+                    return;
+                }
+            } else {
+                // Create Mode
+                payload = {
+                    name_community: currentName,
+                    code: currentCode,
+                    status_community: 'Activo',
+                    access_code: currentCode,
+                    description_community: '',
+                    logo_url: logoUrl,
+                    leader_id: currentLeaderId
+                };
+            }
+
+            console.debug('Optimized payload:', payload);
+
+            const url = editingId ? `/communities/${editingId}` : '/communities/';
+            const method = editingId ? 'PATCH' : 'POST';
+
+            const result = await AuthManager.fetch(url, {
+                method,
+                body: JSON.stringify(payload)
+            });
+
+            // SUCCESS FLOW: Sync with server and then close
+            await setup(); 
+            closeModal();
+            alert('¡Cambios guardados con éxito!');
+            
+            // Helpful visual feedback could be added here if needed, but alert is what user asked for error.
+            // For success, closing the modal is the standard indicator.
+        } catch (err: any) {
+            console.error('Submit execution failed:', err);
+            alert('Error al guardar cambios: ' + (err.message || 'Error desconocido'));
+        } finally {
+            modalSubmitBtn.disabled = false;
+        }
+    });
+
+    // ═══════════ SETUP & RENDER ═══════════
+    async function setup() {
+        try {
+            // Add timestamp to avoid browser cache
+            const data = await AuthManager.fetch(`/communities/?t=${Date.now()}`);
+            if (Array.isArray(data)) {
+                console.log('Setup: Refreshing listStore with', data.length, 'items');
+                listStore = [...data];
+                render();
+            }
+ else if (listStore.length === 0) {
+                // Only use fallback if we have NO data at all
+                listStore = [
+                    { id_community: 1, name_community: 'DevFront Colombia', code: 'DFC#2024c', leader_name: 'Laura Méndez', member_count: 142, status_community: 'Activo' },
+                    { id_community: 2, name_community: 'Backend Masters', code: 'BKM#2024m', leader_name: 'Pedro Salas', member_count: 98, status_community: 'Activo' },
+                    { id_community: 3, name_community: 'DataScience Hub', code: 'DSH#2024h', leader_name: 'Sofía Castro', member_count: 75, status_community: 'Activo' }
+                ];
+                render();
+            }
+        } catch (err) {
+            console.error('Setup error:', err);
+            // If we already have data, don't overwrite with fallback on error
+            if (listStore.length === 0) {
+                listStore = [
+                    { id_community: 1, name_community: 'DevFront Colombia', code: 'DFC#2024c', leader_name: 'Laura Méndez', member_count: 142, status_community: 'Activo' },
+                    { id_community: 2, name_community: 'Backend Masters', code: 'BKM#2024m', leader_name: 'Pedro Salas', member_count: 98, status_community: 'Activo' },
+                    { id_community: 3, name_community: 'DataScience Hub', code: 'DSH#2024h', leader_name: 'Sofía Castro', member_count: 75, status_community: 'Activo' }
+                ];
+                render();
+            }
+        }
+    }
+
+    function render(data = listStore) {
+        if (!grid) return;
+        if (data.length === 0) {
+            grid.innerHTML = `<div class="col-12 text-center py-5"><p class="text-muted">No hay comunidades registradas.</p></div>`;
+            return;
+        }
+
+        grid.innerHTML = data.map((item, idx) => {
+            const config = visualConfig[idx % visualConfig.length];
+            const initials = item.name_community ? item.name_community.substring(0, 2).toUpperCase() : 'CT';
+            const avatarHtml = item.logo_url 
+                ? `<img src="${item.logo_url}" alt="${item.name_community}">`
+                : `<span class="comm-initials">${initials}</span>`;
+
+            return `
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="comm-card" data-id="${item.id_community}">
+                        <div class="comm-card-header">
+                            <div class="comm-card-identity">
+                                <div class="comm-icon-box ${item.logo_url ? 'bg-white' : config.theme}">
+                                    ${avatarHtml}
+                                </div>
+                                <div>
+                                    <div class="comm-name">
+                                        ${item.name_community}
+                                        <span class="comm-status-dot ${item.status_community === 'Inactivo' ? 'bg-danger' : 'bg-success'}"></span>
+                                    </div>
+                                    <span class="comm-code">${item.code}</span>
+                                </div>
+                            </div>
+                            <div class="comm-actions">
+                                <button class="comm-action-btn comm-edit-btn" data-id="${item.id_community}" title="Editar">${editIcon}</button>
+                                <button class="comm-action-btn comm-delete-btn" data-id="${item.id_community}" title="Eliminar">${deleteIcon}</button>
+                            </div>
+                        </div>
+                        <div class="comm-card-footer">
+                            <div class="comm-leader">
+                                ${item.leader_name || 'Sin asignar'} <span class="comm-leader-label">· Líder</span>
+                            </div>
+                            <span class="comm-members">${item.member_count || 0} miembros</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('communitySearch')?.addEventListener('input', (e) => {
+        const q = (e.target as HTMLInputElement).value.toLowerCase();
+        render(listStore.filter(c => c.name_community.toLowerCase().includes(q) || c.code.toLowerCase().includes(q)));
+    });
+
+    setup();
+</script>

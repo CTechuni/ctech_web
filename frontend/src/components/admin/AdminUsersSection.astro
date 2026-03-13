@@ -1,0 +1,785 @@
+---
+// AdminUsersSection.astro
+// Directorio de usuarios rediseñado
+---
+
+<div class="admin-users-page">
+    <!-- Toolbar: Búsqueda y Filtro de Rol -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <!-- Buscador -->
+        <div class="input-group" style="max-width: 320px;">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;color:#94a3b8;">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Buscar por nombre o email..." id="userSearch" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; box-shadow: none; font-size: 0.88rem;">
+        </div>
+
+        <!-- Filtro Rol -->
+        <div class="input-group" style="max-width: 200px;">
+            <select id="roleFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
+                <option value="all">Todos los Roles</option>
+                <option value="admin">Administradores</option>
+            <select id="roleFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
+                <option value="all">Todos los Roles</option>
+                <option value="admin">Administradores</option>
+                <option value="leader">Líderes</option>
+                <option value="user">Usuarios</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- TABLE CONTAINER -->
+    <div class="table-card-container">
+        <div class="table-wrap">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th>Comunidad</th>
+                        <th>Rol</th>
+                        <th>Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                    <!-- Dinámico -->
+                    <tr>
+                        <td colspan="7" class="loading-state">
+                            <div class="spinner-sm"></div>
+                            <span>Cargando directorio de CTech...</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-pagination">
+            <span id="showingText">Mostrando 0 de 0</span>
+        <div class="pagination-btns">
+            <button class="page-btn disabled" id="prevPageBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"/></svg>
+            </button>
+            <button class="page-btn active" id="currentPageDisplay">1</button>
+            <button class="page-btn" id="nextPageBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clip-rule="evenodd"/></svg>
+            </button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<style is:global>
+    .admin-users-page {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .section-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-text h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1E293B;
+        margin: 0;
+    }
+
+    .header-text p {
+        font-size: 0.9rem;
+        color: #94A3B8;
+        margin: 0.2rem 0 0 0;
+        font-weight: 500;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-import {
+        background: white;
+        color: #64748B;
+        border: 1px solid #E2E8F0;
+        padding: 0.75rem 1.25rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .btn-add-user {
+        background: #0073ff;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 115, 255, 0.2);
+    }
+
+    /* FILTER BAR */
+    .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    .search-input-wrap {
+        position: relative;
+        flex: 1;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94A3B8;
+    }
+
+    .search-input-wrap input {
+        width: 100%;
+        padding: 0.85rem 1rem 0.85rem 2.8rem;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        font-size: 0.9rem;
+        outline: none;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .filter-select {
+        padding: 0 1rem;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 0.9rem;
+        outline: none;
+    }
+
+    .filter-btn {
+        padding: 0 1.25rem;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        cursor: pointer;
+    }
+
+    /* TABLE CARD */
+    .table-card-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #F1F5F9;
+        overflow: hidden;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .premium-table th {
+        padding: 1.25rem 1.0rem;
+        background: #F8FAFC;
+        color: #64748B;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #F1F5F9;
+        text-align: center;
+    }
+
+    .premium-table td {
+        padding: 1.1rem 1.0rem;
+        border-bottom: 1px solid #F1F5F9;
+        color: #1E293B;
+        font-size: 0.9rem;
+        vertical-align: middle;
+        text-align: center;
+        height: 72px; /* Row height consistency */
+    }
+
+    .user-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #EFF6FF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #2563EB;
+        font-size: 0.9rem;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .u-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .u-name { font-weight: 700; }
+    .u-email { font-size: 0.8rem; color: #94A3B8; }
+
+    /* BADGES */
+    .status-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #10B981;
+        background: #ECFDF5;
+        padding: 0.25rem 0.6rem;
+        border-radius: 50px;
+        width: fit-content;
+        margin: 0 auto;
+    }
+
+    .dot-sm { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .role-badge {
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .role-badge.admin   { background: #FEF3C7; color: #D97706; }
+    .role-badge.mentor  { background: #F5F3FF; color: #7C3AED; }
+    .role-badge.leader  { background: #ECFDF5; color: #059669; }
+    .role-badge.user    { background: #EFF6FF; color: #2563EB; }
+
+    .comm-tag {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: #64748B;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .comm-tag i { font-size: 0.6rem; color: #CBD5E1; }
+
+    .leader-action-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .leader-action-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .promote-btn:hover {
+        color: #3b82f6;
+        background: #eff6ff;
+    }
+
+    .delete-btn:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+
+    .demote-btn:hover {
+        color: #f97316;
+        background: #fff7ed;
+    }
+
+    /* PAGINATION */
+    .table-pagination {
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+    }
+
+    #showingText { font-size: 0.85rem; color: #94A3B8; font-weight: 500; }
+
+    .pagination-btns { display: flex; gap: 0.5rem; }
+
+    .page-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid #E2E8F0;
+        background: white;
+        color: #64748B;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .page-btn.active { background: #0073ff; color: white; border-color: #0073ff; }
+    .page-btn.disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* LOADING SPINNER */
+    .loading-state {
+        text-align: center;
+        padding: 4rem !important;
+        color: #94A3B8;
+    }
+
+    .spinner-sm {
+        width: 24px;
+        height: 24px;
+        border: 2px solid #F1F5F9;
+        border-top-color: #0073ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* MODAL STYLES */
+    .comm-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .comm-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .comm-modal-content {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        transform: scale(0.95) translateY(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .comm-modal-overlay.active .comm-modal-content {
+        transform: scale(1) translateY(0);
+    }
+
+    .comm-btn-cancel {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        padding: 0.55rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .comm-btn-cancel:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .comm-btn-submit {
+        background: #3b82f6;
+        border: none;
+        color: white;
+        padding: 0.55rem 1.5rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .comm-btn-submit:hover {
+        background: #2563eb;
+    }
+
+    @media (max-width: 768px) {
+        .admin-users-page .input-group {
+            max-width: 100% !important;
+        }
+        .premium-table th:nth-child(4),
+        .premium-table td:nth-child(4),
+        .premium-table th:nth-child(5),
+        .premium-table td:nth-child(5) {
+            display: none; /* Ocultar rol y registro en móviles para ahorrar espacio */
+        }
+    }
+</style>
+
+<script>
+    import { AuthManager, authManager } from "../../utils/auth.js";
+    const auth = authManager;
+
+    let currentPage = 1;
+    let totalUsers = 0;
+    const limit = 6;
+    let currentUsersList = [];
+    let communities = [];
+    let specialties = [];
+
+    // Modal Promotion Refs
+    const confirmModal = document.getElementById('confirmPromoteModal');
+    const confirmModalText = document.getElementById('confirmModalText');
+    const promoteSpecialtySelect = document.getElementById('promoteSpecialtySelect') as HTMLSelectElement;
+    const acceptPromoteBtn = document.getElementById('acceptPromoteBtn') as HTMLButtonElement;
+    const cancelPromoteBtn = document.getElementById('cancelPromoteBtn');
+    let userToPromoteId = null;
+
+    // Modal Demotion Refs
+    const demoteModal = document.getElementById('confirmDemoteModal');
+    const demoteModalText = document.getElementById('confirmDemoteModalText');
+    const acceptDemoteBtn = document.getElementById('acceptDemoteBtn') as HTMLButtonElement;
+    const cancelDemoteBtn = document.getElementById('cancelDemoteBtn');
+    let userToDemoteId = null;
+
+    function openConfirmPromote(id, name) {
+        userToPromoteId = id;
+        if (confirmModalText) confirmModalText.textContent = `¿Quieres asignar a ${name} como mentor?`;
+        confirmModal?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmPromote() {
+        confirmModal?.classList.remove('active');
+        document.body.style.overflow = '';
+        userToPromoteId = null;
+        if (promoteSpecialtySelect) promoteSpecialtySelect.value = "";
+    }
+
+    function openConfirmDemote(id, name) {
+        userToDemoteId = id;
+        if (demoteModalText) demoteModalText.textContent = `¿Quieres designar a ${name} a usuario?`;
+        demoteModal?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmDemote() {
+        demoteModal?.classList.remove('active');
+        document.body.style.overflow = '';
+        userToDemoteId = null;
+    }
+
+    async function fetchData(page = 1) {
+        try {
+            // Reset showing message while loading
+            const tbody = document.getElementById('usersBody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="loading-state"><div class="spinner-sm"></div><span>Cargando...</span></td></tr>';
+
+            const roleVal = (document.getElementById('roleFilter') as HTMLSelectElement)?.value || 'all';
+            const searchVal = (document.getElementById('userSearch') as HTMLInputElement)?.value || '';
+            const [resp, communitiesData, specialtiesData] = await Promise.all([
+                AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
+                AuthManager.fetch('/communities'),
+                AuthManager.fetch('/specialties/')
+            ]);
+            
+            currentUsersList = resp.users || [];
+            totalUsers = resp.total || 0;
+            currentPage = page;
+            communities = Array.isArray(communitiesData) ? communitiesData : [];
+            specialties = Array.isArray(specialtiesData) ? specialtiesData : [];
+            
+            populateSpecialtySelect();
+            renderUsers(currentUsersList);
+            updatePaginationUI();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function populateSpecialtySelect() {
+        if (!promoteSpecialtySelect) return;
+        const currentVal = promoteSpecialtySelect.value;
+        let html = '<option value="" disabled selected>Selecciona una especialidad</option>';
+        specialties.forEach(s => {
+            html += `<option value="${s.id}">${s.name}</option>`;
+        });
+        promoteSpecialtySelect.innerHTML = html;
+        promoteSpecialtySelect.value = currentVal;
+    }
+
+    const ROLE_MAP = {
+        1: 'admin',
+        2: 'mentor',
+        3: 'leader',
+        4: 'user'
+    };
+
+    function renderUsers(list) {
+        const tbody = document.getElementById('usersBody');
+        if (!tbody) return;
+
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 3rem">No hay usuarios en esta página</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(u => {
+            const role = ROLE_MAP[u.rol_id] || 'user';
+            const regDate = u.created_at ? new Date(u.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' }) : '-';
+            const isActive = (u.status || '').toLowerCase() !== 'inactivo' && (u.status || '').toLowerCase() !== 'inactive';
+            
+            return `
+                <tr data-user-id="${u.id}">
+                    <td>
+                        <div class="user-cell">
+                            <div class="u-info">
+                                <span class="u-name">${u.name_user || 'Sin Nombre'}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="status-badge ${isActive ? '' : 'bg-danger-subtle text-danger'}">
+                            <span class="dot-sm ${isActive ? '' : 'bg-danger'}"></span> ${isActive ? 'Activo' : 'Inactivo'}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="comm-tag">
+                            <span>
+                                ${(() => {
+                                    const commId = u.community_id;
+                                    if (!commId) return 'Global';
+                                    const found = communities.find(c => 
+                                        Number(c.id_community || c.id) === Number(commId)
+                                    );
+                                    return found ? (found.name_community || found.name) : 'Cargando...';
+                                })()}
+                            </span>
+                        </div>
+                    </td>
+                    <td><span class="role-badge ${role}">${role}</span></td>
+                    <td><span class="text-muted" style="font-size: 0.82rem;">${regDate}</span></td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            ${role === 'user' ? `
+                                <button class="leader-action-btn promote-btn" data-id="${u.id}" data-name="${u.name_user}" title="Asignar como Mentor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                                    </svg>
+                                </button>
+                            ` : ''}
+                            ${role === 'mentor' ? `
+                                <button class="leader-action-btn demote-btn" data-id="${u.id}" data-name="${u.name_user}" title="Designar a Usuario">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 4.5-15 15m0 0h11.25m-11.25 0V8.25" />
+                                    </svg>
+                                </button>
+                            ` : ''}
+                            ${role !== 'admin' ? `
+                                <button class="leader-action-btn delete-btn" data-id="${u.id}" data-name="${u.name_user}" title="Eliminar Usuario">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0"/></svg>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        const showing = document.getElementById('showingText');
+        if (showing) {
+            const start = (currentPage - 1) * limit + 1;
+            const end = Math.min(currentPage * limit, totalUsers);
+            showing.textContent = `Mostrando ${list.length > 0 ? start : 0}-${end} de ${totalUsers}`;
+        }
+    }
+
+    function updatePaginationUI() {
+        const prevBtn = document.getElementById('prevPageBtn') as HTMLButtonElement;
+        const nextBtn = document.getElementById('nextPageBtn') as HTMLButtonElement;
+        const currentDisplay = document.getElementById('currentPageDisplay');
+        const paginationContainer = document.querySelector('.pagination-btns') as HTMLElement;
+
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        // Hide pagination if 6 or fewer total users
+        if (totalUsers <= limit) {
+            if (paginationContainer) paginationContainer.style.visibility = 'hidden';
+            if (prevBtn) prevBtn.disabled = true;
+            if (nextBtn) nextBtn.disabled = true;
+            return;
+        } else {
+            if (paginationContainer) paginationContainer.style.visibility = 'visible';
+        }
+
+        if (prevBtn) {
+            if (currentPage <= 1) {
+                prevBtn.classList.add('disabled');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.remove('disabled');
+                prevBtn.disabled = false;
+            }
+        }
+
+        if (nextBtn) {
+            if (currentPage >= totalPages) {
+                nextBtn.classList.add('disabled');
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.classList.remove('disabled');
+                nextBtn.disabled = false;
+            }
+        }
+
+        if (currentDisplay) currentDisplay.textContent = String(currentPage);
+    }
+
+    // Filters (Local for now as per minimal request, but should ideally move to backend)
+    // NOTE: This will only filter the visible records if we don't fetch from backend.
+    // For now, let's just make it clear or fetch all if search is used?
+    // User asked explicitly for backend pagination with page/limit.
+    function applyFilters() {
+        // If we want filtering to work with pagination, we should ideally pass filters to fetchData
+        // But the user's focus was purely on pagination logic.
+        // For simplicity, let's just re-fetch page 1.
+        fetchData(1);
+    }
+
+    async function deleteUser(id, name) {
+        if (!confirm(`¿Estás seguro de eliminar al usuario ${name}? Esta acción no se puede deshacer.`)) return;
+        try {
+            await AuthManager.fetch(`/users/${id}`, { method: 'DELETE' });
+            fetchData(currentPage);
+        } catch (e) {
+            alert('Error al eliminar usuario: ' + e.message);
+        }
+    }
+
+    async function promoteUser(id, name) {
+        openConfirmPromote(id, name);
+    }
+
+    // Event Listeners
+    document.getElementById('usersBody')?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const deleteBtn = target.closest('.delete-btn') as HTMLElement;
+        const promoteBtn = target.closest('.promote-btn') as HTMLElement;
+        const demoteBtn = target.closest('.demote-btn') as HTMLElement;
+
+        if (deleteBtn) {
+            deleteUser(Number(deleteBtn.dataset.id), deleteBtn.dataset.name);
+        } else if (promoteBtn) {
+            promoteUser(Number(promoteBtn.dataset.id), promoteBtn.dataset.name);
+        } else if (demoteBtn) {
+            openConfirmDemote(Number(demoteBtn.dataset.id), demoteBtn.dataset.name);
+        }
+    });
+
+    document.getElementById('prevPageBtn')?.addEventListener('click', () => {
+        if (currentPage > 1) fetchData(currentPage - 1);
+    });
+
+    document.getElementById('nextPageBtn')?.addEventListener('click', () => {
+        const totalPages = Math.ceil(totalUsers / limit);
+        if (currentPage < totalPages) fetchData(currentPage + 1);
+    });
+
+    document.getElementById('userSearch')?.addEventListener('input', applyFilters);
+    document.getElementById('roleFilter')?.addEventListener('change', applyFilters);
+
+    acceptPromoteBtn?.addEventListener('click', async () => {
+        if (!userToPromoteId) return;
+        
+        const specialtyId = promoteSpecialtySelect?.value;
+        if (!specialtyId) {
+            alert('Por favor, selecciona una especialidad para el mentor');
+            return;
+        }
+
+        try {
+            acceptPromoteBtn.disabled = true;
+            await AuthManager.fetch(`/users/${userToPromoteId}/promote`, { 
+                method: 'PATCH',
+                body: JSON.stringify({ specialty_id: specialtyId })
+            });
+            closeConfirmPromote();
+            fetchData(currentPage);
+            alert('El usuario ha sido asignado como mentor con su especialidad correctamente.');
+        } catch (e) {
+            alert('Error al asignar mentor: ' + e.message);
+        } finally {
+            acceptPromoteBtn.disabled = false;
+        }
+    });
+
+    acceptDemoteBtn?.addEventListener('click', async () => {
+        if (!userToDemoteId) return;
+        try {
+            acceptDemoteBtn.disabled = true;
+            acceptDemoteBtn.textContent = 'Procesando...';
+            await AuthManager.fetch(`/users/${userToDemoteId}/demote`, { method: 'PATCH' });
+            closeConfirmDemote();
+            fetchData(currentPage);
+        } catch (e) {
+            alert('Error al designar mentor: ' + e.message);
+        } finally {
+            acceptDemoteBtn.disabled = false;
+            acceptDemoteBtn.textContent = 'Designar';
+        }
+    });
+
+    cancelPromoteBtn?.addEventListener('click', closeConfirmPromote);
+    cancelDemoteBtn?.addEventListener('click', closeConfirmDemote);
+
+    fetchData();
+</script>

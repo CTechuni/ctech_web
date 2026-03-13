@@ -1,0 +1,50 @@
+---
+// frontend/src/pages/leader/calendar.astro
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+import CalendarShared from '../../components/shared/CalendarShared.astro';
+---
+
+<LeaderLayout title="Calendario" subtitle="Eventos de la Comunidad">
+    <div class="calendar-page">
+        <header class="calendar-header" style="display: none;">
+            <h2 class="section-title">Mi Agenda de Comunidad</h2>
+            <p class="section-desc">Visualiza los próximos eventos y actividades de tu comunidad.</p>
+        </header>
+
+        <main class="calendar-main-content">
+            <CalendarShared />
+        </main>
+    </div>
+</LeaderLayout>
+
+<style>
+    .calendar-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .calendar-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .section-desc {
+        color: #64748b;
+        font-size: 1rem;
+        margin: 0.5rem 0 0;
+    }
+
+    .calendar-main-content {
+        background: transparent;
+        padding: 0;
+    }
+</style>

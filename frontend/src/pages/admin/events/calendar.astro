@@ -1,0 +1,77 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import CalendarShared from '../../../components/shared/CalendarShared.astro';
+
+const title = 'Calendario';
+const subtitle = 'Eventos y Cursos';
+---
+
+<AdminLayout title={title} subtitle={subtitle}>
+  <section class="calendar-admin-page">
+    <header class="page-header" style="display: none;">
+      <div class="header-content">
+        <h2 class="page-title">Calendario Global</h2>
+        <p class="page-subtitle">Visualiza y organiza todos los eventos y sesiones de la plataforma</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75z" clip-rule="evenodd" /></svg>
+          Nueva Sesión
+        </button>
+      </div>
+    </header>
+
+    <main class="calendar-main-content">
+      <CalendarShared>
+          <div slot="extra-actions" class="admin-extra-actions">
+              <!-- Acciones extra para Admin si fueran necesarias -->
+          </div>
+      </CalendarShared>
+    </main>
+  </section>
+
+  <style>
+    .calendar-admin-page {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .page-subtitle {
+      margin: 0.25rem 0 0;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: #0073ff;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 115, 255, 0.2);
+    }
+
+    .calendar-main-content {
+        margin-top: 1rem;
+    }
+  </style>
+</AdminLayout>

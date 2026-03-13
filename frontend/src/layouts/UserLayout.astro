@@ -1,0 +1,124 @@
+---
+// UserLayout.astro - Pixel Perfect v2
+import UserSidebar from '../components/user/UserSidebar.astro';
+import UserHeader from '../components/user/UserHeader.astro';
+import '../styles/globals.css';
+
+interface Props {
+    title: string;
+    subtitle?: string;
+}
+
+const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | CTech App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        import { requireRole, authManager } from '../utils/auth.js';
+        if (requireRole('usuario')) {
+            authManager.initInactivityTimer(120);
+        }
+    </script>
+</head>
+<body class="user-body">
+    <UserSidebar />
+
+    <div class="user-layout" id="mainLayout">
+        <UserHeader title={title} subtitle={subtitle} />
+        <main class="user-main">
+            <slot />
+        </main>
+    </div>
+
+    <style is:global>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body.user-body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* Content area sit beside the 260px sidebar */
+        .user-layout {
+            margin-left: 260px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #f8fafc;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-collapsed .user-layout {
+            margin-left: 70px;
+        }
+
+        .user-main {
+            flex: 1;
+            padding: 28px 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .user-layout { 
+                margin-left: 0; 
+            }
+            .sidebar-collapsed .user-layout {
+                margin-left: 0;
+            }
+            .user-main {
+                padding: 20px 16px;
+            }
+            
+            /* Mobile Overlay */
+            .sidebar-open::after {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.5);
+                backdrop-filter: blur(4px);
+                z-index: 998;
+            }
+        }
+    </style>
+
+    <script>
+        const body = document.body;
+        const isCollapsed = localStorage.getItem('userSidebarCollapsed') === 'true';
+        if (isCollapsed && window.innerWidth > 1024) {
+            body.classList.add('sidebar-collapsed');
+        }
+
+        window.addEventListener('toggleSidebar', () => {
+            if (window.innerWidth <= 1024) {
+                body.classList.toggle('sidebar-open');
+                body.classList.remove('sidebar-collapsed');
+            } else {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('userSidebarCollapsed', body.classList.contains('sidebar-collapsed').toString());
+            }
+        });
+
+        body.addEventListener('click', (e) => {
+            if (body.classList.contains('sidebar-open') && e.clientX > 260) {
+                body.classList.remove('sidebar-open');
+            }
+        });
+    </script>
+</body>
+</html>

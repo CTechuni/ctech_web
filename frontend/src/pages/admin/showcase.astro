@@ -1,0 +1,46 @@
+---
+// Página de demostración que importa todos los componentes y el layout del área de administración
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminHeader from '../../components/admin/AdminHeader.astro';
+import AdminSidebar from '../../components/admin/AdminSidebar.astro';
+import AdminUsersSection from '../../components/admin/AdminUsersSection.astro';
+import AdminCommunitySection from '../../components/admin/AdminCommunitySection.astro';
+import AdminCoursesSection from '../../components/admin/AdminCoursesSection.astro';
+import AdminEventsSection from '../../components/admin/AdminEventsSection.astro';
+import AdminMentorsSection from '../../components/admin/AdminMentorsSection.astro';
+
+---
+
+<AdminLayout title="Admin Showcase" subtitle="Ejemplo de todos los componentes disponibles">
+    <section class="demo-section">
+        <h2>Header</h2>
+        <AdminHeader title="Encabezado de prueba" subtitle="Subtítulo demo" />
+    </section>
+
+    <!-- El sidebar y el header principal ya se muestran automáticamente dentro del layout -->
+
+    <section class="demo-section">
+        <h2>Sección de Usuarios</h2>
+        <AdminUsersSection />
+    </section>
+
+    <section class="demo-section">
+        <h2>Sección de Comunidades</h2>
+        <AdminCommunitySection />
+    </section>
+
+    <section class="demo-section">
+        <h2>Sección de Cursos</h2>
+        <AdminCoursesSection />
+    </section>
+
+    <section class="demo-section">
+        <h2>Sección de Eventos</h2>
+        <AdminEventsSection />
+    </section>
+
+    <section class="demo-section">
+        <h2>Sección de Mentores</h2>
+        <AdminMentorsSection />
+    </section>
+</AdminLayout>

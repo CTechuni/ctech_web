@@ -1,0 +1,486 @@
+---
+// src/pages/admin/index.astro - Dashboard Rediseñado
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard" subtitle="Global">
+
+<div class="dashboard-wrap">
+    <!-- TOP STAT CARDS -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="icon-box pastel-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="hero-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                </svg>
+            </div>
+            <div class="metric-value" id="totalUsers">0</div>
+            <p class="metric-label">Total Usuarios</p>
+        </div>
+
+        <div class="metric-card">
+            <div class="icon-box pastel-green">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+</svg>
+            </div>
+            <div class="metric-value" id="totalCommunities">0</div>
+            <p class="metric-label">Comunidades</p>
+        </div>
+
+        <div class="metric-card">
+            <div class="icon-box pastel-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hero-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                </svg>
+            </div>
+            <div class="metric-value" id="totalEvents">0</div>
+            <p class="metric-label">Eventos del Mes</p>
+        </div>
+    </div>
+
+    <!-- MAIN CHARTS ROW -->
+    <div class="charts-grid mt-4">
+        <!-- USER GROWTH CHART -->
+        <div class="chart-card large-chart no-padding">
+            <div class="card-header-padded">
+                <div class="ch-text">
+                    <h4>Crecimiento Global de Usuarios</h4>
+                    <span class="subtitle">Últimos 7 meses</span>
+                </div>
+                <div class="ch-trend positive">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" /></svg> +8.2%
+                </div>
+            </div>
+            <div class="relative-chart-container">
+                <div class="chart-container">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROLE DISTRIBUTION CHART -->
+        <div class="chart-card small-chart">
+            <div class="chart-header">
+                <div class="ch-text">
+                    <h4>Distribución de Roles</h4>
+                    <span class="subtitle">Composición de usuarios</span>
+                </div>
+            </div>
+            <div class="chart-container pie-container">
+                <canvas id="roleDistChart"></canvas>
+            </div>
+            <div class="chart-legend" id="roleLegend">
+                <!-- Dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="charts-grid mt-4 single-col">
+        <!-- MEMBERS BY COMMUNITY -->
+        <div class="chart-card medium-chart">
+            <div class="chart-header">
+                <div class="ch-text">
+                    <h4>Miembros por Comunidad</h4>
+                    <span class="subtitle">Total de registrados</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="commMembersChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW SECTION FOR EVENTS -->
+    <div class="mt-4">
+        <div class="chart-card medium-chart events-panel">
+            <div class="p-4">
+                <div class="fw-bold text-dark mb-3" style="font-size: 1.1rem;">Próximos Eventos</div>
+
+                <div id="eventsPanelContainer">
+                    <p class="text-muted small p-3">Cargando eventos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-wrap { display: block; }
+    
+    .dashboard-wrap > div { margin-bottom: 1.5rem; }
+
+    /* METRICS GRID */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+    }
+
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+    }
+
+    .icon-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .pastel-blue { background: #e0f2fe; color: #0ea5e9; }
+    .pastel-green { background: #dcfce7; color: #10b981; }
+    .pastel-purple { background: #f3e8ff; color: #a855f7; }
+    .pastel-orange { background: #ffedd5; color: #f97316; }
+
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .metric-label {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* CHARTS MINIMAL */
+    .charts-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.25rem; margin-top: 1rem; }
+    .charts-grid.single-col { grid-template-columns: 1fr; }
+    .chart-card { background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
+    .chart-card.no-padding { padding: 0; overflow: hidden; }
+    
+    .chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    
+    .card-header-padded {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 24px 24px 0 24px;
+        margin-bottom: 1rem;
+    }
+
+    .ch-text h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #0F172A; }
+    .ch-text .subtitle { font-size: 0.8rem; color: #94A3B8; }
+    
+    .ch-trend.positive {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .relative-chart-container {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chart-container { height: 200px; position: relative; }
+    .large-chart .chart-container { height: 200px; padding: 0 1.5rem 0.5rem; }
+    .pie-container { height: 180px; }
+    
+    /* UPCOMING EVENTS */
+    .events-panel {
+        padding: 0 !important;
+    }
+    .events-panel > div {
+        padding: 1.5rem;
+    }
+    .events-panel .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), 0 -2px 6px rgba(0, 0, 0, 0.05) !important;
+        transition: box-shadow 0.2s ease;
+    }
+    .events-panel .card:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 -3px 8px rgba(0, 0, 0, 0.07) !important;
+    }
+    .events-panel .card-body {
+        padding: 0.75rem 1rem !important;
+    }
+    
+    @media (max-width: 1024px) {
+        .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+        .metrics-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<script>
+    import { AuthManager } from '../../utils/auth.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('[Dashboard] DOM cargado, iniciando carga de estadísticas...');
+        loadStats();
+        
+        if (!window.Chart) {
+            console.error('[Dashboard] Error: Chart.js no se ha cargado correctamente.');
+        }
+    });
+
+    async function loadStats() {
+        console.log('[Dashboard] Intentando obtener métricas de /metrics/admin...');
+        try {
+            const data = await AuthManager.fetch('/metrics/admin');
+            console.log('[Dashboard] Datos recibidos:', data);
+            
+            if (data) {
+                // Actualizar contadores
+                const updateCounter = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = value !== undefined ? value.toString() : '0';
+                    }
+                };
+
+                updateCounter('totalUsers', data.total_users);
+                updateCounter('totalCommunities', data.total_communities);
+                updateCounter('totalEvents', data.active_events);
+                
+                // Inicializar gráficas con datos reales
+                initCharts(data);
+            } else {
+                console.warn('[Dashboard] No se recibieron datos de métricas.');
+                initCharts(); // Fallback a gráficas vacías
+            }
+
+            // Cargar Eventos
+            console.log('[Dashboard] Intentando obtener eventos...');
+            const events = await AuthManager.fetch('/events/');
+            renderEvents(events);
+        } catch (e) { 
+            console.error('[Dashboard] Error fatal al cargar estadísticas:', e);
+            initCharts(); // Fallback para que al menos se vea la estructura
+        }
+    }
+
+    function renderEvents(events) {
+        const container = document.getElementById('eventsPanelContainer');
+        if (!container) return;
+        
+        if (!events || events.length === 0) {
+            container.innerHTML = '<p class="text-muted small p-3">No hay eventos próximos.</p>';
+            return;
+        }
+
+        container.innerHTML = events.slice(0, 4).map(event => {
+            const date = new Date(event.event_date);
+            const day = date.getDate();
+            const month = date.toLocaleString('es-ES', { month: 'short' }).toUpperCase().replace('.', '');
+            const time = event.event_time || '06:00 PM';
+            const location = event.location || 'CTech Hub';
+            const type = (event.event_type || 'virtual').toLowerCase();
+            const isVirtual = type === 'online' || type === 'virtual';
+            const typeLabel = isVirtual ? 'Virtual' : 'Presencial';
+
+            return `
+                <div class="card border-0 shadow-sm mb-3">
+                    <div class="card-body d-flex align-items-center p-3 w-100">
+                        <div class="flex-shrink-0 bg-primary-subtle rounded-circle d-flex flex-column align-items-center justify-content-center me-3" style="width: 52px; height: 52px;">
+                            <span class="fw-bold text-primary" style="font-size: 1.1rem; line-height: 1.1;">${day}</span>
+                            <span class="text-uppercase text-muted" style="font-size: 0.7rem; line-height: 1.1;">${month}</span>
+                        </div>
+                        <div class="ms-3 flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-dark mb-1" style="font-size: 1rem;">${event.title}</div>
+                            <div class="small text-muted opacity-75">${location} • ${time}</div>
+                        </div>
+                        <div class="ms-auto ps-3 flex-shrink-0">
+                            <span class="badge rounded-pill" style="font-size: 0.82rem; background-color: ${isVirtual ? '#e7f1ff' : '#fff0f0'}; color: ${isVirtual ? '#3b82f6' : '#e05252'}; padding: 5px 14px;">
+                                ${typeLabel}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function initCharts(apiData = null) {
+        console.log('[Dashboard] Inicializando gráficas...');
+        // @ts-ignore
+        const ChartLib = window.Chart;
+        if (!ChartLib) {
+            console.error('[Dashboard] Chart.js no encontrado en window.Chart');
+            return;
+        }
+
+        // Helper to get last 7 months
+        const getLast7Months = () => {
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const labels = [];
+            const d = new Date();
+            for (let i = 6; i >= 0; i--) {
+                const monthDate = new Date(d.getFullYear(), d.getMonth() - i, 1);
+                labels.push(months[monthDate.getMonth()]);
+            }
+            return labels;
+        };
+
+        // 1. Line Chart: Growth
+        const growthCtx = document.getElementById('userGrowthChart');
+        if (!growthCtx) return;
+
+        const growthLabels = getLast7Months();
+        const growthData = apiData?.user_growth || [0, 0, 0, 0, 0, 0, 0];
+
+        new ChartLib(growthCtx, {
+            type: 'line',
+            data: {
+                labels: growthLabels,
+                datasets: [{
+                    label: 'Usuarios',
+                    data: growthData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    clip: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => ` Miembros: ${context.parsed.y}`,
+                            afterLabel: (context) => {
+                                const dataset = context.dataset.data;
+                                const index = context.dataIndex;
+                                if (index > 0) {
+                                    const prevValue = dataset[index - 1];
+                                    const currValue = context.parsed.y;
+                                    const diff = currValue - prevValue;
+                                    const percentage = ((diff / prevValue) * 100).toFixed(1);
+                                    const sign = diff >= 0 ? '+' : '';
+                                    return ` Crecimiento: ${sign}${percentage}%`;
+                                }
+                                return ' Crecimiento: --';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { display: true, color: '#f1f5f9' }, 
+                        ticks: { color: '#94a3b8', font: { size: 11 } } 
+                    },
+                    y: { 
+                        beginAtZero: true,
+                        min: 0,
+                        max: 60,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 11 },
+                            stepSize: 20
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Doughnut Chart: Roles
+        const roleCtx = document.getElementById('roleDistChart');
+        if (!roleCtx) return;
+        
+        const roleLabels = apiData?.role_distribution ? Object.keys(apiData.role_distribution) : ['Usuarios', 'Mentores', 'Líderes'];
+        const roleValues = apiData?.role_distribution ? Object.values(apiData.role_distribution) : [0, 0, 0];
+
+        new ChartLib(roleCtx, {
+            type: 'doughnut',
+            data: {
+                labels: roleLabels,
+                datasets: [{
+                    data: roleValues,
+                    backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'],
+                    borderWidth: 4,
+                    borderColor: '#ffffff',
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                cutout: '80%'
+            }
+        });
+
+        // 3. Bar Chart: Communities
+        const commCtx = document.getElementById('commMembersChart');
+        if (!commCtx) return;
+        
+        const commLabels = apiData?.community_distribution ? Object.keys(apiData.community_distribution) : ['Sin datos'];
+        const commValues = apiData?.community_distribution ? Object.values(apiData.community_distribution) : [0];
+
+        new ChartLib(commCtx, {
+            type: 'bar',
+            data: {
+                labels: commLabels,
+                datasets: [{
+                    data: commValues,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 6,
+                    barThickness: 16
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                    y: { 
+                        beginAtZero: true,
+                        min: 0,
+                        max: 40,
+                        grid: { color: '#f1f5f9' }, 
+                        ticks: { 
+                            color: '#94a3b8', 
+                            font: { size: 11 },
+                            stepSize: 5
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</AdminLayout>
+

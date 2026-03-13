@@ -1,0 +1,536 @@
+---
+// Astro component script (if needed)
+---
+
+<form class="login-form" id="loginForm" method="POST">
+    <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="tu@email.com"
+        >
+        <span class="error-message" id="emailError"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="password-wrapper">
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                placeholder="••••••"
+            >
+            <button type="button" class="toggle-password" data-target="password">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+            </button>
+        </div>
+        <span class="error-message" id="passwordError"></span>
+    </div>
+
+    <div class="form-options">
+        <label class="checkbox-container">
+            <input type="checkbox" name="remember">
+            <span class="checkmark"></span>
+            Recordarme
+        </label>
+        <a href="#" class="forgot-password" onclick="toggleForgotPassword(event, true)">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <button type="submit" class="login-btn">
+        Iniciar Sesión
+    </button>
+
+
+
+    <div id="inactivityNotice" class="alert alert-warning mb-3" style="display: none; border-radius: 12px; font-size: 0.85rem; font-weight: 500;">
+        Sesión cerrada por inactividad
+    </div>
+
+    <div class="signup-link">
+        <p>¿No tienes cuenta? <a href="#" onclick="window.closeModal('loginModal'); window.openModal('signupModal')">Regístrate aquí</a></p>
+    </div>
+</form>
+
+<!-- Forgot Password Form Overlay -->
+<form class="login-form" id="forgotPasswordForm" style="display: none;" method="POST">
+    <div style="text-align: center; margin-bottom: 1rem;">
+        <h3 style="color: var(--color-primary-dark); margin-bottom: 0.5rem;">Recuperar Contraseña</h3>
+        <p style="color: #64748b; font-size: 0.9rem; margin: 0; line-height: 1.4;">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
+    </div>
+
+    <div class="form-group">
+        <label for="forgotEmail">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="forgotEmail" 
+            name="forgotEmail" 
+            placeholder="tu@email.com"
+            required
+        >
+        <span class="error-message" id="forgotEmailError"></span>
+    </div>
+
+    <div id="forgotPasswordSuccess" class="alert alert-success" style="display: none; border-radius: 12px; font-size: 0.85rem; font-weight: 500; background-color: #dcfce7; color: #166534; padding: 0.75rem; border: 1px solid #bbf7d0; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+        Revisa tu bandeja de entrada o spam. Hemos enviado un correo con las instrucciones.
+    </div>
+
+    <button type="submit" class="login-btn" id="forgotSubmitBtn">
+        Enviar Enlace
+    </button>
+
+    <div class="signup-link" style="margin-top: 1rem;">
+        <a href="#" onclick="toggleForgotPassword(event, false)" style="color: #64748b;">Volver a Iniciar Sesión</a>
+    </div>
+</form>
+
+
+<style>
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--color-primary-dark);
+        font-size: 0.9rem;
+        margin: 0 1rem 0 1rem;
+    }
+
+    .form-group input {
+        padding: 0.6rem 1rem;
+        border: 1px solid #dbdee1;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #06060640;
+    }
+
+    .form-group input.error {
+        border-color: #ef4444;
+        background-color: #fef2f2;
+    }
+
+    /* Password Toggle Styling */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 3rem !important;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    .toggle-password:hover {
+        color: #64748b;
+    }
+    .eye-icon {
+        pointer-events: none;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.8rem;
+        margin-left: 1rem;
+        margin-top: -0.1rem;
+        display: none;
+    }
+
+    .error-message.visible {
+        display: block;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .forgot-password {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    .login-btn {
+        padding: 0.6rem 1.5rem;
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .login-btn:hover {
+        background-color: var(--color-primary);
+    }
+
+    .login-btn:active {
+        background-color: var(--color-blue-grey);
+    }
+
+    .login-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .signup-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--color-primary-dark);
+    }
+
+    .signup-link a {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+</style>
+
+<script>
+    import { AuthManager, authManager } from "../../utils/auth.js";
+    import { API_CONFIG, buildApiUrl } from "../../config/api.js";
+
+    // Cerrar modal (complemento de openModal)
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+    }
+
+    // Función para abrir modal (se define globalmente)
+    window.openModal = function (modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+
+            // Detectar razón de logout por inactividad si es el modal de login
+            if (modalId === 'loginModal') {
+                // Clear fields to avoid pre-fill issues reported by user
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                if (emailInput) {
+                    emailInput.value = '';
+                    emailInput.setAttribute('autocomplete', 'off');
+                }
+                if (passwordInput) {
+                    passwordInput.value = '';
+                    passwordInput.setAttribute('autocomplete', 'new-password');
+                }
+
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('reason') === 'inactivity') {
+                    const notice = document.getElementById('inactivityNotice');
+                    if (notice) notice.style.display = 'block';
+                }
+            }
+        }
+    };
+
+    // Manejo del formulario de login
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        // Limpiar errores al escribir
+        function clearError(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            if(input) input.classList.remove('error');
+            if(error) {
+                error.textContent = '';
+                error.classList.remove('visible');
+            }
+        }
+
+        const preventSpaces = (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+            }
+        };
+
+        const emailInputFixed = document.getElementById('email');
+        const passwordInputFixed = document.getElementById('password');
+        const forgotEmailInputFixed = document.getElementById('forgotEmail');
+
+        emailInputFixed?.addEventListener('keydown', preventSpaces);
+        passwordInputFixed?.addEventListener('keydown', preventSpaces);
+        forgotEmailInputFixed?.addEventListener('keydown', preventSpaces);
+
+        document.getElementById('email')?.addEventListener('input', () => clearError('email', 'emailError'));
+        document.getElementById('password')?.addEventListener('input', () => clearError('password', 'passwordError'));
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault(); // CRITICAL: Stop the page from refreshing and showing credentials in URL
+
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            
+            let hasErrors = false;
+
+            const email = String(emailInput.value || '').trim();
+            const password = String(passwordInput.value || '');
+
+            if (email.includes(' ')) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'El correo no puede contener espacios';
+                emailError.classList.add('visible');
+                hasErrors = true;
+            }
+
+            if (password.includes(' ')) {
+                passwordInput.classList.add('error');
+                passwordError.textContent = 'La contraseña no puede contener espacios';
+                passwordError.classList.add('visible');
+                hasErrors = true;
+            }
+
+            // Validations...
+            if (!email) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'El correo es obligatorio';
+                emailError.classList.add('visible');
+                hasErrors = true;
+            } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+                emailInput.classList.add('error');
+                emailError.textContent = 'Correo inválido';
+                emailError.classList.add('visible');
+                hasErrors = true;
+            }
+            if (!password) {
+                passwordInput.classList.add('error');
+                passwordError.textContent = 'La contraseña es obligatoria';
+                passwordError.classList.add('visible');
+                hasErrors = true;
+            }
+
+            if (hasErrors) return;
+
+            // Submit Button status
+            const submitBtn = this.querySelector('.login-btn');
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) {
+                submitBtn.textContent = 'Iniciando sesión...';
+                submitBtn.disabled = true;
+            }
+
+            console.log("Intentando login para:", email);
+            try {
+                const result = await authManager.login(email, password);
+
+                console.debug('login result', result);
+
+                // Redirección según rol
+                const role = String(result.user?.role || '').toLowerCase().trim();
+
+                let redirectPath = '/user';
+                if (role === 'admin')        redirectPath = '/admin/dashboard';
+                else if (role === 'leader')  redirectPath = '/leader/';
+
+                window.location.href = redirectPath;
+
+            } catch (error) {
+                console.error('login failed', error);
+                const msg = error.message || 'Error al iniciar sesión';
+                if (msg.toLowerCase().includes('correo') || msg.toLowerCase().includes('registrado')) {
+                    emailError.textContent = msg;
+                    emailError.classList.add('visible');
+                    emailInput.classList.add('error');
+                } else {
+                    passwordError.textContent = msg;
+                }
+                passwordError.classList.add('visible');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        });
+    }
+
+    // Toggle Password Visibility Logic
+    loginForm.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            
+            // Toggle Icon (Eye / Eye Slash)
+            this.innerHTML = isPassword ? 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`;
+        });
+    });
+
+    // Función para actualizar la UI después del login
+    function updateAuthUI(user) {
+        // En el estado original sólo mostraba un log o ajustaba botones.
+    }
+
+    // Función para logout
+    window.logout = async function () {
+        try {
+            if (!authManager || typeof authManager.logout !== 'function') {
+                throw new Error('El gestor de autenticación no está disponible.');
+            }
+            await authManager.logout();
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            alert('Error al cerrar sesión: ' + (error?.message || error));
+        }
+    };
+
+    // Toggle para visualizar Forgot Password Form
+    window.toggleForgotPassword = function(e, showForgot) {
+        if(e) e.preventDefault();
+        const loginFormEl = document.getElementById('loginForm');
+        const forgotFormEl = document.getElementById('forgotPasswordForm');
+        const forgotSuccess = document.getElementById('forgotPasswordSuccess');
+        const emailInput = document.getElementById('forgotEmail');
+        
+        if (showForgot) {
+            loginFormEl.style.display = 'none';
+            forgotFormEl.style.display = 'flex';
+            if(forgotSuccess) forgotSuccess.style.display = 'none';
+            if(emailInput) emailInput.value = '';
+        } else {
+            loginFormEl.style.display = 'flex';
+            forgotFormEl.style.display = 'none';
+        }
+    };
+
+    // Manejo del formulario de Forgot Password
+    const forgotForm = document.getElementById('forgotPasswordForm');
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('forgotEmail');
+            const errorSpan = document.getElementById('forgotEmailError');
+            const btn = document.getElementById('forgotSubmitBtn');
+            const successMsg = document.getElementById('forgotPasswordSuccess');
+            const email = String(emailInput.value || '').trim();
+            
+            errorSpan.textContent = '';
+            errorSpan.classList.remove('visible');
+            inputRemoveError(emailInput);
+            successMsg.style.display = 'none';
+            
+            if (!email) {
+                inputErrorAndMsg(emailInput, errorSpan, 'El correo es obligatorio');
+                return;
+            } else if (email.includes(' ')) {
+                inputErrorAndMsg(emailInput, errorSpan, 'El correo no puede contener espacios');
+                return;
+            } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+                inputErrorAndMsg(emailInput, errorSpan, 'Correo inválido');
+                return;
+            }
+            
+            const originalText = btn.textContent;
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
+            
+            try {
+                // Configurar URL usando el helper
+                const url = buildApiUrl(API_CONFIG.AUTH.FORGOT_PASSWORD);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    successMsg.style.display = 'block';
+                    emailInput.value = '';
+                } else {
+                    inputErrorAndMsg(emailInput, errorSpan, data.detail || 'Error al enviar la solicitud');
+                }
+            } catch (error) {
+                console.error('forgot password failed', error);
+                inputErrorAndMsg(emailInput, errorSpan, 'Error de conexión con el servidor');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        function inputErrorAndMsg(input, errorEl, msg) {
+            input.classList.add('error');
+            errorEl.textContent = msg;
+            errorEl.classList.add('visible');
+        }
+        function inputRemoveError(input) {
+            if(input) input.classList.remove('error');
+        }
+    }
+
+</script>

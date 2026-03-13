@@ -1,0 +1,176 @@
+---
+
+---
+<section class="contenido">
+    <div class="cards-contenido" id="contenido-container">
+        <div class="card">
+            <h3>Front End</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>Back End</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>IA</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Data science</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Web3</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>Desarrollo movil</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card last-two">
+            <h3>Desarrollo web</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+
+        <div class="card last-two">
+            <h3>Programacion</h3>
+            <ul>
+                <button class="basic">Basico</button>
+                <button class="intermedio">Intermedio</button>
+                <button class="avanzado">Avanzado</button>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<style>
+    .contenido {
+        padding: 1rem 1rem;
+    }
+
+    .cards-contenido {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        justify-content: center;
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 0rem;
+    }
+
+    .cards-contenido > .card {
+        background-color: var(--color-medium-grey);
+        color: #333;
+        padding: 0.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.179);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        min-height: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cards-contenido > .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(116, 115, 115, 0.877);
+    }
+
+    .cards-contenido h3 {
+        font-style: italic;
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+        color: var(--color-sencondary-azure);
+        font-weight: bold;
+    }
+
+    /* Botones dentro de cada tarjeta */
+    .cards-contenido ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .cards-contenido button {
+        padding: 8px 15px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    /* Colores botones */
+    .cards-contenido button.basic,
+    .cards-contenido button.intermedio,
+    .cards-contenido button.avanzado {
+        background: var(--color-white);
+        color: var(--color-primary-dark);
+    }
+    
+    .cards-contenido button.basic:hover,
+    .cards-contenido button.intermedio:hover,
+    .cards-contenido button.avanzado:hover {
+        text-shadow: 2px 2px 3px rgba(58, 58, 58, 0.366);
+        background: var(--color-azure-radiant);
+        color: var(--color-white);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 992px) {
+        .cards-contenido {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cards-contenido > .last-two {
+            grid-column: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .cards-contenido {
+            grid-template-columns: 1fr;
+            max-width: 100%;
+        }
+    }
+</style>

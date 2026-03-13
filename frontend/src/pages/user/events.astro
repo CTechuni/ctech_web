@@ -1,0 +1,156 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { escapeHtml } from '../../utils/escape.js'; // if exists, else not needed
+const title = "Eventos";
+---
+
+<MainLayout title={title}>
+    <div class="user-events-container" id="userEventsContainer">
+        <p>Cargando eventos...</p>
+    </div>
+</MainLayout>
+
+<style>
+.user-events-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 1.5rem;
+}
+.event-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--color-light-grey);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.event-card h3 {
+    font-size: 1.1rem;
+    margin: 0;
+}
+.event-card .register-btn {
+    margin-top: auto;
+}
+</style>
+
+<script>
+    import { authManager, AuthManager } from '../../utils/auth.js';
+
+    function escapeHtml(str: unknown) {
+        return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    let allEvents: any[] = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const user = authManager.getUser();
+        if (!user) return;
+        try {
+            const events = await AuthManager.fetch('/events/');
+            allEvents = events || [];
+            renderEvents(allEvents);
+        } catch (err) {
+            console.error('Error loading events for user:', err);
+            const c = document.getElementById('userEventsContainer');
+            if (c) c.innerHTML = '<p>Error cargando eventos.</p>';
+        }
+    });
+
+    function getRegistrationMap() {
+        try {
+            return JSON.parse(localStorage.getItem('eventRegs') || '{}');
+        } catch {
+            return {};
+        }
+    }
+
+    function setRegistrationMap(map) {
+        localStorage.setItem('eventRegs', JSON.stringify(map));
+    }
+
+    function renderEvents(events) {
+        const container = document.getElementById('userEventsContainer');
+        if (!container) return;
+        if (events.length === 0) {
+            container.innerHTML = '<p>No hay eventos disponibles para tu comunidad.</p>';
+            return;
+        }
+        const regs = getRegistrationMap();
+        container.innerHTML = '';
+        events.forEach(ev => {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+            const reg = ev.is_registered ?? (regs[ev.id] || 0);
+            const registered = ev.registered_count || 0;
+            const available = ev.capacity ? ev.capacity - registered : null;
+            card.innerHTML = `
+                <h3>${escapeHtml(ev.title)}</h3>
+                <p><strong>Tipo:</strong> ${escapeHtml(ev.event_type)}</p>
+                <p><strong>Fecha:</strong> ${escapeHtml(ev.event_date)} ${escapeHtml(ev.event_time || '')}</p>
+                <p><strong>Cupos:</strong> ${available === null ? 'Sin límite' : available <= 0 ? '<span style="color:#ef4444;">0</span>' : available}</p>
+                <button class="btn register-btn">${reg ? 'Cancelar Registro' : (available !== null && available <= 0 ? 'No hay disponibilidad' : 'Registrarme')}</button>
+            `;
+            const btn = card.querySelector('button.register-btn') as HTMLButtonElement | null;
+            if (btn) {
+                if (available !== null && available <= 0 && !reg) btn.disabled = true;
+                btn.addEventListener('click', () => toggleRegistration(ev.id));
+            }
+            container.appendChild(card);
+        });
+    }
+
+    async function cancelRegistration(eventId: number) {
+        await AuthManager.fetch(`/events/${eventId}/register`, { method: 'DELETE' });
+        const regs = getRegistrationMap();
+        delete regs[eventId];
+        setRegistrationMap(regs);
+    }
+
+    async function toggleRegistration(eventId) {
+        const ev = allEvents.find(e => e.id === eventId);
+        if (!ev) return;
+
+        const regs = getRegistrationMap();
+        const already = ev.is_registered ?? (regs[eventId] || 0);
+        const cap = ev.capacity || 0;
+
+        if (!already) {
+            if (cap <= 0) return; // no space
+
+            try {
+                const response = await AuthManager.fetch(`/events/${eventId}/register`, {
+                    method: 'POST'
+                });
+
+                if (response && (response.message === "Registro exitoso" || response.event_title)) {
+                    ev.is_registered = true;
+                    regs[eventId] = 1;
+                    setRegistrationMap(regs);
+                    alert(`¡Inscripción exitosa a "${ev.title}"! Se ha enviado una confirmación a tu correo.`);
+                } else {
+                    alert("No se pudo completar el registro en este momento.");
+                }
+            } catch (err) {
+                console.error('Error registering for event:', err);
+                alert("Error al procesar el registro. Intenta de nuevo.");
+            }
+        } else {
+            try {
+                await cancelRegistration(eventId);
+                ev.is_registered = false;
+                alert("Has cancelado tu registro al evento.");
+            } catch (err) {
+                console.error('Error cancelling registration:', err);
+                alert("Error al cancelar el registro. Intenta de nuevo.");
+            }
+        }
+
+        // Re-renderizar lista
+        renderEvents(allEvents);
+    }
+</script>

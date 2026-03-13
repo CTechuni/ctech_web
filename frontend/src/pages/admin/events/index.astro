@@ -1,0 +1,41 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminEventsSection from '../../../components/admin/AdminEventsSection.astro';
+
+const title = 'Eventos';
+const subtitle = 'Gestión de eventos de la plataforma';
+---
+
+<AdminLayout title={title} subtitle={subtitle}>
+  <section class="admin-events-page">
+    <AdminEventsSection />
+  </section>
+
+  <style>
+    .admin-events-page {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .admin-page-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin: 0;
+      color: #0f172a;
+    }
+
+    .admin-page-subtitle {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 768px) {
+      .admin-page-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</AdminLayout>
+

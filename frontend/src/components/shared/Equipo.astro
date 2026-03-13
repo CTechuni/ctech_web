@@ -1,0 +1,112 @@
+---
+---
+<section class="equipo" id="equipo">
+  <h2>Nuestros Mentores</h2>
+  <p class="sub">Expertos de la industria listos para guiarte</p>
+  <div class="mentors-grid">
+    <div class="mentor-card">
+      <div class="avatar-initials" aria-hidden="true">DT</div>
+      <h3 class="name">Diego Torres</h3>
+      <p class="specialty">Frontend Development</p>
+      <div class="rating">★ 4.9</div>
+      <div class="meta"><span>3 cursos</span><span>112 alumnos</span></div>
+    </div>
+    <div class="mentor-card">
+      <div class="avatar-initials" aria-hidden="true">JM</div>
+      <h3 class="name">Julián Morales</h3>
+      <p class="specialty">Backend & APIs</p>
+      <div class="rating">★ 4.8</div>
+      <div class="meta"><span>2 cursos</span><span>89 alumnos</span></div>
+    </div>
+    <div class="mentor-card">
+      <div class="avatar-initials" aria-hidden="true">VR</div>
+      <h3 class="name">Valeria Ríos</h3>
+      <p class="specialty">Data Science</p>
+      <div class="rating">★ 4.7</div>
+      <div class="meta"><span>3 cursos</span><span>74 alumnos</span></div>
+    </div>
+    <div class="mentor-card">
+      <div class="avatar-initials" aria-hidden="true">PS</div>
+      <h3 class="name">Pedro Salas</h3>
+      <p class="specialty">Mobile Development</p>
+      <div class="rating">★ 4.9</div>
+      <div class="meta"><span>2 cursos</span><span>61 alumnos</span></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .equipo {
+    padding: 4rem 1rem;
+    background: #fff;
+    text-align: center;
+  }
+  .equipo h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+  }
+  .equipo .sub {
+    color: #666;
+    margin-bottom: 2rem;
+  }
+  .mentors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .mentor-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .mentor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+  .avatar-initials {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--color-azure-radiant, #2563eb);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+  .mentor-card .name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+  .mentor-card .specialty {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .mentor-card .rating {
+    font-size: 0.9rem;
+    color: #ca8a04;
+    margin-bottom: 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .mentor-card .meta {
+    font-size: 0.8rem;
+    color: #777;
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+  }
+</style>

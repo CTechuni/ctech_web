@@ -1,0 +1,117 @@
+---
+// Astro component script (if needed)
+---
+
+<section id="hero-section" class="hero-section">
+    <div class="hero-badge">Plataforma Tecnológica Comunitaria</div>
+    <h1>Aprende, <span class="highlight">Conecta</span>, <span class="gradient-text">Lidera.</span></h1>
+    <p class="hero-sub">CTech es la plataforma donde las comunidades tecnológicas crecen juntas a través de eventos</p>
+    <div class="hero-cta">
+        <button class="cta-primary" onclick="openModal('signupModal')">Comenzar gratis →</button>
+    </div>
+    <slot />
+</section>
+
+<style>
+    .hero-section {
+        padding: 8rem 2rem 6rem;
+        text-align: center;
+        background: linear-gradient(135deg, #0f0f16 0%, #04040a 100%);
+        color: #fff;
+        position: relative;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        background: var(--color-azure-radiant);
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.02em;
+    }
+
+    .hero-section h1 {
+        font-family: 'Inter', sans-serif;
+        font-size: 4.5rem;
+        font-weight: 900;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    .hero-section .highlight {
+        color: var(--color-azure-radiant);
+    }
+
+    .gradient-text {
+        background: linear-gradient(90deg, #0073ff, #a42aff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+        font-size: 1.1rem;
+        max-width: 680px;
+        margin: 1.5rem auto 1.5rem;
+        opacity: 0.8;
+        line-height: 1.4;
+    }
+
+    .hero-cta {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .hero-cta .cta-primary {
+        padding: 0.9rem 1.8rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s, transform 0.2s;
+        white-space: nowrap;
+        background: var(--color-azure-radiant);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+    .hero-cta .cta-primary:hover { background: #005ceb; transform: translateY(-2px); }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+        .hero-section {
+            padding: 6rem 1.5rem 4rem;
+        }
+        .hero-section h1 {
+            font-size: 3.8rem;
+        }
+        .hero-sub {
+            font-size: 1rem;
+            margin: 1rem auto 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-section {
+            padding: 4rem 1rem 3rem;
+        }
+        .hero-section h1 {
+            font-size: 2.2rem;
+            text-align: center;
+        }
+        .hero-sub {
+            font-size: 0.95rem;
+            margin: 1rem auto 1.5rem;
+        }
+    }
+</style>
+
+
+
+
+
+
+
+

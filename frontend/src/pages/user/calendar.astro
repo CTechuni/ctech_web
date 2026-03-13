@@ -1,0 +1,28 @@
+---
+// src/pages/user/calendar.astro
+import UserLayout from "../../layouts/UserLayout.astro";
+import CalendarShared from "../../components/shared/CalendarShared.astro";
+---
+
+<UserLayout title="Mi Calendario" subtitle="Eventos y actividades de la comunidad">
+    <div class="calendar-user-page">
+        <main class="calendar-main-content">
+            <CalendarShared />
+        </main>
+    </div>
+</UserLayout>
+
+<style>
+    .calendar-user-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .calendar-main-content {
+        background: transparent;
+        padding: 0;
+    }
+</style>

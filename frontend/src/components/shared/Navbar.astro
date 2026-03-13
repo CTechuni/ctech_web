@@ -1,0 +1,268 @@
+---
+import Modal from './Modal.astro';
+import LoginForm from './LoginForm.astro';
+import SignupForm from './SignupForm.astro';
+---
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <button class="menu-toggle" type="button" aria-label="Abrir menú">
+      <span class="material-icons">menu</span>
+    </button>
+
+    <div class="logo-container">
+      <a href="/" class="logo-link" aria-label="CTech">
+        <img src="/LogoCTech.svg" alt="Logo CTech" class="logo-img logo-white" />
+      </a>
+    </div>
+
+    <ul class="menu-nav" role="navigation" aria-label="Navegación principal">
+      <li><a href="#hero-section">Nosotros</a></li>
+      <li><a href="#courses-preview">Contenido</a></li>
+      <li><a href="#eventos">Eventos</a></li>
+      <li><a href="#equipo">Equipo</a></li>
+      <li><a href="#comunidades">Comunidades</a></li>
+    </ul>
+
+    <div class="auth-actions">
+      <button class="btn btn-ghost" type="button" onclick="openModal('loginModal')">Acceder</button>
+      <button class="btn btn-primary" type="button" onclick="openModal('signupModal')">Registrarse</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Modal de Login -->
+<Modal id="loginModal" title="Iniciar Sesión">
+  <LoginForm />
+</Modal>
+
+<!-- Modal de Registro -->
+<Modal id="signupModal" title="Únete a CTech">
+  <SignupForm />
+</Modal>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 57px;
+    z-index: 1000;
+    background: rgba(14, 15, 23, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .navbar-inner {
+    height: 57px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    font-family: "Segoe UI", "Inter", sans-serif;
+    font-style: italic;
+  }
+
+  .logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .logo-link img {
+    height: 34px;
+    width: auto;
+    transition: transform 0.2s ease;
+  }
+  .logo-link .logo-white {
+    filter: brightness(0) invert(1);
+  }
+
+  .logo-link:hover img {
+    transform: translateY(-1px);
+  }
+
+  .menu-nav {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .menu-nav a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .menu-nav a:hover {
+    color: #ffffff;
+  }
+
+  .menu-nav a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-azure-radiant);
+    transition: width 0.2s ease;
+  }
+
+  .menu-nav a:hover::after {
+    width: 100%;
+  }
+
+  .auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+
+  .btn-ghost {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-color: #e2e8f0;
+  }
+  .btn-ghost:hover {
+    background: #e2e8f0;
+  }
+
+  .btn-primary {
+    background: var(--color-azure-radiant);
+    color: #fff;
+    border-color: var(--color-azure-radiant);
+  }
+
+  .menu-toggle {
+    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .navbar-inner {
+      padding: 0 1rem;
+      justify-content: flex-start;
+      gap: 1rem;
+    }
+    .menu-toggle {
+      display: inline-flex;
+    }
+    .auth-actions {
+      margin-left: auto;
+    }
+    .menu-nav {
+      display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .menu-nav.active {
+      display: flex;
+      position: fixed;
+      top: 57px;
+      left: 0;
+      right: 0;
+      background: rgba(14, 15, 23, 0.98);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1rem 1.25rem;
+      flex-direction: column;
+      gap: 0.75rem;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu-nav');
+
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Node)) return;
+
+      if (menu.classList.contains('active')) {
+        const isClickInsideMenu = menu.contains(target);
+        const isClickOnToggle = toggle.contains(target);
+
+        if (!isClickInsideMenu && !isClickOnToggle) {
+          menu.classList.remove('active');
+        }
+      }
+    });
+
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        menu.classList.remove('active');
+      });
+    });
+  });
+</script>
+
+<script is:inline>
+  window.openModal = function (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'block';
+      modal.classList.add('show');
+    }
+  };
+
+  window.closeModal = function (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+    }
+  };
+</script>
+

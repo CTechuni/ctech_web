@@ -1,0 +1,525 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Hero from '../components/shared/Hero.astro';
+import Cards from '../components/shared/Cards.astro';
+import Comunidades from '../components/shared/Comunidades.astro';
+import Footer from '../components/shared/Footer.astro';
+
+const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
+---
+
+<MainLayout title={title}>
+  <Hero />
+
+
+
+
+
+    <!-- upcoming events preview -->
+    <section id="eventos" class="events-preview">
+        <h2>Próximos Eventos</h2>
+        <p class="sub">Conecta con la comunidad en eventos presenciales y virtuales</p>
+        <div class="events-grid" id="eventsGrid">
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
+            <div class="event-card-ph"><div class="event-image-placeholder"></div><div class="ph-line ph-title" style="margin:1rem"></div></div>
+        </div>
+    </section>
+
+    <!-- Modal de detalle de evento -->
+    <div id="eventModal" role="dialog" aria-modal="true">
+        <div class="event-modal-box">
+            <div class="event-modal-header">
+                <div class="event-modal-img-ph" id="modalImgPh"></div>
+                <span class="event-modal-badge" id="modalBadge"></span>
+                <button class="event-modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="event-modal-body">
+                <h3 id="modalTitle"></h3>
+                <div class="event-modal-meta">
+                    <span id="modalDate"></span>
+                    <span id="modalCommunity"></span>
+                    <span id="modalLocation"></span>
+                    <span id="modalCapacity"></span>
+                </div>
+                <p class="event-modal-desc" id="modalDesc"></p>
+                <a href="#" class="event-modal-link" id="modalLink" style="display:none" target="_blank" rel="noopener">Ver enlace del evento →</a>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Nuestras Comunidades -->
+    <Comunidades />
+
+    <!-- Estadísticas (según referencia) -->
+    <section class="stats-row" aria-label="Estadísticas">
+        <div><strong>6+</strong> Comunidades activas</div>
+        <div><strong>500+</strong> Miembros registrados</div>
+        <div><strong>20+</strong> Eventos al mes</div>
+    </section>
+
+    <Footer />
+
+
+<style>
+/* courses preview styling */
+.courses-preview {
+  padding: 4rem 1rem;
+  background: #fff;
+  text-align: center;
+}
+.courses-preview h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+.courses-preview .sub { color: #666; margin-bottom: 2rem; }
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  align-items: stretch;
+}
+.course-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+/* Placeholder para imagen del curso (se rellenará con respuesta del back) */
+.course-image-placeholder {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border-radius: 12px 12px 0 0;
+}
+.course-card .tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #fff;
+  background: var(--color-azure-radiant, #2563eb);
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  margin: 0.75rem 1rem 0.25rem;
+}
+.course-card h3 { margin: 0.25rem 1rem; font-size: 1.1rem; color: #1f2937; font-weight: 600; }
+.course-card .author { color: #555; margin: 0 1rem 0.25rem; font-size: 0.9rem; }
+.course-card .meta { margin: 0 1rem 1rem; font-size: 0.8rem; color: #777; display: flex; gap: 1rem; }
+.course-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.view-all {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--color-azure-radiant);
+  font-weight: 600;
+  text-decoration: none;
+}
+.view-all:hover { text-decoration: underline; }
+
+/* events preview */
+.events-preview {
+  padding: 4rem 1rem;
+  background: #0e0f17;
+  color: #fff;
+  text-align: center;
+}
+.events-preview .sub { color: rgba(255,255,255,0.6); margin-bottom: 2rem; }
+.events-grid {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.event-card {
+  background: #1a1c29;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 280px;
+  max-width: 100%;
+  position: relative;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.event-image-placeholder {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #334155 100%);
+}
+.event-card .badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.badge.virtual, .badge.online { background: #0ea5e9; }
+.badge.presencial { background: #a855f7; color: #fff; }
+.event-card h3 { margin: 1rem 1rem 0.25rem; font-size: 1rem; font-weight: 600; }
+.event-card p { margin: 0 1rem 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+
+
+
+/* stats row styling */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 3.5rem 1rem;
+  background: #0e0f17;
+  color: #fff;
+  text-align: center;
+  flex-wrap: wrap;
+}
+.stats-row strong { display: block; font-size: 2.25rem; color: #fff; margin-bottom: 0.25rem; }
+.stats-row div { font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); }
+
+/* Placeholder skeleton */
+.placeholder-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.08); overflow:hidden; }
+.event-card-ph { background:#1a1c29; border-radius:12px; overflow:hidden; width:280px; max-width:100%; }
+.ph-line { background:#e5e7eb; border-radius:6px; height:12px; margin:0.5rem 1rem; animation:shimmer 1.4s infinite; }
+.ph-tag  { width:60px; height:20px; border-radius:9999px; }
+.ph-title{ width:80%; height:14px; }
+.ph-author{ width:50%; height:11px; margin-bottom:1rem; }
+@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Mentor card */
+.equipo { padding:4rem 1rem; background:#fff; text-align:center; }
+.equipo h2 { font-size:2rem; margin-bottom:.5rem; color:#1f2937; }
+.equipo .sub { color:#666; margin-bottom:2rem; }
+.mentors-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; max-width:1200px; margin:0 auto; }
+.mentor-card { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); padding:1.5rem 1rem; text-align:center; display:flex; flex-direction:column; align-items:center; transition:transform .2s,box-shadow .2s; }
+.mentor-card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,.12); }
+.mentor-avatar { width:72px; height:72px; border-radius:50%; background:#2563eb; color:#fff; font-weight:700; font-size:1.4rem; display:flex; align-items:center; justify-content:center; margin-bottom:.75rem; overflow:hidden; flex-shrink:0; }
+.mentor-avatar img { width:100%; height:100%; object-fit:cover; }
+.mentor-card .name { margin:0 0 .2rem; font-size:1.05rem; font-weight:700; color:#1f2937; }
+.mentor-card .specialty { margin:0 0 .3rem; font-size:.88rem; color:#2563eb; font-weight:600; }
+.mentor-card .community { font-size:.78rem; color:#64748b; margin-bottom:.75rem; }
+.mentor-card .mentor-stats { display:flex; gap:1.5rem; justify-content:center; margin-top:auto; padding-top:.75rem; border-top:1px solid #f1f5f9; width:100%; }
+.mentor-card .mentor-stat { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.mentor-card .mentor-stat strong { font-size:1rem; font-weight:700; color:#1f2937; }
+.mentor-card .mentor-stat span { font-size:.72rem; color:#94a3b8; }
+.mentor-ph { background:#f1f5f9; border-radius:12px; height:220px; animation:shimmer 1.4s infinite; }
+
+/* Event modal */
+#eventModal { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:1rem; }
+#eventModal.open { display:flex; }
+.event-modal-box { background:#1a1c29; border-radius:16px; max-width:480px; width:100%; color:#fff; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,.5); animation:slideUp .25s ease; }
+@keyframes slideUp { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
+.event-modal-header { position:relative; }
+.event-modal-header img,.event-modal-header .event-modal-img-ph { width:100%; height:160px; object-fit:cover; }
+.event-modal-img-ph { background:linear-gradient(135deg,#1e3a8a,#334155); }
+.event-modal-badge { position:absolute; top:.75rem; left:.75rem; font-size:.7rem; padding:.25rem .6rem; border-radius:8px; text-transform:uppercase; font-weight:700; }
+.event-modal-close { position:absolute; top:.75rem; right:.75rem; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,.5); border:none; color:#fff; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.event-modal-body { padding:1.25rem 1.5rem 1.5rem; }
+.event-modal-body h3 { margin:0 0 .75rem; font-size:1.15rem; font-weight:700; }
+.event-modal-meta { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1rem; font-size:.875rem; color:rgba(255,255,255,.75); }
+.event-modal-meta span { display:flex; align-items:center; gap:.5rem; }
+.event-modal-desc { font-size:.875rem; color:rgba(255,255,255,.65); margin-bottom:1rem; line-height:1.55; }
+.event-modal-link { display:inline-block; padding:.6rem 1.25rem; background:#2563eb; color:#fff; border-radius:9999px; font-size:.875rem; font-weight:600; text-decoration:none; transition:background .15s; }
+.event-modal-link:hover { background:#1d4ed8; }
+/* Cursor pointer on event cards */
+.event-card { cursor:pointer; transition:transform .2s,box-shadow .2s; }
+.event-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .courses-preview,
+  .events-preview {
+    padding: 3rem 1rem;
+  }
+  .courses-preview h2,
+  .events-preview h2 {
+    font-size: 1.75rem;
+  }
+  .courses-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .events-grid {
+    gap: 1.25rem;
+  }
+  .event-card {
+    width: 260px;
+  }
+  .stats-row {
+    gap: 2rem;
+    padding: 3rem 1rem;
+  }
+  .stats-row strong {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .cards-section {
+    padding: 2.5rem 1rem;
+  }
+  .courses-preview,
+  .events-preview {
+    padding: 2.5rem 1rem;
+  }
+  .courses-preview h2,
+  .events-preview h2 {
+    font-size: 1.5rem;
+  }
+  .courses-preview .sub,
+  .events-preview .sub {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  .courses-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+  .course-card h3 {
+    font-size: 1rem;
+  }
+  .events-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  .event-card {
+    width: 100%;
+    max-width: 320px;
+  }
+  .event-image-placeholder {
+    height: 100px;
+  }
+  .stats-row {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2.5rem 1rem;
+  }
+  .stats-row strong {
+    font-size: 1.875rem;
+  }
+  .stats-row div {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .courses-preview,
+  .events-preview {
+    padding: 2rem 0.75rem;
+  }
+  .courses-preview h2,
+  .events-preview h2 {
+    font-size: 1.35rem;
+  }
+  .courses-grid {
+    padding: 0 0.5rem;
+    gap: 0.75rem;
+  }
+  .course-image-placeholder {
+    height: 120px;
+  }
+  .course-card .tag {
+    margin: 0.5rem 0.75rem 0.25rem;
+  }
+  .course-card h3,
+  .course-card .author,
+  .course-card .meta {
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+  .course-card .meta {
+    margin-bottom: 0.75rem;
+  }
+  .view-all {
+    font-size: 0.9rem;
+  }
+  .event-card h3 {
+    font-size: 0.95rem;
+  }
+  .event-card p {
+    font-size: 0.8rem;
+  }
+  .stats-row {
+    padding: 2rem 0.75rem;
+    gap: 1.25rem;
+    width: 100%;
+    margin: 0;
+  }
+  .stats-row strong {
+    font-size: 1.75rem;
+  }
+}
+
+</style>
+
+<script>
+    import { buildApiUrl } from '../config/api.js';
+
+    const BASE = 'http://localhost:8000/api/v1';
+
+    async function apiFetch(path) {
+        const res = await fetch(`${BASE}${path}`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        return res.json();
+    }
+
+    // ── Utilidades ────────────────────────────────────────────────────────────
+    function fmtDate(dateStr) {
+        if (!dateStr) return '';
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function fmtTime(timeStr) {
+        if (!timeStr) return '';
+        const [h, m] = timeStr.split(':');
+        const hr = parseInt(h);
+        return `${hr > 12 ? hr - 12 : hr || 12}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
+    }
+
+    function escHtml(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+
+
+    // ── Eventos ───────────────────────────────────────────────────────────────
+    let _eventsCache = [];
+
+    function openEventModal(idx) {
+        const e = _eventsCache[idx];
+        if (!e) return;
+
+        const modal = document.getElementById('eventModal');
+        const type = (e.event_type || '').toLowerCase().includes('presencial') ? 'presencial' : 'virtual';
+        const badgeCls = type === 'presencial' ? 'presencial' : 'virtual online';
+        const badgeTxt = type === 'presencial' ? 'Presencial' : 'Virtual';
+
+        const badge = document.getElementById('modalBadge');
+        badge.textContent = badgeTxt;
+        badge.className = `event-modal-badge badge ${badgeCls}`;
+
+        const imgPh = document.getElementById('modalImgPh');
+        if (e.image_url) {
+            imgPh.outerHTML = `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" style="width:100%;height:160px;object-fit:cover" id="modalImgPh">`;
+        } else {
+            imgPh.className = 'event-modal-img-ph';
+            imgPh.id = 'modalImgPh';
+        }
+
+        document.getElementById('modalTitle').textContent = e.title || '';
+
+        const dateEl = document.getElementById('modalDate');
+        const dateStr = fmtDate(e.event_date);
+        const timeStr = e.event_time ? fmtTime(e.event_time) : '';
+        dateEl.innerHTML = dateStr ? `📅 ${dateStr}${timeStr ? ' · ' + timeStr : ''}` : '';
+        dateEl.style.display = dateStr ? '' : 'none';
+
+        const commEl = document.getElementById('modalCommunity');
+        commEl.innerHTML = e.community_name ? `🏘️ ${escHtml(e.community_name)}` : '';
+        commEl.style.display = e.community_name ? '' : 'none';
+
+        const locEl = document.getElementById('modalLocation');
+        if (e.location) {
+            const isUrl = e.location.startsWith('http');
+            locEl.innerHTML = isUrl
+                ? `🔗 <a href="${escHtml(e.location)}" target="_blank" rel="noopener" style="color:#60a5fa">${escHtml(e.location)}</a>`
+                : `📍 ${escHtml(e.location)}`;
+            locEl.style.display = '';
+        } else {
+            locEl.style.display = 'none';
+        }
+
+        const capEl = document.getElementById('modalCapacity');
+        capEl.innerHTML = e.capacity ? `👥 Capacidad: ${e.capacity} personas` : '';
+        capEl.style.display = e.capacity ? '' : 'none';
+
+        document.getElementById('modalDesc').textContent = e.description || 'Sin descripción disponible.';
+
+        const linkEl = document.getElementById('modalLink');
+        if (e.location && e.location.startsWith('http')) {
+            linkEl.href = e.location;
+            linkEl.style.display = 'inline-block';
+        } else {
+            linkEl.style.display = 'none';
+        }
+
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEventModal() {
+        document.getElementById('eventModal')?.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    async function loadEvents() {
+        const grid = document.getElementById('eventsGrid');
+        if (!grid) return;
+        try {
+            const events = await apiFetch('/events/upcoming');
+            const list = Array.isArray(events) ? events.slice(0, 3) : [];
+            _eventsCache = list;
+
+            if (!list.length) {
+                grid.innerHTML = '<p style="color:rgba(255,255,255,.6);text-align:center;width:100%">No hay eventos próximos.</p>';
+                return;
+            }
+            grid.innerHTML = list.map((e, idx) => {
+                const type = (e.event_type || '').toLowerCase().includes('presencial') ? 'presencial' : 'virtual';
+                const badgeCls = type === 'presencial' ? 'presencial' : 'virtual online';
+                const badgeTxt = type === 'presencial' ? 'Presencial' : 'Virtual';
+                const dateStr = fmtDate(e.event_date);
+                const community = e.community_name || '';
+                return `
+                <div class="event-card" onclick="openEventModal(${idx})">
+                    ${e.image_url
+                        ? `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" style="width:100%;height:120px;object-fit:cover">`
+                        : `<div class="event-image-placeholder"></div>`}
+                    <span class="badge ${badgeCls}">${badgeTxt}</span>
+                    <h3>${escHtml(e.title)}</h3>
+                    <p>${escHtml(dateStr)}${community ? ' · ' + escHtml(community) : ''}</p>
+                </div>`;
+            }).join('');
+        } catch (e) {
+            grid.innerHTML = '<p style="color:rgba(255,255,255,.6);text-align:center;width:100%">Eventos no disponibles.</p>';
+        }
+    }
+
+
+
+    // ── Modal de eventos (listeners) ──────────────────────────────────────────
+    window.openEventModal = openEventModal;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('modalClose')?.addEventListener('click', closeEventModal);
+        document.getElementById('eventModal')?.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeEventModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeEventModal();
+        });
+
+        // Auto-open login modal if ?action=login
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'login') {
+            const newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+            window.history.replaceState({path: newUrl}, '', newUrl);
+            if (typeof window.openModal === 'function') window.openModal('loginModal');
+        }
+    });
+
+    // Cargar todo en paralelo
+    Promise.all([loadEvents()]);
+</script>
+
+</MainLayout>

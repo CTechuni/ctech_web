@@ -1,0 +1,188 @@
+---
+
+---
+
+<section class="comunidades" id="comunidades">
+    <h2>Nuestras Comunidades</h2>
+    <p class="comunidades-sub">+6 comunidades activas con más de 500 miembros</p>
+    <div class="comunidades-grid" id="comunidadesGrid">
+        <!-- Renderizado dinámico vía JS -->
+        <p class="loading-msg">Cargando comunidades...</p>
+    </div>
+    <div class="join-btn-container">
+        <a href="/user/communities" class="join-btn">Unirse a una comunidad →</a>
+    </div>
+</section>
+
+<style>
+    .comunidades {
+        width: 100%;
+        overflow: hidden;
+        padding: 4rem 1rem 5rem;
+        position: relative;
+        background: #fff;
+        text-align: center;
+    }
+    .comunidades h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #1f2937;
+    }
+    .comunidades-sub {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .comunidades-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        justify-content: center;
+    }
+
+    .comunidad-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        text-align: center;
+        width: 80px; /* Fixed small width */
+    }
+
+    .comunidad-icon {
+        width: 60px; /* Smaller icon */
+        height: 60px;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e2e8f0;
+        flex-shrink: 0;
+    }
+
+    .comunidad-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #4b5563;
+        line-height: 1.2;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .comunidad-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .loading-msg {
+        width: 100%;
+        color: #666;
+        font-style: italic;
+    }
+
+    .join-btn-container {
+        text-align: center;
+        margin-top: 2.5rem;
+    }
+    .join-btn {
+        display: inline-block;
+        padding: 0.9rem 1.8rem;
+        background: var(--color-azure-radiant);
+        color: #fff;
+        border-radius: 9999px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.2s;
+    }
+    .join-btn:hover { background: #005ceb; transform: translateY(-2px); }
+
+    /* Responsive Comunidades */
+    @media (max-width: 768px) {
+        .comunidades-grid {
+            gap: 1.25rem;
+        }
+        .comunidad-item {
+            width: 70px;
+        }
+        .comunidad-icon {
+            width: 54px;
+            height: 54px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .comunidades-grid {
+            gap: 1rem;
+        }
+        .comunidad-item {
+            width: 64px;
+        }
+        .comunidad-icon {
+            width: 48px;
+            height: 48px;
+        }
+        .comunidad-name {
+            font-size: 0.7rem;
+        }
+    }
+</style>
+
+<script>
+    import { API_CONFIG, buildApiUrl } from '../../config/api.js';
+
+    async function loadComunidades() {
+        const grid = document.getElementById('comunidadesGrid');
+        if (!grid) return;
+
+        try {
+            const url = buildApiUrl(API_CONFIG.COMMUNITIES.WITH_LOGO);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+            
+            /** @type {{logo_url?: string, name_community?: string}[]} */
+            const communities = await response.json();
+            
+            if (!communities || communities.length === 0) {
+                grid.innerHTML = '<p class="loading-msg">Próximamente más comunidades...</p>';
+                return;
+            }
+
+            // Build nodes instead of assigning innerHTML to avoid XSS and handle missing data
+            grid.innerHTML = '';
+            communities.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'comunidad-item';
+
+                const icon = document.createElement('div');
+                icon.className = 'comunidad-icon';
+
+                const img = document.createElement('img');
+                img.loading = 'lazy';
+                img.alt = c.name_community || 'Comunidad';
+                img.src = c.logo_url || '/images/placeholder-community.png';
+                icon.appendChild(img);
+
+                const name = document.createElement('span');
+                name.className = 'comunidad-name';
+                name.textContent = c.name_community || 'Sin nombre';
+
+                item.appendChild(icon);
+                item.appendChild(name);
+                grid.appendChild(item);
+            });
+
+        } catch (err) {
+            console.error(err);
+            grid.innerHTML = '<p class="loading-msg">Error al cargar comunidades</p>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadComunidades);
+</script>

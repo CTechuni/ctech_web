@@ -1,0 +1,550 @@
+---
+// Astro component script (if needed)
+---
+
+<form class="signup-form" id="signupForm">
+    <div id="signupGeneralError" class="general-error-message"></div>
+
+    <div class="form-group">
+        <label for="community">Comunidad CTech</label>
+        <select id="community" name="community" class="rounded-xl shadow-sm">
+            <option value="">Cargando comunidades disponibles...</option>
+        </select>
+        <span class="error-message" id="communityError"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="inviteCode">Código de acceso</label>
+        <input 
+            type="text" 
+            id="inviteCode" 
+            name="inviteCode" 
+            placeholder="Ingresa el código de tu comunidad"
+            class="rounded-xl shadow-sm"
+            autocomplete="off"
+        >
+        <span class="error-message" id="inviteCodeError"></span>
+        <div id="codeFeedback" class="field-feedback"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="fullName">Nombre completo</label>
+        <input 
+            type="text" 
+            id="fullName" 
+            name="fullName" 
+            placeholder="Tu nombre completo"
+            class="rounded-xl shadow-sm"
+        >
+        <span class="error-message" id="fullNameError"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+            type="email" 
+            id="email_signup" 
+            name="email" 
+            placeholder="tu@email.com"
+            class="rounded-xl shadow-sm"
+        >
+        <span class="error-message" id="emailSignupError"></span>
+    </div>
+
+        <div class="form-group">
+            <label for="password_signup">Contraseña</label>
+            <div class="password-wrapper">
+                <input type="password" id="password_signup" name="password" placeholder="Mínimo 8 caracteres" required>
+                <button type="button" class="toggle-password" data-target="password_signup">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                </button>
+            </div>
+            <div class="password-strength-meter">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            <span class="error-message" id="passwordSignupError"></span>
+        </div>
+
+    <div class="form-group">
+        <label for="confirmPassword">Confirmar contraseña</label>
+        <div class="password-wrapper">
+            <input 
+                type="password" 
+                id="confirmPassword" 
+                name="confirmPassword" 
+                placeholder="••••••"
+                minlength="8"
+            >
+            <button type="button" class="toggle-password" data-target="confirmPassword">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+            </button>
+        </div>
+        <span class="error-message" id="confirmPasswordError"></span>
+    </div>
+
+    <div class="form-options">
+        <label class="checkbox-container">
+            <input type="checkbox" name="terms" id="terms">
+            <span class="checkmark"></span>
+            Acepto los <a href="#" class="terms-link">términos y condiciones</a>
+        </label>
+        <span class="error-message" id="termsError"></span>
+    </div>
+
+    <button type="submit" class="signup-btn">
+        Crear Cuenta
+    </button>
+
+
+    <div class="login-link">
+        <p>¿Ya tienes cuenta? <a href="#" onclick="window.closeModal('signupModal'); window.openModal('loginModal')">Inicia sesión aquí</a></p>
+    </div>
+</form>
+
+<style>
+    .signup-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--color-primary-dark);
+        font-size: 0.9rem;
+        margin: 0 1rem 0 1rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.75rem 1.2rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+        color: #1e293b;
+    }
+
+    .rounded-xl {
+        border-radius: 12px !important;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .form-group select {
+        cursor: pointer;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--color-azure-radiant);
+    }
+
+    .form-group input.error,
+    .form-group select.error {
+        border-color: #ef4444;
+        background-color: #fef2f2;
+    }
+
+    /* Password Toggle Styling */
+    .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 3rem !important;
+    }
+    .toggle-password {
+        position: absolute;
+        right: 0.75rem;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        color: #94a3b8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    .toggle-password:hover {
+        color: #64748b;
+    }
+    .eye-icon {
+        pointer-events: none;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+        display: none;
+    }
+
+    .field-feedback {
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    .feedback-error { color: #ef4444; }
+    .feedback-success { color: #10b981; }
+
+    .error-message.visible {
+        display: block;
+    }
+
+    .password-strength-meter {
+        height: 6px;
+        background-color: #e2e8f0;
+        border-radius: 4px;
+        margin: 0.2rem 1rem 0.5rem;
+        overflow: hidden;
+        display: none;
+    }
+
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .strength-weak { width: 33%; background-color: #ef4444; }
+    .strength-medium { width: 66%; background-color: #f59e0b; }
+    .strength-strong { width: 100%; background-color: #10b981; }
+
+    .general-error-message {
+        background-color: #fef2f2;
+        color: #ef4444;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        border: 1px solid #fee2e2;
+        margin-bottom: 1rem;
+        display: none;
+        text-align: center;
+    }
+
+    .general-error-message.visible {
+        display: block;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 0.9rem;
+        margin: 0.5rem 0;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+
+    .terms-link {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+    }
+
+    .terms-link:hover {
+        text-decoration: underline;
+    }
+
+    .signup-btn {
+        padding: 0.6rem 1.5rem;
+        background-color: var(--color-azure-radiant);
+        color: var(--color-white);
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 0.5rem;
+    }
+
+    .signup-btn:hover {
+        background-color: var(--color-azure-radiant);
+    }
+
+    .signup-btn:active {
+        background-color: var(--color-blue-grey);
+    }
+
+    .signup-btn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+
+
+    .login-link {
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--color-primary-dark);
+        margin-top: 1rem;
+    }
+
+    .login-link a {
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+
+</style>
+
+<script>
+import { AuthManager, authManager } from '../../utils/auth.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const form = document.getElementById('signupForm');
+    const pwdInput = document.getElementById('password_signup');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthMeter = document.querySelector('.password-strength-meter');
+
+    pwdInput?.addEventListener('input', () => {
+        const val = pwdInput.value;
+        if (!val) {
+            strengthMeter.style.display = 'none';
+            return;
+        }
+        strengthMeter.style.display = 'block';
+        
+        let strength = 0;
+        if (val.length > 7) strength++;
+        if (/[A-Z]/.test(val)) strength++;
+        if (/[0-9]/.test(val)) strength++;
+        if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+        strengthBar.className = 'strength-bar';
+        if (strength <= 2) strengthBar.classList.add('strength-weak');
+        else if (strength === 3) strengthBar.classList.add('strength-medium');
+        else strengthBar.classList.add('strength-strong');
+    });
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Limpieza de todos los errores previos
+        const errorSpans = form.querySelectorAll('.error-message');
+        errorSpans.forEach(span => {
+            span.textContent = '';
+            span.classList.remove('visible');
+        });
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => input.classList.remove('error'));
+
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const errorSpan = document.getElementById(errorId);
+            if(input) input.classList.add('error');
+            if(errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.classList.add('visible');
+            }
+        }
+
+        const submitBtn = form.querySelector('.signup-btn');
+        const originalText = submitBtn?.textContent ?? '';
+
+        try {
+            const formData = new FormData(form);
+            const community = String(formData.get('community') ?? '').trim();
+            const inviteCode = String(formData.get('inviteCode') ?? '').trim();
+            const fullName = String(formData.get('fullName') ?? '').trim();
+            const email = String(formData.get('email') ?? '').trim();
+            const password = String(formData.get('password') ?? '');
+            const confirmPassword = String(formData.get('confirmPassword') ?? '');
+            const termsAccepted = formData.get('terms') !== null;
+
+            let hasErrors = false;
+
+            // Validaciones Visuales Frontend
+            if (!community) { showError('community', 'communityError', 'La comunidad es obligatoria'); hasErrors = true; }
+            if (!inviteCode) { showError('inviteCode', 'inviteCodeError', 'Código requerido'); hasErrors = true; }
+            
+            // Validación de nombre: 10-65 chars, solo letras y espacios
+            const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+            if (!fullName) { 
+                showError('fullName', 'fullNameError', 'El nombre es obligatorio'); hasErrors = true; 
+            } else if (fullName.length < 10 || fullName.length > 65) {
+                showError('fullName', 'fullNameError', 'Mínimo 10 y máximo 65 caracteres'); hasErrors = true;
+            } else if (!nameRegex.test(fullName)) {
+                showError('fullName', 'fullNameError', 'Solo letras y espacios'); hasErrors = true;
+            }
+
+            if (!email || !/^\S+@\S+\.\S+$/.test(email)) { showError('email_signup', 'emailSignupError', 'Correo inválido'); hasErrors = true; }
+            if (password.length < 5) { showError('password_signup', 'passwordSignupError', 'Mínimo 5 caracteres'); hasErrors = true; }
+            if (password !== confirmPassword) { 
+                showError('confirmPassword', 'confirmPasswordError', 'Las contraseñas no coinciden'); 
+                hasErrors = true; 
+            }
+            if (!termsAccepted) { 
+                const termsErr = document.getElementById('termsError');
+                if(termsErr) {
+                    termsErr.textContent = 'Debes aceptar los términos';
+                    termsErr.classList.add('visible');
+                }
+                hasErrors = true; 
+            }
+
+            if (hasErrors) return;
+
+            // Indicador de carga
+            if (submitBtn) {
+                submitBtn.textContent = 'Creando cuenta...';
+                submitBtn.disabled = true;
+            }
+
+            const userData = {
+                community_id: community,      
+                inviteCode,
+                fullName,
+                email,
+                password
+            };
+            const result = await authManager.register(userData);
+
+            alert('¡Cuenta creada exitosamente! Por favor, inicia sesión.');
+
+            // Manejo de modales (si existen las funciones)
+            window.closeModal?.('signupModal');
+            window.openModal?.('loginModal');
+
+        } catch (error) {
+            console.error('Error de registro:', error);
+            const generalErr = document.getElementById('signupGeneralError');
+            if(generalErr) {
+                generalErr.textContent = 'Hubo un error al crear la cuenta. ' + (error?.message ?? 'Inténtalo de nuevo.');
+                generalErr.classList.add('visible');
+                generalErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } finally {
+            if (submitBtn) {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+    });
+
+    // 5. Cargar comunidades y Validación Cruzada
+    let communityCodes = {};
+
+    async function loadCommunities() {
+        const communitySelect = document.getElementById('community');
+        if (!communitySelect) return;
+
+        try {
+            const communities = await AuthManager.fetch('/communities/public');
+            
+            if (communities && Array.isArray(communities)) {
+                communitySelect.innerHTML = '<option value="">Selecciona tu comunidad</option>';
+                communities.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id_community;
+                    opt.textContent = c.name_community;
+                    communitySelect.appendChild(opt);
+                    
+                    // Guardar código para validación instantánea
+                    communityCodes[c.id_community] = c.code;
+                });
+            } else {
+                communitySelect.innerHTML = '<option value="">No hay comunidades disponibles</option>';
+            }
+        } catch (err) {
+            console.error('Error al cargar comunidades:', err);
+            communitySelect.innerHTML = '<option value="">Error al cargar comunidades</option>';
+        }
+    }
+
+    const inviteInput = document.getElementById('inviteCode');
+    const communitySelect = document.getElementById('community');
+    const submitBtn = form.querySelector('.signup-btn');
+    const codeFeedback = document.getElementById('inviteCodeError');
+
+    function validateCode() {
+        const selectedId = communitySelect.value;
+        const inputCode = inviteInput.value.trim();
+        
+        if (!selectedId || !inputCode) {
+            inviteInput.classList.remove('error');
+            codeFeedback.textContent = '';
+            codeFeedback.classList.remove('visible');
+            submitBtn.disabled = false;
+            return;
+        }
+
+        const expectedCode = communityCodes[selectedId];
+        
+        if (inputCode !== expectedCode) {
+            inviteInput.classList.add('error');
+            codeFeedback.textContent = 'El código no coincide con la comunidad seleccionada';
+            codeFeedback.classList.add('visible');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+        } else {
+            inviteInput.classList.remove('error');
+            codeFeedback.textContent = '';
+            codeFeedback.classList.remove('visible');
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        }
+    }
+
+    communitySelect?.addEventListener('change', validateCode);
+    inviteInput?.addEventListener('input', validateCode);
+
+    loadCommunities();
+
+    // Toggle Password Visibility Logic
+    form.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const isPassword = input.getAttribute('type') === 'password';
+            input.setAttribute('type', isPassword ? 'text' : 'password');
+            
+            // Toggle Icon (Eye / Eye Slash)
+            this.innerHTML = isPassword ? 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : 
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18" class="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`;
+        });
+    });
+});
+</script>

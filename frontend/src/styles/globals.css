@@ -1,0 +1,24 @@
+:root {
+    --color-azure-radiant: #0073ff;
+    --color-primary: #18457C;
+    --color-sencondary-azure: #2c3e50;
+    --color-primary-dark: #0A0C10;
+    --color-secondary: #424345;
+    --color-pink-grey: #B57681;
+    --color-blue-grey: #95A1AD;
+    --color-blue-grey-dark: #7D7E80;
+    --color-white: #FBFBFB;
+    --color-light-grey: #E8E8E8;
+    --color-medium-grey: #C1BFBF;
+
+    --rgba-azure-radiant: rgba(0, 115, 255, 1);
+    --rgba-primary: rgba(24, 69, 124, 1);
+    --rgba-primary-dark: rgba(10, 12, 16, 1);
+    --rgba-secondary: rgba(66, 67, 69, 1);
+    --rgba-pink-grey: rgba(181, 118, 129, 1);
+    --rgba-blue-grey: rgba(149, 161, 173, 1);
+    --rgba-blue-grey-dark: rgba(125, 126, 128, 1);
+    --rgba-white: rgba(251, 251, 251, 1);
+    --rgba-light-grey: rgba(232, 232, 232, 1);
+    --rgba-medium-grey: rgba(193, 191, 191, 1);
+}

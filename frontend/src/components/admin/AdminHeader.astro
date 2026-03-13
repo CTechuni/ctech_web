@@ -1,0 +1,419 @@
+---
+// AdminHeader.astro
+interface Props {
+    title: string;
+    subtitle?: string;
+}
+
+const { title, subtitle = 'Gestión Global' } = Astro.props;
+---
+
+<header class="admin-header">
+    <!-- Left: Menu Toggle + Title block -->
+    <div class="header-left-group">
+        <button class="menu-toggle-btn" id="headerMenuBtn" aria-label="Abrir Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+        <div class="header-title-block">
+            <h1 class="header-title">{title}</h1>
+            <span class="header-subtitle">{subtitle}</span>
+        </div>
+    </div>
+
+    <!-- Right: Actions -->
+    <div class="header-actions">
+        <!-- Notification Bell -->
+        <div class="notif-wrapper">
+            <button class="notif-btn" id="notifBellBtn" aria-label="Notificaciones">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                <span class="notif-badge" id="notifCount" style="display: none;">0</span>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="notif-header">
+                    <h3>Notificaciones</h3>
+                    <button id="markAllReadBtn">Marcar todo como leído</button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty">No hay notificaciones nuevas</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Chip -->
+        <div class="user-chip">
+            <div class="user-avatar" id="headerAvatarContainer">
+                <span id="headerInitial">...</span>
+            </div>
+            <span class="user-name" id="userNameHeader">Admin</span>
+        </div>
+    </div>
+</header>
+
+<style>
+    .admin-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000; /* Aumentado para estar por encima de todo */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+        padding: 0 32px;
+        background: #ffffff;
+        border-bottom: 1px solid #e8ecf0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        margin-bottom: 0;
+    }
+
+    .header-left-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .menu-toggle-btn {
+        width: 40px;
+        height: 40px;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .menu-toggle-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .menu-toggle-btn svg { width: 22px; height: 22px; }
+
+    .header-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .header-title {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    .header-subtitle {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .notif-wrapper {
+        position: relative;
+    }
+
+    .notif-btn {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        border-radius: 8px;
+        transition: background 0.15s;
+        position: relative;
+    }
+    .notif-btn:hover { background: #f1f5f9; }
+    .notif-btn svg { width: 20px; height: 20px; }
+
+    .notif-badge {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.6rem;
+        font-weight: 700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+    }
+
+    .notif-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 340px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideUp 0.2s ease-out;
+    }
+
+    .notif-dropdown.show { display: flex; }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .notif-header {
+        padding: 16px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+    }
+
+    .notif-header h3 { margin: 0; font-size: 0.9rem; font-weight: 700; color: #0f172a; }
+    .notif-header button { 
+        background: none; border: none; color: #3b82f6; font-size: 0.75rem; 
+        font-weight: 600; cursor: pointer; padding: 4px 8px; border-radius: 4px;
+    }
+    .notif-header button:hover { background: #eff6ff; }
+
+    .notif-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .notif-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f8fafc;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        cursor: pointer;
+        transition: background 0.15s;
+        position: relative;
+    }
+    .notif-item:hover { background: #f1f5f9; }
+    .notif-item.unread { background: #f0f7ff; }
+    .notif-item.unread::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 6px;
+        background: #3b82f6;
+        border-radius: 50%;
+    }
+
+    .notif-item-title { font-size: 0.82rem; font-weight: 700; color: #0f172a; margin: 0; }
+    .notif-item-msg { font-size: 0.78rem; color: #64748b; line-height: 1.4; margin: 0; }
+    .notif-item-time { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+    .notif-empty { padding: 32px; text-align: center; color: #94a3b8; font-size: 0.85rem; }
+
+    .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        padding: 4px 8px 4px 4px;
+        border-radius: 40px;
+        transition: background 0.15s;
+    }
+    .user-chip:hover { background: #f1f5f9; }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        background: #3b82f6;
+        border-radius: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0.5px;
+        overflow: hidden;
+    }
+
+    .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    @media (max-width: 1024px) {
+        .admin-header { padding: 0 16px; }
+        .header-subtitle { display: none; }
+    }
+
+    @media (min-width: 1025px) {
+        .menu-toggle-btn { display: none; }
+    }
+</style>
+
+<script>
+    import { AuthManager, authManager as auth } from "../../utils/auth.js";
+    
+    // UI Elements
+    const bellBtn = document.getElementById('notifBellBtn');
+    const dropdown = document.getElementById('notifDropdown');
+    const notifList = document.getElementById('notifList');
+    const notifCount = document.getElementById('notifCount');
+    const markAllBtn = document.getElementById('markAllReadBtn');
+
+    let notifications = [];
+
+    async function fetchNotifications() {
+        try {
+            const data = await AuthManager.fetch('/notifications/');
+            notifications = data || [];
+            updateNotifUI();
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
+
+    function updateNotifUI() {
+        const unread = notifications.filter(n => !n.is_read);
+        
+        if (unread.length > 0 && notifCount) {
+            notifCount.textContent = unread.length.toString();
+            notifCount.style.display = 'flex';
+        } else if (notifCount) {
+            notifCount.style.display = 'none';
+        }
+
+        if (!notifList) return;
+
+        if (notifications.length === 0) {
+            notifList.innerHTML = '<div class="notif-empty">No hay notificaciones</div>';
+            return;
+        }
+
+        notifList.innerHTML = notifications.map(n => `
+            <div class="notif-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
+                <p class="notif-item-title">${n.title}</p>
+                <p class="notif-item-msg">${n.message}</p>
+                <span class="notif-item-time">${formatDate(n.created_at)}</span>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.notif-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const id = (item as HTMLElement).dataset.id;
+                await markAsRead(id);
+            });
+        });
+    }
+
+    async function markAsRead(id) {
+        try {
+            await AuthManager.fetch(`/notifications/${id}/read`, { method: 'PATCH' });
+            await fetchNotifications();
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    }
+
+    async function markAllRead() {
+        try {
+            await AuthManager.fetch('/notifications/read-all', { method: 'POST' });
+            await fetchNotifications();
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
+    }
+
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
+        
+        if (diff < 60000) return 'Ahora mismo';
+        if (diff < 3600000) return `${Math.floor(diff/60000)}m atrás`;
+        if (diff < 86400000) return `${Math.floor(diff/3600000)}h atrás`;
+        return date.toLocaleDateString();
+    }
+
+    bellBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown?.classList.toggle('show');
+    });
+
+    document.addEventListener('click', () => dropdown?.classList.remove('show'));
+    dropdown?.addEventListener('click', (e) => e.stopPropagation());
+    markAllBtn?.addEventListener('click', markAllRead);
+
+    function applyAdminUser(user) {
+        if (!user) return;
+        const nameHeader = document.getElementById('userNameHeader');
+        if (nameHeader) nameHeader.textContent = (user.name_user || 'Admin').split(' ')[0];
+        const avatarContainer = document.getElementById('headerAvatarContainer');
+        const headerInitial = document.getElementById('headerInitial');
+        if (avatarContainer && headerInitial) {
+            const initials = (user.name_user || 'Admin')
+                .split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            headerInitial.textContent = initials;
+            const existingImg = avatarContainer.querySelector('img');
+            if (existingImg) existingImg.remove();
+        }
+    }
+
+    async function initAdminHeader() {
+        // 1. Render inmediato desde localStorage
+        applyAdminUser(auth.getUser());
+        // 2. Refrescar desde el servidor
+        try {
+            const fresh = await AuthManager.fetch('/users/me');
+            if (fresh) {
+                auth.setAuthData(auth.getToken(), { ...fresh, role: 'admin' });
+                applyAdminUser(fresh);
+                if (fresh.rol_id === 1) {
+                    fetchNotifications();
+                    setInterval(fetchNotifications, 30000);
+                }
+            }
+        } catch (e) {
+            // Fallback: usar localStorage
+            const cached = auth.getUser();
+            if (cached?.rol_id === 1) {
+                fetchNotifications();
+                setInterval(fetchNotifications, 30000);
+            }
+        }
+    }
+
+    initAdminHeader();
+
+    document.getElementById('headerMenuBtn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('toggleAdminSidebar'));
+    });
+</script>

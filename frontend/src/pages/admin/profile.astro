@@ -1,0 +1,320 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+const title = 'Perfil';
+const subtitle = 'Mi cuenta administrativa';
+---
+
+<AdminLayout title={title} subtitle={subtitle}>
+  <div class="profile-page-container">
+    <div class="profile-header-card glass-morphism">
+      <div class="profile-avatar-large">
+        <span id="profileLargeInitial">CR</span>
+      </div>
+      <div class="profile-main-info">
+        <h2 id="profileFullName">Carlos Ramírez</h2>
+        <p class="profile-role-tag">Administrador Global</p>
+        <div class="profile-stats">
+          <div class="stat">
+            <span class="stat-value" id="profileUsers">0</span>
+            <span class="stat-label">Usuarios</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="profileCommunities">0</span>
+            <span class="stat-label">Comunidades</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="profileCourses">0</span>
+            <span class="stat-label">Cursos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="profileEvents">0</span>
+            <span class="stat-label">Eventos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-sections-grid">
+      <section class="settings-card glass-morphism">
+        <h3>Información Personal</h3>
+        <form class="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre Completo</label>
+              <input type="text" id="profileInputName" value="Cargando..." readonly />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="profileInputEmail" value="Cargando..." readonly />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Cargo</label>
+            <input type="text" id="profileInputRole" value="Administrador Global" readonly />
+          </div>
+          <button type="button" class="btn-secondary">Editar Perfil</button>
+        </form>
+      </section>
+
+      <section class="settings-card glass-morphism">
+        <h3>Seguridad</h3>
+        <div class="security-options">
+          <div class="option-item">
+            <div class="option-info">
+              <h4>Contraseña</h4>
+              <p>Última actualización: hace 3 meses</p>
+            </div>
+            <button class="btn-outline">Cambiar</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <style>
+    .profile-page-container {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .glass-morphism {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid #e2e8f0;
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+    }
+
+    .profile-header-card {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      padding: 3rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .profile-avatar-large {
+      width: 120px;
+      height: 120px;
+      background: #0073ff;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 20px 40px rgba(0, 115, 255, 0.2);
+    }
+
+    .profile-main-info h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0;
+      color: #0f172a;
+    }
+
+    .profile-role-tag {
+      display: inline-block;
+      margin: 0.5rem 0 1.5rem;
+      background: rgba(0, 115, 255, 0.1);
+      color: #0073ff;
+      padding: 0.35rem 1rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 3rem;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .profile-sections-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+    }
+
+    .settings-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 0 0 1.5rem 0;
+      color: #0f172a;
+    }
+
+    .profile-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .form-group input {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 0.95rem;
+      color: #1e293b;
+      outline: none;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      width: fit-content;
+      margin-top: 1rem;
+    }
+
+    .security-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .option-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .option-item:last-child { border: none; }
+
+    .option-info h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #1e293b;
+    }
+
+    .option-info p {
+      margin: 0.2rem 0 0;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .status-badge-active {
+      color: #10b981;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 1024px) {
+      .profile-header-card { flex-direction: column; text-align: center; gap: 2rem; }
+      .profile-sections-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .profile-stats { gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+      .form-row { grid-template-columns: 1fr; }
+      .profile-header-card { padding: 2rem 1rem; }
+      .profile-avatar-large { width: 100px; height: 100px; font-size: 2.5rem; }
+      .profile-main-info h2 { font-size: 1.8rem; }
+    }
+  </style>
+
+  <script>
+    import { authManager as auth, AuthManager } from '../../utils/auth.js';
+
+    async function initProfile() {
+      try {
+        const user = (auth && auth.getUser) ? auth.getUser() : null;
+        if (user) {
+          const fullNameEl = document.getElementById('profileFullName');
+          if (fullNameEl) fullNameEl.textContent = user.name_user || 'Admin';
+
+          const profileInitial = document.getElementById('profileLargeInitial');
+          if (profileInitial) {
+            const fullName = user.name_user || 'Admin';
+            const initials = fullName
+              .split(' ')
+              .map(word => (word && word[0]) ? word[0] : '')
+              .join('')
+              .substring(0, 2)
+              .toUpperCase();
+            profileInitial.textContent = initials;
+          }
+
+          // Update form inputs safely
+          const nameInput = document.getElementById('profileInputName');
+          const emailInput = document.getElementById('profileInputEmail');
+          const roleInput = document.getElementById('profileInputRole');
+
+          if (nameInput) nameInput.value = user.name_user || 'Admin';
+          if (emailInput) emailInput.value = user.email || '';
+          if (roleInput) roleInput.value = (user.role && user.role.name_rol) ? user.role.name_rol : 'Administrador Global';
+        }
+      } catch (e) {
+        console.warn('Profile init error:', e);
+      }
+
+      // Dynamic Stats
+      try {
+        const data = await AuthManager.fetch('/metrics/admin');
+        if (data) {
+          const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value ?? '0'); };
+          setText('profileEvents', data.active_events);
+          setText('profileCommunities', data.total_communities);
+          setText('profileUsers', data.total_users);
+          setText('profileCourses', data.total_courses);
+        }
+      } catch (e) { console.error('Error loading profile stats:', e); }
+    }
+
+    document.addEventListener('DOMContentLoaded', initProfile);
+  </script>
+</AdminLayout>

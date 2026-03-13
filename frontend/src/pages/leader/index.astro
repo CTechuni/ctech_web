@@ -1,0 +1,283 @@
+---
+// src/pages/leader/index.astro
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+---
+
+<LeaderLayout title="Dashboard de Líder" subtitle="Gestión de Comunidad">
+    <div class="dashboard-container">
+        <!-- 1. Metrics Grid (4 columns) -->
+        <div class="metrics-grid-leader">
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                    </svg>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-value" id="leaderMembersCount">0</span>
+                    <p class="metric-label">Miembros activos</p>
+                </div>
+            </div>
+            <div class="metric-card-leader">
+                <div class="icon-box pastel-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="hero-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                    </svg>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-value" id="leaderEventsCount">0</span>
+                    <p class="metric-label">Eventos programados</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Growth Section (Full width) -->
+        <div class="leader-card growth-section no-padding">
+            <div class="card-header-padded">
+                <div class="ch-text">
+                    <h4>Crecimiento de la comunidad</h4>
+                    <span class="subtitle" id="growthSubtitle">Total acumulado de miembros — últimos 7 meses</span>
+                </div>
+                <div class="ch-trend" id="growthTrend">
+                    <span id="growthTrendText">--</span>
+                </div>
+            </div>
+            <div class="relative-chart-container">
+                <canvas id="chart-crecimiento" class="chart-container"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 1. Metrics Grid */
+        .metrics-grid-leader {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .metric-card-leader {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .icon-box {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .hero-icon { width: 22px; height: 22px; }
+
+        .pastel-blue   { background: #e0f2fe; color: #0ea5e9; }
+        .pastel-green  { background: #dcfce7; color: #10b981; }
+        .pastel-purple { background: #f3e8ff; color: #a855f7; }
+        .pastel-orange { background: #ffedd5; color: #f97316; }
+
+        .metric-value {
+            font-size: 1.8rem; font-weight: 800;
+            color: #0f172a; line-height: 1;
+        }
+        .metric-label {
+            margin: 0; color: #64748b;
+            font-size: 0.9rem; font-weight: 500;
+        }
+
+        .leader-card {
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,.05);
+        }
+
+        /* 2. Growth Section */
+        .growth-section.no-padding { padding: 0; overflow: hidden; }
+
+        .card-header-padded {
+            display: flex; justify-content: space-between;
+            align-items: flex-start;
+            padding: 24px 24px 0 24px;
+            margin-bottom: 1rem;
+        }
+
+        .relative-chart-container { position: relative; width: 100%; }
+
+        .ch-text h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #0F172A; }
+        .ch-text .subtitle { font-size: 0.8rem; color: #94A3B8; }
+
+        .ch-trend {
+            padding: 4px 12px; border-radius: 9999px;
+            font-size: 0.85rem; font-weight: 700;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .ch-trend.positive { background: #dcfce7; color: #15803d; }
+        .ch-trend.negative { background: #fee2e2; color: #b91c1c; }
+        .ch-trend.neutral  { background: #f1f5f9; color: #64748b; }
+
+        .chart-container {
+            min-height: 260px; position: relative;
+            width: 100%; height: 260px; padding-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid-leader { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .metrics-grid-leader { grid-template-columns: 1fr; }
+        }
+    </style>
+</LeaderLayout>
+
+<script>
+    async function initLeaderDashboard() {
+        // ── 1. Obtener community_id siempre desde el servidor ──────────────────
+        let communityId = null;
+        try {
+            // Leer token de la clave unificada
+            const token = sessionStorage.getItem('authToken') || '';
+            if (!token) { console.warn('[Leader] Sin token'); return; }
+
+            const meRes = await fetch('http://localhost:8000/api/v1/users/me', {
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            if (!meRes.ok) { console.warn('[Leader] /users/me error', meRes.status); return; }
+            const me = await meRes.json();
+            communityId = me.community_id;
+        } catch (e) { console.error('[Leader] Error /users/me:', e); return; }
+
+        if (!communityId) { console.warn('[Leader] Líder sin communidad asignada'); return; }
+
+        // ── 2. Cargar métricas ─────────────────────────────────────────────────
+        let metrics = null;
+        try {
+            const token = sessionStorage.getItem('authToken') || '';
+            const mRes = await fetch(`http://localhost:8000/api/v1/metrics/community/${communityId}`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            if (!mRes.ok) { console.warn('[Leader] /metrics error', mRes.status); return; }
+            metrics = await mRes.json();
+        } catch (e) { console.error('[Leader] Error métricas:', e); return; }
+
+        // ── 3. Contadores ──────────────────────────────────────────────────────
+        document.getElementById('leaderMembersCount').textContent = String(metrics.total_users   ?? 0);
+        document.getElementById('leaderEventsCount').textContent  = String(metrics.active_events ?? 0);
+
+        // ── 4. Gráfica ─────────────────────────────────────────────────────────
+        const labels = metrics.growth_labels || [];
+        const data   = metrics.growth_data   || [];
+
+        function renderChart() {
+            if (!window.Chart) { setTimeout(renderChart, 100); return; }
+            const canvas = document.getElementById('chart-crecimiento');
+            if (!canvas) return;
+
+            new window.Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Total miembros',
+                        data,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59,130,246,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2.5,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        clip: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { left: 15, right: 25, top: 15, bottom: 10 } },
+                    interaction: { intersect: false, mode: 'index' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#fff',
+                            titleColor: '#1e293b',
+                            bodyColor: '#475569',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: c => ` ${c.parsed.y} miembro${c.parsed.y !== 1 ? 's' : ''} en total`,
+                                afterLabel: c => {
+                                    const d = c.dataset.data;
+                                    const i = c.dataIndex;
+                                    if (i > 0) {
+                                        const diff = d[i] - d[i - 1];
+                                        return diff === 0 ? ' Sin cambios' : ` ${diff > 0 ? '+' : ''}${diff} vs mes anterior`;
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: true, color: '#f1f5f9' },
+                            ticks: { color: '#94a3b8', font: { size: 11 }, padding: 5 },
+                            border: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { color: '#94a3b8', font: { size: 11 }, padding: 10, stepSize: 20 },
+                            border: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // Badge de tendencia
+            const trendEl = document.getElementById('growthTrend');
+            const trendTx = document.getElementById('growthTrendText');
+            if (trendEl && trendTx) {
+                const last = data[data.length - 1] ?? 0;
+                const prev = data[data.length - 2] ?? 0;
+                const diff = last - prev;
+                if (last === 0 && prev === 0) {
+                    trendEl.className   = 'ch-trend neutral';
+                    trendTx.textContent = 'Sin datos';
+                } else if (prev === 0) {
+                    trendEl.className   = 'ch-trend positive';
+                    trendTx.textContent = `+${last} miembro${last !== 1 ? 's' : ''} este mes`;
+                } else {
+                    const pct = ((diff / prev) * 100).toFixed(1);
+                    trendEl.className   = diff >= 0 ? 'ch-trend positive' : 'ch-trend negative';
+                    trendTx.textContent = diff >= 0 ? `▲ +${pct}%` : `▼ ${pct}%`;
+                }
+            }
+        }
+
+        renderChart();
+    }
+
+    // Run immediately if DOM is ready, otherwise wait
+    if (document.readyState !== 'loading') {
+        initLeaderDashboard();
+    } else {
+        document.addEventListener('DOMContentLoaded', initLeaderDashboard);
+    }
+</script>

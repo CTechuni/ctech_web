@@ -1,0 +1,43 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminCommunitySection from '../../components/admin/AdminCommunitySection.astro';
+
+const title = 'Comunidades';
+const subtitle = 'Gestión de grupos y comunidades';
+---
+
+<AdminLayout title={title} subtitle={subtitle}>
+  <div class="communities-page-wrapper">
+    <AdminCommunitySection />
+  </div>
+
+  <style>
+    .admin-page-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .page-kicker {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+  </style>
+</AdminLayout>

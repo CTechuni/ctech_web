@@ -1,0 +1,90 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Términos y Condiciones | CTech">
+    <div class="terms-container">
+        <h1>Términos y Condiciones</h1>
+        <p class="status-badge">Documento en proceso de redacción</p>
+        
+        <div class="terms-content">
+            <p>Bienvenido a CTech. Actualmente estamos trabajando en la redacción detallada de nuestros términos y condiciones de uso para garantizar la mejor protección y transparencia para nuestra comunidad.</p>
+            
+            <section>
+                <h2>Aviso Legal</h2>
+                <p>Al registrarte en CTech, aceptas que el uso de la plataforma está sujeto a las normas vigentes de conducta de la comunidad y protección de datos personales.</p>
+            </section>
+
+            <div class="coming-soon">
+                <span class="material-icons">info</span>
+                <p>La versión completa de este documento estará disponible próximamente.</p>
+            </div>
+
+            <a href="/" class="back-btn">Volver al inicio</a>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .terms-container {
+        max-width: 800px;
+        margin: 4rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+        color: var(--color-primary-dark);
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        background: #fef3c7;
+        color: #92400e;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+
+    .terms-content {
+        line-height: 1.6;
+        color: #4b5563;
+    }
+
+    section {
+        margin: 2rem 0;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        color: var(--color-primary-dark);
+        margin-bottom: 1rem;
+    }
+
+    .coming-soon {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: #f3f4f6;
+        border-radius: 12px;
+        margin-top: 3rem;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--color-azure-radiant);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .back-btn:hover {
+        text-decoration: underline;
+    }
+</style>
