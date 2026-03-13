@@ -50,7 +50,7 @@ const title = "Eventos";
             const events = await AuthManager.fetch('/events/');
             allEvents = events || [];
             const communityId = user.community_id;
-            const filtered = allEvents.filter(e => e.community_id == communityId && e.status === 'publicado');
+            const filtered = allEvents.filter(e => e.status === 'approved');
             renderEvents(filtered);
         } catch (err) {
             console.error('Error loading events for user:', err);
@@ -147,7 +147,7 @@ const title = "Eventos";
         const user = authManager.getUser();
         if (user) {
             const communityId = user.community_id;
-            const filtered = allEvents.filter(e => e.community_id == communityId && e.status === 'publicado');
+            const filtered = allEvents.filter(e => e.status === 'approved');
             renderEvents(filtered);
         }
     }
