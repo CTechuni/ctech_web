@@ -131,7 +131,16 @@ export class AuthManager {
         });
     }
 
-    logout(reason = '') {
+    async logout(reason = '') {
+        const token = this.getToken();
+        if (token) {
+            try {
+                await fetch(buildApiUrl(API_CONFIG.AUTH.LOGOUT), {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch { /* silencioso — igual limpiamos la sesión local */ }
+        }
         this.clearAuthData();
         window.location.href = reason === 'inactivity' ? '/?reason=inactivity' : '/';
     }
