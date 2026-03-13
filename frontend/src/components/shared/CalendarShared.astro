@@ -402,10 +402,10 @@
 </style>
 
 <script>
-    import { authManager, AuthManager } from "../../utils/auth.js";
+    import { AuthManager } from "../../utils/auth.js";
 
     const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    let displayDate = new Date(2026, 2, 1); // Starting at March 2026
+    let displayDate = new Date();
     let currentFilter = 'all';
     let allEvents = [];
 
@@ -417,7 +417,7 @@
 
     async function loadEvents() {
         try {
-            const rawEvents = await AuthManager.fetch('/events/').catch(() => null);
+            const rawEvents = await AuthManager.fetch('/events/?upcoming_only=false&limit=100').catch(() => null);
             
             allEvents = (rawEvents && Array.isArray(rawEvents)) ? rawEvents : [];
             renderGrid();
@@ -539,20 +539,13 @@
         // Link & Form Handling
         const formBtn = document.getElementById('modalFormBtn') as HTMLAnchorElement;
         const linkBtn = document.getElementById('modalLinkBtn') as HTMLAnchorElement;
-        
-        const urlForm = event.url_form;
+
+        formBtn.style.display = 'none'; // url_form no existe en el backend
+
         const eventLink = event.event_type === 'virtual' ? event.location : null;
-        
-        // Handle Registration Form (Prioridad 1)
-        if (urlForm && (urlForm.startsWith('http') || urlForm.includes('.'))) {
-            formBtn.href = urlForm;
-            formBtn.style.display = 'block';
-        } else {
-            formBtn.style.display = 'none';
-        }
 
         // Handle General Event Link (Prioridad 2)
-        if (eventLink && eventLink !== urlForm && (eventLink.startsWith('http') || eventLink.includes('.'))) {
+        if (eventLink && (eventLink.startsWith('http') || eventLink.includes('.'))) {
             linkBtn.href = eventLink;
             linkBtn.style.display = 'flex';
         } else {
