@@ -29,6 +29,9 @@ def mark_as_read(db: Session, notification_id: int):
         db.refresh(notification)
     return notification
 
-def mark_all_as_read(db: Session):
-    db.query(models.Notification).filter(models.Notification.is_read == False).update({"is_read": True})
+def mark_all_as_read(db: Session, user_id: int):
+    db.query(models.Notification).filter(
+        models.Notification.recipient_id == user_id,
+        models.Notification.is_read == False
+    ).update({"is_read": True})
     db.commit()

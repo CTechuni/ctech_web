@@ -1,6 +1,6 @@
 from datetime import date as date_type
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from . import models, schemas
 from app.modules.communities.models import Community
 
@@ -51,6 +51,22 @@ def get_approved(db: Session, skip: int = 0, limit: int = 20,
     """Eventos aprobados (cualquier visibilidad) — para usuarios autenticados."""
     q = _with_community(_base_query(db)).filter(models.Event.status == "approved")
     return _paginate(_apply_filters(q, upcoming_only, community_id, event_type), skip, limit)
+
+def get_approved_for_user(db: Session, user_community_id: int | None, skip: int = 0, limit: int = 20,
+                          upcoming_only: bool = True, event_type: str | None = None):
+    """
+    Eventos aprobados para usuario rol_id=4:
+    - Públicos de cualquier comunidad
+    - Privados solo de su propia comunidad
+    """
+    q = _with_community(_base_query(db)).filter(
+        models.Event.status == "approved",
+        or_(
+            models.Event.visibility == "publico",
+            models.Event.community_id == user_community_id
+        )
+    )
+    return _paginate(_apply_filters(q, upcoming_only, None, event_type), skip, limit)
 
 def get_all(db: Session, skip: int = 0, limit: int = 20,
             upcoming_only: bool = False, community_id: int | None = None,
@@ -134,6 +150,12 @@ def delete(db: Session, event_id: int):
     return False
 
 # ── Registros de asistentes ────────────────────────────────────────────────────
+
+def get_registered_event_ids(db: Session, user_id: int) -> set:
+    rows = db.query(models.EventRegistration.event_id).filter(
+        models.EventRegistration.user_id == user_id
+    ).all()
+    return {r[0] for r in rows}
 
 def get_registration(db: Session, event_id: int, user_id: int):
     return db.query(models.EventRegistration).filter(

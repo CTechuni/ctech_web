@@ -1,26 +1,26 @@
-# Documentación Integral de Requerimientos y Diseño - CTech 🚀
+# Documentación de Requerimientos y Diseño - CTech
 
 Este documento centraliza la especificación técnica, funcional y el diseño arquitectónico de la plataforma **CTech**.
 
 ---
 
 ## 1. Mapa de Actores y Roles
+
 - **Visitante**: Acceso público a vitrina de eventos.
-- **Usuario Estándar**: Acceso a contenido privado de su comunidad.
-- **Mentor**: Generador de contenido y sesiones formativas.
-- **Líder**: Moderador y gestor de comunidad (relación 1-a-1).
+- **Usuario**: Miembro registrado de una comunidad — se inscribe a eventos.
+- **Líder**: Modera y gestiona su comunidad (relación 1-a-1 con la comunidad).
 - **Administrador**: Control global del sistema e infraestructura.
+
+> El rol **Mentor** fue eliminado. CTech no gestiona mentorías ni cursos.
 
 ---
 
-## 2. Diagrama de Casos de Uso (Usuario)
-Este diagrama describe las interacciones de los actores con las funcionalidades clave.
+## 2. Diagrama de Casos de Uso
 
 ```mermaid
 useCaseDiagram
     actor "Visitante" as V
     actor "Usuario" as U
-    actor "Mentor" as M
     actor "Líder" as L
     actor "Administrador" as A
 
@@ -28,83 +28,69 @@ useCaseDiagram
         usecase "Registrarse/Login" as UC1
         usecase "Unirse a Comunidad (Código)" as UC2
         usecase "Inscribirse a Evento" as UC3
-        usecase "Crear Evento/Curso" as UC4
-        usecase "Aprobar Contenido" as UC5
-        usecase "Gestionar Usuarios/Roles" as UC6
-        usecase "Reservar Mentoría" as UC7
+        usecase "Crear/Gestionar Evento" as UC4
+        usecase "Gestionar Usuarios y Roles" as UC5
+        usecase "Ver Eventos Públicos" as UC6
     }
 
+    V --> UC6
     V --> UC1
     U --> UC2
     U --> UC3
-    U --> UC7
-    M --> UC4
-    L --> UC5
-    L --> UC2
-    A --> UC6
+    L --> UC4
+    A --> UC4
     A --> UC5
 ```
 
 ---
 
-## 3. Requisitos Funcionales (RF) - Total: 35
+## 3. Requisitos Funcionales (RF)
 
-| ID | Requerimiento | Descripción |
-|---|---|---|
-| **RF01** | Registro de Usuarios | Validación de email único y perfil activo por defecto. |
-| **RF02** | Autenticación JWT | Inicio de sesión seguro con tokens de 24h de duración. |
-| **RF03** | Sesión Única | Invalida tokens previos al detectar un nuevo inicio de sesión. |
-| **RF04** | Blocklist de Tokens | Cierre de sesión instantáneo invalidando el token en el servidor. |
-| **RF05** | Perfil de Usuario | CRUD de datos personales y cambio de contraseña. |
-| **RF06** | RBAC Estricto | Control de acceso basado en 4 roles jerárquicos. |
-| **RF07** | Promoción de Roles | Capacidad de elevar usuarios a Mentores (Admin/Líder). |
-| **RF08** | Gestión Comunidades | CRUD global de comunidades (Solo Admin). |
-| **RF09** | Código de Acceso | Unión a comunidades mediante códigos compartidos por el líder. |
-| **RF10** | Identidad Visual | Subida de logos a Cloudinary para comunidades y eventos. |
-| **RF11** | Registro Líder-Comunidad| Restricción de un líder por comunidad (1:1). |
-| **RF12** | Catálogo Tecnologías | Gestión de lenguajes y herramientas del sistema. |
-| **RF13** | Creación de Eventos | Mentores pueden proponer eventos virtuales/presenciales. |
-| **RF14** | Workflow Aprobación | Los eventos de terceros (si se habilitan) requieren revisión; lo creado por Admin/Líder es inmediato. |
-| **RF15** | Visibilidad Pública | Fichas informativas de eventos para visitantes sin cuenta. |
-| **RF16** | Inscripción Eventos | El usuario recibe confirmación inmediata y el líder una notificación de registro. |
-| **RF17** | Agenda de Mentoría | Los mentores habilitan slots de tiempo para citas. |
-| **RF18** | Reserva 1-a-1 | Estudiantes pueden agendar citas con mentores. |
-| **RF19** | Enlaces Dinámicos | Los links de Meet/Zoom solo se ven tras la reserva confirmada. |
-| **RF20** | Áreas Temáticas | Clasificación de cursos (ej. Web, Mobile, Data). |
-| **RF21** | Niveles LMS | Contenido categorizado como Básico, Intermedio o Avanzado. |
-| **RF22** | Gestión Cursos | Creación de rutas de aprendizaje modulares. |
-| **RF23** | Notificaciones Targeted| Alertas segmentadas por `recipient_id` para líderes y usuarios (miembros). |
-| **RF24** | Dashboard Admin | Métricas globales de usuarios y comunidades. |
-| **RF25** | Dashboard Líder | Estadísticas de participación en su comunidad. |
-| **RF26** | Dashboard Mentor | Seguimiento de sus cursos y sesiones reservadas. |
-| **RF27** | Búsqueda/Filtros | Localización de eventos por especialidad y tecnología. |
-| **RF28** | Auditoría de Acciones | Registro de creaciones y modificaciones críticas. |
-| **RF29** | Recuperación Password | Flujo de reset vía token de seguridad por email. |
-| **RF30** | Auto-Aprobación | Contenido creado por Admin/Líder se publica sin revisión. |
-| **RF31** | Control de Capacidad | Validación de cupos máximos disponibles para cada evento. |
-| **RF32** | Filtros de Modalidad | Consulta de eventos por tipo (Presencial / Virtual / Híbrido). |
-| **RF33** | Gestión de Lectura | Capacidad de marcar notificaciones como leídas/no leídas. |
-| **RF34** | Soporte Multitecnología| Asociación de múltiples tecnologías a un solo curso (vía JSON). |
-| **RF35** | Cancelación Flexible | Liberación automática de slots de mentoría tras cancelación. |
+| Número de Requisito | Nombre de Requisito | Tipo | Fuente de Requisito | Prioridad |
+|---|---|---|---|---|
+| RF 1 | Registro de Usuarios | Requisito Funcional | El sistema debe permitir el registro de nuevos usuarios con validación de email único y perfil activo por defecto. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 2 | Autenticación JWT | Requisito Funcional | El sistema debe permitir el inicio de sesión seguro mediante tokens JWT con vigencia de 24 horas. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 3 | Sesión Única | Requisito Funcional | El sistema debe invalidar los tokens previos al detectar un nuevo inicio de sesión del mismo usuario. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 4 | Blocklist de Tokens | Requisito Funcional | El sistema debe permitir el cierre de sesión instantáneo invalidando el token activo en el servidor mediante una blocklist. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 5 | Perfil de Usuario | Requisito Funcional | El sistema debe permitir a los usuarios actualizar sus datos personales y cambiar su contraseña. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 6 | Control de Acceso Basado en Roles | Requisito Funcional | El sistema debe controlar el acceso a las funcionalidades mediante tres roles definidos: administrador, líder y usuario. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 7 | Gestión de Comunidades | Requisito Funcional | El sistema debe permitir al administrador crear, editar y eliminar comunidades de forma global. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 8 | Código de Acceso a Comunidad | Requisito Funcional | El sistema debe permitir a los usuarios unirse a comunidades mediante un código único compartido por el líder. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 9 | Subida de Imágenes | Requisito Funcional | El sistema debe permitir la subida de logos e imágenes a Cloudinary para comunidades y eventos. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 10 | Restricción de Líder Único | Requisito Funcional | El sistema debe garantizar que cada comunidad tenga un único líder asignado (relación 1:1). | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 11 | Creación de Eventos | Requisito Funcional | El sistema debe permitir a líderes y administradores crear eventos con aprobación automática. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 12 | Flujo de Aprobación de Eventos | Requisito Funcional | El sistema debe publicar automáticamente los eventos creados por líderes y administradores, quedando disponibles de inmediato para los miembros. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 13 | Visibilidad de Eventos | Requisito Funcional | El sistema debe permitir clasificar eventos como públicos (visibles sin registro) o privados (solo para miembros de la comunidad). | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 14 | Inscripción a Eventos | Requisito Funcional | El sistema debe permitir a los usuarios inscribirse en eventos aprobados, validando cupo disponible y registros duplicados. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 15 | Control de Capacidad | Requisito Funcional | El sistema debe permitir configurar un límite de inscripciones por evento. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 16 | Filtros por Modalidad | Requisito Funcional | El sistema debe permitir consultar y filtrar eventos por tipo: presencial o virtual. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 17 | Notificaciones Segmentadas | Requisito Funcional | El sistema debe enviar alertas segmentadas por destinatario (`recipient_id`) para líderes y usuarios. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 18 | Email de Confirmación | Requisito Funcional | El sistema debe enviar un correo electrónico automático al usuario al inscribirse en un evento. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 19 | Dashboard del Administrador | Requisito Funcional | El sistema debe proporcionar al administrador un panel con métricas globales de usuarios, comunidades y eventos. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 20 | Dashboard del Líder | Requisito Funcional | El sistema debe proporcionar al líder un panel con estadísticas de participación e inscripciones de su comunidad. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 21 | Recuperación de Contraseña | Requisito Funcional | El sistema debe permitir la recuperación de contraseña mediante un token de seguridad enviado al correo del usuario. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RF 22 | Gestión de Notificaciones | Requisito Funcional | El sistema debe permitir a los usuarios marcar notificaciones individuales o todas como leídas. | Baja (puede diferirse a versiones futuras sin impactar el lanzamiento) |
+| RF 23 | Cancelación de Inscripción | Requisito Funcional | El sistema debe permitir al usuario cancelar su registro en un evento previamente inscrito. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RF 24 | Conteo de Inscritos en Tiempo Real | Requisito Funcional | El sistema debe exponer el número actualizado de inscritos por evento (`registered_count`) en cada respuesta de la API. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
 
 ---
 
 ## 4. Requisitos No Funcionales (RNF)
 
-| ID | Requerimiento | Especificación |
-|---|---|---|
-| **RNF01** | Seguridad | Cifrado de contraseñas con **Bcrypt** (Passlib). |
-| **RNF02** | Escalabilidad | Arquitectura modular desacoplada en el backend. |
-| **RNF03** | Rendimiento | Frontend con Astro Islands para carga progresiva rápida. |
-| **RNF04** | Disponibilidad | Base de datos relacional PostgreSQL con integridad referencial. |
-| **RNF05** | Integración | Uso de API externa (Cloudinary) para persistencia multimedia. |
-| **RNF06** | UX/UI | Diseño responsivo basado en Bootstrap 5 y CSS moderno. |
-| **RNF07** | Mantenibilidad | Documentación automática con Swagger (OpenAPI). |
+| Número de Requisito | Nombre de Requisito | Tipo | Fuente de Requisito | Prioridad |
+|---|---|---|---|---|
+| RNF 1 | Seguridad de Contraseñas | Requisito No Funcional | El sistema debe cifrar las contraseñas de los usuarios utilizando el algoritmo Bcrypt mediante la librería Passlib. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RNF 2 | Escalabilidad | Requisito No Funcional | El sistema debe contar con una arquitectura modular y desacoplada en el backend que facilite su crecimiento y mantenimiento. | Media (puede implementarse en versiones posteriores al lanzamiento inicial) |
+| RNF 3 | Rendimiento | Requisito No Funcional | El sistema debe utilizar Astro Islands en el frontend y subconsultas correlacionadas en el backend para evitar el problema de consultas N+1. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RNF 4 | Disponibilidad e Integridad de Datos | Requisito No Funcional | El sistema debe utilizar PostgreSQL con integridad referencial activada para garantizar la consistencia de los datos. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RNF 5 | Integración con Servicios Externos | Requisito No Funcional | El sistema debe integrarse con Cloudinary para gestión de imágenes y con Gmail SMTP para el envío de correos electrónicos. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RNF 6 | Diseño Responsivo | Requisito No Funcional | El sistema debe implementar una interfaz de usuario responsiva y adaptable a distintos dispositivos utilizando Bootstrap 5. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
+| RNF 7 | Mantenibilidad y Documentación | Requisito No Funcional | El sistema debe generar documentación automática e interactiva de la API mediante Swagger, accesible en la ruta `/docs`. | Baja (puede diferirse a versiones futuras sin impactar el lanzamiento) |
+| RNF 8 | Validación de Datos de Entrada | Requisito No Funcional | El sistema debe validar todos los datos de entrada utilizando Pydantic v2, con tipos `Literal` para campos de selección fija. | Alta (debe implementarse para el lanzamiento inicial del sistema) |
 
 ---
 
-## 5. Diagrama de Actividades (Flujo de Eventos)
-Describe el proceso desde que un Mentor crea un evento hasta su publicación.
+## 5. Flujo de Aprobación de Eventos
 
 ```mermaid
 activityDiagram
@@ -112,20 +98,17 @@ activityDiagram
     :Líder o Admin crea evento;
     :Sistema lo marca como 'Approved' (Auto-Aprobación);
     :Guardar en Base de Datos;
-    :Sincronizar vinculación Líder-Comunidad;
     fork
         :Notificar a todos los Usuarios (si es Público);
     orchestrate
         :Notificar a miembros de la Comunidad (si es Privado);
     end fork
-    :Enviar correo de confirmación al Creador;
     stop
 ```
 
 ---
 
-## 6. Diagrama de Procesos (Login y Sesión Única)
-Secuencia técnica para garantizar una sola sesión activa.
+## 6. Flujo de Login y Sesión
 
 ```mermaid
 sequenceDiagram
@@ -139,7 +122,7 @@ sequenceDiagram
     B->>D: Busca usuario por email
     D-->>B: Retorna datos + password_hash
     B->>B: Verifica hash (Bcrypt)
-    B->>D: Invalida tokens previos (Update last_token)
+    B->>D: Invalida tokens previos (Blocklist)
     B->>B: Genera nuevo JWT (HS256)
     B-->>F: Retorna Token + Datos Perfil
     F->>F: Guarda en localStorage
@@ -148,8 +131,7 @@ sequenceDiagram
 
 ---
 
-## 7. Diagrama de Arquitectura Tecnológica
-Muestra la infraestructura y comunicación entre componentes.
+## 7. Arquitectura Tecnológica
 
 ```mermaid
 graph TD
@@ -160,6 +142,7 @@ graph TD
 
     subgraph "Cloud Services"
         CLO[Cloudinary API]
+        MAIL[Gmail SMTP]
     end
 
     subgraph "Backend API (FastAPI)"
@@ -180,12 +163,12 @@ graph TD
     ROU <--> ORM
     ORM <--> DB
     APP <--> CLO
+    APP <--> MAIL
 ```
 
 ---
 
-## 8. Priorización de Épicas (Matriz de Valor)
-Clasificación de las grandes funcionalidades del proyecto.
+## 8. Priorización de Épicas
 
 ```mermaid
 quadrantChart
@@ -199,68 +182,53 @@ quadrantChart
     "Auth & RBAC": [0.2, 0.9]
     "Gestión de Perfiles": [0.3, 0.7]
     "Comunidades (Core)": [0.4, 0.8]
-    "Eventos & Calendario": [0.5, 0.9]
-    "Mentorías 1-a-1": [0.8, 0.8]
-    "LMS (Cursos)": [0.7, 0.7]
+    "Eventos & Inscripciones": [0.5, 0.95]
+    "Notificaciones & Email": [0.4, 0.6]
     "Métricas de Admin": [0.6, 0.5]
-    "Notificaciones Email": [0.4, 0.4]
+    "Dashboard Líder": [0.5, 0.6]
 ```
 
 ---
 
-## 9. Diagrama de Estados (Entidad: Evento)
-Ciclo de vida de un evento en la plataforma.
+## 9. Diagrama de Estados — Evento
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Borrador: Mentor crea inicial
-    Borrador --> Pendiente: Enviar a revisión
-    Pendiente --> Aprobado: Líder/Admin acepta
-    Pendiente --> Rechazado: Líder/Admin declina
-    Aprobado --> Realizado: Fecha actual > Fecha evento
-    Aprobado --> Cancelado: Mentor/Líder elimina
-    Rechazado --> Borrador: Mentor corrige
-    [*] --> Aprobado: Creado por Admin o Líder
-    Realizado --> [*]
+    [*] --> Aprobado: Creado por Líder o Admin (auto-aprobación)
+    Aprobado --> [*]: Evento eliminado
 ```
 
 ---
 
-## 10. Catálogo Detallado de Casos de Uso (CU)
+## 10. Catálogo de Casos de Uso
 
 ### 10.1 Gestión de Identidad y Acceso
-- **CU-AC-01: Registro de Cuenta**: El visitante crea sus credenciales con validación de email.
-- **CU-AC-02: Inicio de Sesión**: Autenticación con invalidación de sesiones previas.
-- **CU-AC-03: Recuperación de Acceso**: Reset de contraseña vía token temporal.
-- **CU-AC-04: Gestión de Perfil**: Edición de datos personales y preferencias.
-- **CU-AC-05: Cierre de Sesión**: Destrucción segura del token en cliente y servidor.
-- **CU-AC-06: Baja Voluntaria**: Eliminación permanente de la cuenta y datos.
+- **CU-AC-01**: Registro con validación de email único.
+- **CU-AC-02**: Login con invalidación de sesiones previas.
+- **CU-AC-03**: Reset de contraseña vía token por email.
+- **CU-AC-04**: Edición de perfil (nombre, bio, avatar, redes).
+- **CU-AC-05**: Logout con destrucción del token en servidor (blocklist).
+- **CU-AC-06**: Eliminación de cuenta propia.
 
-### 10.2 Casos de Uso: Usuario Estándar
-- **CU-US-01: Explorar Comunidades**: Consulta de grupos públicos disponibles.
-- **CU-US-02: Unirse a Comunidad**: Ingreso mediante el código secreto del líder.
-- **CU-US-03: Inscripción a Eventos**: Registro para asegurar cupo en talleres.
-- **CU-US-04: Reserva de Mentoría**: Agendamiento de cita 1-a-1 según disponibilidad.
-- **CU-US-05: Acceso a Contenido**: Visualización de cursos y recursos de su nivel.
-- **CU-US-06: Directorio de Miembros**: Ver quiénes integran su comunidad.
+### 10.2 Usuario Estándar
+- **CU-US-01**: Unirse a comunidad con código del líder.
+- **CU-US-02**: Ver listado de eventos (públicos sin auth, aprobados con auth según comunidad y rol).
+- **CU-US-03**: Inscribirse a un evento (validación de cupo y duplicados).
+- **CU-US-04**: Cancelar inscripción a un evento.
+- **CU-US-05**: Recibir notificaciones in-app y correo de confirmación.
+- **CU-US-06**: Ver directorio de miembros de su comunidad.
 
-### 10.3 Casos de Uso: Mentor
-- **CU-MN-01: Propuesta de Evento**: Creación de evento sujeto a revisión.
-- **CU-MN-02: Gestión de Agenda**: Configuración de horas para mentoría.
-- **CU-MN-03: Publicación de Curso**: Subida de material educativo por módulos.
-- **CU-MN-04: Dashboard de Mentor**: Métricas de impacto y alumnos asignados.
-- **CU-MN-05: Edición de Contenido**: Ajustes a materiales propios publicados.
+### 10.3 Líder de Comunidad
+- **CU-LD-01**: Crear eventos (auto-aprobados).
+- **CU-LD-02**: Ver y gestionar los eventos de su comunidad.
+- **CU-LD-03**: Ver lista de inscritos por evento.
+- **CU-LD-04**: Actualizar logo y descripción de su comunidad.
+- **CU-LD-05**: Dashboard con estadísticas de miembros y eventos.
+- **CU-LD-06**: Ver y gestionar miembros de su comunidad.
 
-### 10.4 Casos de Uso: Líder de Comunidad
-- **CU-LD-01: Moderación de Contenido**: Aprobar o rechazar eventos y cursos.
-- **CU-LD-02: Gestión de Mentores**: Promover usuarios destacados al rol mentor.
-- **CU-LD-03: Configuración de Comunidad**: Actualizar logo y descripción pública.
-- **CU-LD-04: Dashboard de Comunidad**: Estadísticas de crecimiento y actividad.
-- **CU-LD-05: Revocación de Roles**: Degradación de mentores si es necesario.
-
-### 10.5 Casos de Uso: Administrador
-- **CU-AD-01: Gestión de Infraestructura**: Alta y baja de comunidades globales.
-- **CU-AD-02: Control Maestro de Usuarios**: CRUD total de perfiles y roles.
-- **CU-AD-03: Gestión de Catálogos**: Mantenimiento de Tecnologías y Especialidades.
-- **CU-AD-04: Auditoría de Sistema**: Monitoreo de logs y estados de salud.
-- **CU-AD-05: Reportes Globales**: Exportación de métricas de toda la plataforma.
+### 10.4 Administrador
+- **CU-AD-01**: CRUD global de comunidades (crear, editar, eliminar).
+- **CU-AD-02**: CRUD total de usuarios y cambio de roles.
+- **CU-AD-03**: Crear, editar y eliminar cualquier evento del sistema.
+- **CU-AD-04**: Dashboard global con métricas de toda la plataforma.
+- **CU-AD-05**: Crear y asignar líderes a comunidades.

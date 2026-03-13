@@ -402,10 +402,10 @@
 </style>
 
 <script>
-    import { authManager } from "../../utils/auth.js";
+    import { AuthManager } from "../../utils/auth.js";
 
     const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    let displayDate = new Date(2026, 2, 1); // Starting at March 2026
+    let displayDate = new Date();
     let currentFilter = 'all';
     let allEvents = [];
 
@@ -417,20 +417,9 @@
 
     async function loadEvents() {
         try {
-            // Tentamos obtener eventos mediante el fetch estático de AuthManager
-            // En producción el endpoint sería '/events' o similar
-            const rawEvents = await authManager.constructor.fetch('/events').catch(() => null);
+            const rawEvents = await AuthManager.fetch('/events/?upcoming_only=false&limit=100').catch(() => null);
             
-            if (rawEvents && Array.isArray(rawEvents)) {
-                allEvents = rawEvents;
-            } else {
-                // Mock fallback para demo de producción
-                allEvents = [
-                    { id: 1, title: 'Workshop: Astro v4', event_date: '2026-03-04', description: 'Profundizando en las nuevas APIs de Astro para optimizar el rendimiento del frontend.', location: 'Zoom / Meet', event_type: 'virtual', event_time: '18:30', image_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800' },
-                    { id: 2, title: 'Meetup CTech CDMX', event_date: '2026-03-12', description: ' Networking presencial con la comunidad de tecnología en México.', location: 'CTech Hub, Reforma', event_type: 'presencial', event_time: '19:00', image_url: '' },
-                    { id: 3, title: 'Hackathon AI 2026', event_date: '2026-03-22', description: '48 horas de pura innovación usando LLMs locales y arquitecturas distribuidas.', location: 'Discord Community', event_type: 'virtual', event_time: '10:00', image_url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800' }
-                ];
-            }
+            allEvents = (rawEvents && Array.isArray(rawEvents)) ? rawEvents : [];
             renderGrid();
         } catch (err) {
             console.error('Calendar: Error loading events', err);
@@ -471,12 +460,11 @@
             const isToday = isCurrentMonth && today.getDate() === day;
             
             const dayEvents = allEvents.filter(ev => {
-                const evDate = ev.event_date || ev.date_events; // flex field naming
+                const evDate = ev.event_date;
                 if (!evDate) return false;
                 const matchesDate = evDate.startsWith(dateISO);
-                
-                let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-                let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+
+                const normalizedType = ev.event_type === 'presencial' ? 'presencial' : 'virtual';
                 
                 const matchesFilter = currentFilter === 'all' || normalizedType === currentFilter;
                 return matchesDate && matchesFilter;
@@ -487,8 +475,7 @@
                     <span class="day-label">${day}</span>
                     <div class="events-container">
                         ${dayEvents.map(ev => {
-                            let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
-                            let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+                            const type = ev.event_type === 'presencial' ? 'presencial' : 'virtual';
                             return `<div class="event-micro-pill pill-${type}" data-event-id="${ev.id}">${ev.title}</div>`;
                         }).join('')}
                     </div>
@@ -536,14 +523,13 @@
 
         // Info mapping
         document.getElementById('modalEventTitle').textContent = event.title;
-        document.getElementById('modalEventDesc').textContent = event.description || event.description_event || 'Sin descripción disponible.';
+        document.getElementById('modalEventDesc').textContent = event.description || 'Sin descripción disponible.';
         document.getElementById('modalEventDate').textContent = new Date(event.event_date + 'T12:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' });
         document.getElementById('modalEventTime').textContent = (event.event_time || '18:00') + ' hr';
-        document.getElementById('modalEventLocation').textContent = event.location || event.place || 'Consultar con organizador';
-        
+        document.getElementById('modalEventLocation').textContent = event.location || 'Consultar con organizador';
+
         const badge = document.getElementById('modalEventBadge');
-        let typeRaw = `${event.event_type || ''} ${event.type_event || ''} ${event.location || ''}`.toLowerCase();
-        let type = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
+        const type = event.event_type === 'presencial' ? 'presencial' : 'virtual';
         
         if (badge) {
             badge.textContent = type.toUpperCase();
@@ -553,21 +539,13 @@
         // Link & Form Handling
         const formBtn = document.getElementById('modalFormBtn') as HTMLAnchorElement;
         const linkBtn = document.getElementById('modalLinkBtn') as HTMLAnchorElement;
-        
-        const urlForm = event.url_form || event.form_url;
-        const normalizedType = (event.event_type || '').toLowerCase();
-        const eventLink = event.event_link || event.link || ((normalizedType === 'virtual' || normalizedType === 'online') ? event.location : null);
-        
-        // Handle Registration Form (Prioridad 1)
-        if (urlForm && (urlForm.startsWith('http') || urlForm.includes('.'))) {
-            formBtn.href = urlForm;
-            formBtn.style.display = 'block';
-        } else {
-            formBtn.style.display = 'none';
-        }
+
+        formBtn.style.display = 'none'; // url_form no existe en el backend
+
+        const eventLink = event.event_type === 'virtual' ? event.location : null;
 
         // Handle General Event Link (Prioridad 2)
-        if (eventLink && eventLink !== urlForm && (eventLink.startsWith('http') || eventLink.includes('.'))) {
+        if (eventLink && (eventLink.startsWith('http') || eventLink.includes('.'))) {
             linkBtn.href = eventLink;
             linkBtn.style.display = 'flex';
         } else {

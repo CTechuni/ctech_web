@@ -1,128 +1,83 @@
-# CTech Platform 🚀
+# CTech Platform
 
-> **Plataforma LMS para comunidades tecnológicas en Colombia**
+> **Plataforma de comunidades tecnológicas en Colombia**
 > Proyecto SENA — Ficha 2995403
 
 ---
 
-## 📋 Descripción del Proyecto
+## Descripción del Proyecto
 
-CTech es una plataforma LMS **gratuita** dirigida exclusivamente a **comunidades tecnológicas en Colombia**. Su propósito es conectar a personas interesadas en aprender tecnología (nivel básico, intermedio y avanzado) con comunidades organizadas, proporcionándoles acceso a cursos, eventos y sesiones de mentoría de forma centralizada.
+CTech es una plataforma **gratuita** dirigida a **comunidades tecnológicas en Colombia**. Su propósito es conectar a personas interesadas en tecnología con comunidades organizadas, proporcionándoles acceso a **eventos** de forma centralizada.
 
-La plataforma no requiere pago alguno — el acceso es libre y el crecimiento de la comunidad se logra a través de **eventos públicos** y el **intercambio presencial del código de comunidad** por parte del líder.
+La plataforma no requiere pago alguno. El crecimiento de la comunidad se logra a través de **eventos públicos** y el **intercambio presencial del código de comunidad** por parte del líder.
 
 ---
 
-## 🔑 Modelo de Funcionamiento
+## Modelo de Funcionamiento
 
-### 💡 Acceso Gratuito
-La plataforma es **100% gratuita** para todos los usuarios. No hay costo de inscripción, membresía ni acceso a contenido.
+### Acceso Gratuito
+La plataforma es **100% gratuita**. No hay costo de inscripción, membresía ni acceso a contenido.
 
-### 🏘️ Comunidades Tecnológicas
-CTech está dirigida a **comunidades de tecnología en Colombia**: grupos de personas interesadas en aprender y crecer en el área tech, organizadas por temática (desarrollo web, mobile, datos, ciberseguridad, etc.).
+### Comunidades Tecnológicas
+CTech está dirigida a **comunidades de tecnología en Colombia**: grupos organizados por temática (desarrollo web, mobile, datos, ciberseguridad, etc.).
 
 Cada comunidad tiene:
-- Un **Líder** responsable de gestionar su comunidad dentro de la plataforma.
-- Su propio catálogo de **cursos**, **eventos** y **contenido educativo**.
+- Un **Líder** responsable de gestionar la comunidad.
+- Su propio catálogo de **eventos** (públicos y privados).
 - Un **código de comunidad** único que funciona como llave de acceso.
 
-### 📣 Promoción a través de Eventos Públicos
-Las comunidades se promocionan mediante **eventos públicos** visibles para cualquier persona que visite la plataforma, **sin necesidad de registro**. Estos eventos:
-- Funcionan como **vitrina de atracción** para personas interesadas en tecnología.
-- Muestran **fichas informativas** con imágenes del lugar del evento (foto del sitio, dirección, fecha), diseñadas para generar interés y convocar asistentes.
-- Permiten que los visitantes conozcan la comunidad antes de unirse formalmente.
-- No exponen el contenido interno (cursos, mentorías) — solo la información pública del evento.
+### Ingreso por Código
+El **Líder** comparte de forma **presencial** el código único de su comunidad. Con ese código el usuario puede:
+- Registrarse y unirse a la comunidad.
+- Acceder a todos sus **eventos internos**.
 
-> 📸 En la vista de visitante se despliegan **fichas visuales** con imagen del lugar del evento, nombre, fecha y tipo (presencial / online), todo sin requerir cuenta.
+> El código NO se publica en la plataforma — se entrega en persona, asegurando que solo personas realmente interesadas accedan al contenido privado.
 
-### � Estados de los Eventos: Público vs Privado
+### Eventos: Público vs Privado
 
-Al igual que los cursos, los eventos tienen dos estados de visibilidad:
-
-| Estado | Visibilidad | Acceso al detalle |
-|---|---|---|
-| 🌐 **Público** | Visible para cualquier visitante sin registro | Solo muestra la **ficha informativa**. Miembros de CTech reciben notificación al publicarse. |
-| 🔒 **Privado** | Solo visible para miembros registrados de la comunidad | Acceso completo. Miembros de la comunidad reciben notificación al publicarse. |
-
-**Reglas de acceso:**
-- **Visitante (sin cuenta):** ve los eventos públicos como fichas visuales — sirven para atraer e informar, no para participar.
-- **Usuario registrado con código de comunidad:** accede a **todos los eventos** de la comunidad (públicos y privados), con capacidad de inscribirse y ver todo el detalle.
-- **Sistema proactivo**: El usuario recibe una notificación en su panel y un correo al confirmar su inscripción.
-
-> 🔑 Los eventos públicos son la puerta de entrada. El acceso completo a inscripciones, detalles y recursos requiere ser miembro registrado de la comunidad.
-
-
-### �🔐 Ingreso a una Comunidad por Código
-El **Líder de comunidad** comparte de forma **presencial** (en los eventos o encuentros físicos) el **código único de su comunidad** a las personas interesadas. Con ese código, el usuario puede:
-- Registrarse y unirse a esa comunidad específica.
-- Acceder a todos sus **cursos**, **eventos internos** y **sesiones de mentoría**.
-- Interactuar con otros miembros y mentores dentro del espacio privado de la comunidad.
-
-> 🤝 El código NO se publica en la plataforma — se entrega en persona por el líder, asegurando que solo personas realmente interesadas y vetadas por la comunidad accedan al contenido privado.
-
-### � Estados de los Cursos: Público vs Privado
-
-Los cursos dentro de cada comunidad pueden tener dos estados de visibilidad:
-
-| Estado | Visibilidad | Acceso al contenido |
-|---|---|---|
-| 🌐 **Público** | Visible en la vista de visitante (sin registro) | Solo se muestra la **ficha del curso** (título, descripción, nivel). El visitante **no accede al contenido completo** |
-| 🔒 **Privado** | Solo visible para miembros registrados de la comunidad | Acceso completo a **lecciones, recursos, eventos y mentorías** de la comunidad |
-
-**Reglas de acceso:**
-- **Visitante (sin cuenta):** puede ver los cursos marcados como públicos y los eventos públicos, pero únicamente como vista previa. No puede acceder al contenido, lecciones ni interacciones.
-- **Usuario registrado con código de comunidad:** accede a **todo el contenido** de esa comunidad — tanto cursos públicos y privados, como eventos internos, sesiones de mentoría y recursos educativos.
-
-> 🔑 El acceso completo requiere registro + código de comunidad. Los cursos públicos son una herramienta de atracción; el valor real está en el ecosistema privado de la comunidad.
-
----
-
-### �📚 Niveles de Aprendizaje
-El contenido educativo de cada comunidad está organizado por nivel de dificultad:
-
-| Nivel | Descripción |
+| Visibilidad | Acceso |
 |---|---|
-| 🟢 **Básico** | Para personas que están comenzando en el área tech, sin experiencia previa |
-| 🟡 **Intermedio** | Para quienes ya tienen fundamentos y quieren profundizar sus conocimientos |
-| 🔴 **Avanzado** | Para profesionales que buscan especializarse en tecnologías y competencias de alto nivel |
+| **Público** | Visible para cualquier visitante sin registro. Sirve como vitrina de atracción. |
+| **Privado** | Solo visible para miembros registrados de la comunidad. |
+
+**Flujo de aprobación de eventos:** `draft → pending → approved | rejected`
+
+- Líder y admin crean eventos que se aprueban automáticamente.
+- El sistema notifica a los usuarios al publicarse un evento.
+- Al inscribirse, el usuario recibe notificación in-app y correo de confirmación.
 
 ---
 
+## Objetivo General
 
-## � Objetivo General
-
-Desarrollar una plataforma LMS web que centralice la gestión del aprendizaje, la formación de comunidades tecnológicas y el intercambio de conocimiento entre personas interesadas en tecnología en **Colombia**, facilitando el acceso a cursos, eventos, mentorías y contenido educativo de calidad bajo un sistema organizado por roles.
-
----
-
-## 📌 Objetivos Específicos
-
-1. **Gestionar comunidades tecnológicas** — Permitir la creación, organización y administración de comunidades temáticas dentro de la plataforma.
-2. **Centralizar la oferta de cursos y contenido** — Ofrecer un catálogo de cursos y materiales educativos accesibles para todos los usuarios registrados.
-3. **Facilitar la mentoría** — Conectar a mentores con usuarios mediante la gestión de sesiones de mentoría programadas.
-4. **Administrar eventos** — Registrar, publicar y gestionar eventos tecnológicos (presenciales y virtuales).
-5. **Implementar control de acceso por roles (RBAC)** — Garantizar que cada tipo de usuario (Admin, Líder, Mentor, Usuario) tenga acceso únicamente a las funciones que le corresponden.
-6. **Proveer métricas e indicadores** — Generar estadísticas sobre el uso de la plataforma para la toma de decisiones por parte de administradores y líderes.
-7. **Asegurar la integridad y seguridad de los datos** — Proteger la información de los usuarios mediante autenticación JWT, hashing de contraseñas con bcrypt y validación de datos con Pydantic.
+Desarrollar una plataforma web que centralice la gestión de **comunidades tecnológicas** y sus **eventos** en Colombia, facilitando el acceso, la inscripción y la comunicación entre miembros bajo un sistema organizado por roles.
 
 ---
 
-## 👥 Público Objetivo
+## Objetivos Específicos
+
+1. **Gestionar comunidades tecnológicas** — Crear, organizar y administrar comunidades temáticas.
+2. **Administrar eventos** — Registrar, publicar y gestionar eventos (presenciales y virtuales) con flujo de aprobación.
+3. **Implementar RBAC** — Garantizar que cada rol (Admin, Líder, Usuario) acceda solo a sus funciones.
+4. **Proveer métricas** — Estadísticas de uso para administradores y líderes.
+5. **Asegurar seguridad** — Autenticación JWT, hashing bcrypt, validación Pydantic.
+
+---
+
+## Público Objetivo
 
 | Perfil | Descripción |
 |---|---|
-| **Desarrolladores / Programadores** | Personas que buscan aprender nuevas tecnologías, certificarse o conectar con comunidades afines |
-| **Estudiantes de tecnología** | Estudiantes de carreras técnicas, tecnológicas y profesionales en el área de sistemas e informática |
-| **Líderes de comunidad tech** | Personas que organizan y dirigen comunidades tecnológicas locales o virtuales |
-| **Mentores** | Profesionales con experiencia que desean compartir conocimiento a través de sesiones de mentoría |
-| **Administrativos SENA / Instituciones** | Gestores que necesitan supervisar el desempeño y crecimiento de las comunidades |
+| **Desarrolladores / Programadores** | Personas que buscan conectar con comunidades tecnológicas |
+| **Estudiantes de tecnología** | Estudiantes de carreras técnicas y tecnológicas |
+| **Líderes de comunidad tech** | Personas que organizan comunidades tecnológicas locales |
+| **Administrativos SENA / Instituciones** | Gestores que supervisan comunidades |
 
-> 🇨🇴 **País de aplicación: Colombia únicamente.**
-> La plataforma está enfocada exclusivamente en el ecosistema tecnológico colombiano, priorizando comunidades, eventos y mentores del territorio nacional.
+> **País de aplicación: Colombia únicamente.**
 
 ---
 
-## �🏗️ Arquitectura General
+## Arquitectura General
 
 ```
 CTech/
@@ -130,224 +85,201 @@ CTech/
 └── frontend/      → Interfaz web (Astro + Bootstrap 5)
 ```
 
-La arquitectura es una **SPA híbrida desacoplada**:
 - El **backend** expone una API REST en `/api/v1/`.
-- El **frontend** consume la API mediante `fetch` nativo desde el cliente (JavaScript vanilla).
-- La autenticación es **stateless via JWT**, almacenado en `localStorage` con soporte multi-sesión por rol.
+- El **frontend** consume la API con `fetch` nativo desde el cliente.
+- La autenticación es **stateless via JWT**, almacenado en `localStorage`.
 
 ---
 
-## ⚙️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Backend
 
-| Tecnología | Versión | Rol |
-|---|---|---|
-| **Python** | 3.11+ | Lenguaje principal |
-| **FastAPI** | última | Framework web / API REST |
-| **Uvicorn** | última | Servidor ASGI |
-| **SQLAlchemy** | última | ORM (mapeo objeto-relacional) |
-| **PostgreSQL** | 15+ | Base de datos relacional |
-| **psycopg2-binary** | última | Driver PostgreSQL para Python |
-| **python-jose** | última | Generación y validación de JWT |
-| **passlib (bcrypt)** | última | Hashing seguro de contraseñas |
-| **Pydantic / pydantic-settings** | v2 | Validación de datos y settings |
-| **python-dotenv** | última | Gestión de variables de entorno |
-| **Cloudinary** | última | Almacenamiento y gestión de imágenes |
+| Tecnología | Rol |
+|---|---|
+| **Python 3.11+** | Lenguaje principal |
+| **FastAPI** | Framework web / API REST |
+| **SQLAlchemy 2.0** | ORM |
+| **PostgreSQL 15+** | Base de datos relacional |
+| **python-jose** | JWT |
+| **passlib (bcrypt)** | Hashing de contraseñas |
+| **Pydantic v2** | Validación de datos |
+| **Cloudinary** | Almacenamiento de imágenes |
 
 ### Frontend
 
-| Tecnología | Versión | Rol |
-|---|---|---|
-| **Astro** | 5.x | Framework SSG/SSR híbrido |
-| **TypeScript** | 5.x | Tipado estático |
-| **Bootstrap** | 5.3.x | Framework CSS de componentes |
-| **JavaScript (ESM)** | ES2022 | Lógica de cliente (fetch, auth) |
+| Tecnología | Rol |
+|---|---|
+| **Astro 5.x** | Framework SSG/SSR híbrido |
+| **TypeScript 5.x** | Tipado estático |
+| **Bootstrap 5.3** | Framework CSS |
+| **JavaScript ESM** | Lógica de cliente (fetch, auth) |
 
 ---
 
-## 🔐 Sistema de Autenticación y RBAC
+## Sistema de Autenticación y RBAC
 
-- **JWT** con `python-jose` y algoritmo **HS256**. Token con expiración configurable (por defecto 1440 min / 24 h).
-- **Hashing** de contraseñas con **bcrypt** usando `passlib`.
-- **Multi-sesión por rol**: el frontend guarda tokens separados en `localStorage` con clave dinámica por rol (`ctech_token_admin`, `ctech_token_mentor`, etc.).
-- **RBAC (Role-Based Access Control)**: 4 roles definidos en la BD:
-  - `admin` — acceso total al sistema
-  - `leader` — gestión de su comunidad
-  - `mentor` — gestión de mentorías y contenido
-  - `user` — acceso al catálogo y aprendizaje
-- Las rutas del frontend validan el rol activo en cada carga de página mediante `auth.js`.
-- El backend protege endpoints con dependencias FastAPI que extraen y verifican el token JWT del header `Authorization: Bearer`.
-- **Seed automático**: al iniciar el backend, `init_db.py` crea los roles y el usuario administrador si no existen.
+- **JWT** con HS256. Token con expiración configurable (por defecto 24 h).
+- **bcrypt** para hashing de contraseñas.
+- **Token blocklist** para invalidar tokens en logout.
+- **RBAC — 3 roles:**
+  - `admin` (rol_id 1) — acceso total al sistema
+  - `leader` (rol_id 3) — gestión de su comunidad y eventos
+  - `user` (rol_id 4) — acceso a eventos e inscripciones
+- **Seed automático**: `init_db.py` crea roles y usuario admin al iniciar si no existen.
 
 ---
 
-## 🗄️ Base de Datos
+## Base de Datos
 
-- **Motor**: PostgreSQL (conexión configurada por variables de entorno).
-- **ORM**: SQLAlchemy con declarative base.
-- **Migraciones**: directorio `migrations/` disponible.
-- **Tablas principales** (generadas por los modelos de cada módulo):
-  - `users`, `roles`
+- **Motor**: PostgreSQL
+- **ORM**: SQLAlchemy con declarative base
+- **Tablas activas:**
+  - `users`, `roles`, `profiles`
   - `communities`
-  - `events`
-  - `courses`
-  - `mentoring_sessions`
-  - `content`
-  - `specialties`
-  - `technologies`
-  - `metrics`
+  - `events`, `event_registrations`
+  - `notifications`
+  - `token_blocklist`
 
 ---
 
-## 📦 Módulos del Backend (`/api/v1/`)
+## Módulos del Backend (`/api/v1/`)
 
-| Módulo | Prefijo de Ruta | Descripción |
+| Módulo | Prefijo | Descripción |
 |---|---|---|
-| **auth** | `/api/v1/auth` | Login, generación de token JWT |
-| **users** | `/api/v1/users` | CRUD de usuarios y perfiles |
-| **communities** | `/api/v1/communities` | Gestión de comunidades tecnológicas |
-| **events** | `/api/v1/events` | Creación y consulta de eventos |
-| **courses** | `/api/v1/courses` | Cursos y módulos de aprendizaje |
-| **mentoring_sessions** | `/api/v1/mentoring_sessions` | Sesiones de mentoría |
-| **content** | `/api/v1/content` | Contenido educativo / recursos |
-| **metrics** | `/api/v1/metrics` | Indicadores y estadísticas |
-| **specialties** | `/api/v1/specialties` | Especialidades técnicas |
-| **technologies** | `/api/v1/technologies` | Catálogo de tecnologías |
+| **auth** | `/api/v1/auth` | Login, registro, logout, reset de contraseña |
+| **users** | `/api/v1/users` | CRUD usuarios, cambio de rol, perfil |
+| **communities** | `/api/v1/communities` | Gestión de comunidades, logo |
+| **events** | `/api/v1/events` | CRUD eventos, flujo aprobación, inscripciones |
+| **metrics** | `/api/v1/metrics` | Dashboard admin y líder |
+| **notifications** | `/api/v1/notifications` | Notificaciones in-app |
 | **admin** | `/api/v1/admin` | Operaciones exclusivas del administrador |
 
-Cada módulo sigue la estructura:
+### Endpoints de Eventos destacados
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/events/` | Listado con filtros (skip, limit, upcoming_only, community_id, event_type) |
+| `GET` | `/events/pending` | Eventos pendientes de aprobación |
+| `GET` | `/events/upcoming` | Próximos 5 eventos aprobados |
+| `GET` | `/events/my` | Eventos creados por el usuario actual |
+| `GET` | `/events/{id}` | Detalle de un evento |
+| `GET` | `/events/{id}/registration` | Verifica si el usuario está inscrito |
+| `GET` | `/events/{id}/attendees` | Lista de asistentes (líder/admin) |
+| `POST` | `/events/` | Crear evento |
+| `POST` | `/events/upload-image` | Subir imagen (JPG/PNG/WEBP/GIF, máx 5MB) |
+| `PATCH` | `/events/{id}/approve` | Aprobar evento |
+| `PATCH` | `/events/{id}/reject` | Rechazar evento |
+| `POST` | `/events/{id}/register` | Inscribirse a un evento |
+| `DELETE` | `/events/{id}/register` | Cancelar inscripción |
+
+Cada módulo sigue la estructura de 4 capas:
 ```
 módulo/
-├── router.py    → Rutas FastAPI
 ├── models.py    → Modelos SQLAlchemy
 ├── schemas.py   → Schemas Pydantic
-└── service.py   → Lógica de negocio (en algunos módulos)
+├── repository.py → Queries a la DB
+├── service.py   → Lógica de negocio
+└── router.py    → Rutas FastAPI
 ```
 
 ---
 
-## 🖥️ Estructura del Frontend
+## Estructura del Frontend
 
 ### Layouts por Rol
 
-| Layout | Archivo | Uso |
-|---|---|---|
-| **AdminLayout** | `AdminLayout.astro` | Panel de administración |
-| **LeaderLayout** | `LeaderLayout.astro` | Panel de líderes de comunidad |
-| **MentorLayout** | `MentorLayout.astro` | Panel de mentores |
-| **UserLayout** | `UserLayout.astro` | Panel del usuario aprendiz |
-| **MainLayout** | `MainLayout.astro` | Páginas públicas (landing, login) |
+| Layout | Uso |
+|---|---|
+| **AdminLayout** | Panel de administración |
+| **LeaderLayout** | Panel de líderes |
+| **UserLayout** | Panel de usuarios |
+| **MainLayout** | Páginas públicas |
 
 ### Páginas Implementadas
 
 **Admin (`/admin`)**
-- `index.astro` — Dashboard principal con KPIs y tablas
-- `users.astro` — Gestión de usuarios
-- `communities.astro` — Gestión de comunidades
-- `courses.astro` — Gestión de cursos
-- `events/` — Gestión de eventos
-- `leaders.astro` — Gestión de líderes
-- `mentors.astro` — Gestión de mentores
-- `settings.astro` — Configuración del sistema
-- `profile.astro` — Perfil del administrador
-- `showcase.astro` — Vista de muestra de estilos
-
-**Mentor (`/mentor`)**
-- `index.astro` — Dashboard del mentor
-- `sessions.astro`, `profile.astro`, `content.astro`
+- Dashboard con KPIs y gráficas
+- Gestión de usuarios, comunidades, líderes
+- Gestión de eventos + calendario
+- Perfil y configuración
 
 **Leader (`/leader`)**
-- `index.astro` — Dashboard del líder
-- `community.astro` — Vista de comunidad
+- Dashboard con estadísticas de comunidad
+- Gestión de eventos + calendario
+- Gestión de miembros
 
 **User (`/user`)**
-- `index.astro` — Dashboard del usuario
-- `courses.astro`, `events.astro`, `profile.astro`, `calendar.astro`
+- Dashboard, perfil, configuración
+- Eventos y calendario
 
 **Públicas**
-- `index.astro` — Landing page
-- `404.astro` — Página de error
-- `terminos-y-condiciones.astro`
-
-### Componentes
-
-Los componentes están organizados por rol en `src/components/`:
-- `admin/` — Sidebar, Header, modals, tablas
-- `leader/` — Sidebar, Header específico
-- `mentor/` — Sidebar, Header específico
-- `user/` — Sidebar, Header específico
-- `shared/` — Componentes reutilizables entre roles
+- Landing page
+- Reset de contraseña
 
 ### Utilidades del Cliente
 
 | Archivo | Descripción |
 |---|---|
-| `utils/auth.js` | Gestión de sesiones JWT, validación de roles, redirección automática, multi-sesión |
-| `utils/communities-logic.js` | Lógica de negocio del módulo comunidades (CRUD, formularios) |
-| `utils/escape.js` | Helpers para sanitización de HTML |
+| `utils/auth.js` | Gestión JWT, validación de roles, redirección automática |
+| `utils/communities-logic.js` | Lógica CRUD comunidades |
+| `utils/escape.js` | Sanitización de HTML |
 
 ---
 
-## 📁 Estructura del Repositorio
+## Estructura del Repositorio
 
 ```
 CTech/
 ├── backend/
 │   ├── app/
-│   │   ├── core/          → config, database, security, logger, cloudinary
-│   │   ├── db/            → base_api.py (Base SQLAlchemy), init_db.py (seed)
-│   │   ├── modules/       → 11 módulos de negocio
-│   │   ├── tests/         → pruebas
+│   │   ├── core/          → config, database, security, logger, cloudinary, email
+│   │   ├── db/            → base_api.py, init_db.py (seed)
+│   │   ├── modules/       → auth, users, communities, events, metrics, notifications, admin
 │   │   └── main.py        → entry point FastAPI
-│   ├── migrations/
+│   ├── migrations/        → scripts SQL
 │   ├── requirements.txt
 │   ├── .env               → variables de entorno (no commitear)
-│   └── run_backend.bat    → script de inicio rápido (Windows)
+│   └── run_backend.bat    → inicio rápido (Windows)
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/    → componentes por rol
+│   │   ├── components/    → componentes por rol (admin/, leader/, user/, shared/)
 │   │   ├── layouts/       → layouts por rol
 │   │   ├── pages/         → páginas por rol
-│   │   ├── styles/        → estilos globales CSS
+│   │   ├── styles/        → estilos globales
 │   │   ├── utils/         → auth.js, lógica cliente
-│   │   └── config/        → configuración de constantes (API URL, etc.)
+│   │   └── config/        → constantes (API URL)
 │   ├── public/            → assets estáticos
 │   ├── astro.config.mjs
 │   └── package.json
 │
-├── database/              → scripts SQL adicionales
+├── reset_admin.py         → script para recuperar acceso al admin
 └── README.md
 ```
 
 ---
 
-## 🚀 Cómo Levantar el Proyecto
+## Cómo Levantar el Proyecto
 
 ### Backend
 
 ```bash
-# 1. Crear entorno virtual
 cd backend
 python -m venv .venv
 .venv\Scripts\activate
-
-# 2. Instalar dependencias
 pip install -r requirements.txt
 
-# 3. Configurar variables de entorno
+# Configurar variables de entorno
 cp .env.example .env
-# → Editar .env con credenciales de PostgreSQL, JWT secret y Cloudinary
+# Editar .env con credenciales de PostgreSQL, JWT secret, Cloudinary y Gmail
 
-# 4. Iniciar el servidor
 uvicorn app.main:app --reload --port 8000
-# O usar el script:
-run_backend.bat
+# O usar: run_backend.bat
 ```
 
-La API queda disponible en: `http://localhost:8000`
-Documentación interactiva: `http://localhost:8000/docs`
+API disponible en: `http://localhost:8000`
+Documentación: `http://localhost:8000/docs`
 
 ### Frontend
 
@@ -357,11 +289,11 @@ npm install
 npm run dev
 ```
 
-La aplicación queda disponible en: `http://localhost:4321`
+Aplicación disponible en: `http://localhost:4321`
 
 ---
 
-## 🌐 Variables de Entorno
+## Variables de Entorno
 
 ### Backend (`.env`)
 
@@ -381,6 +313,9 @@ ADMIN_PASSWORD=password_segura
 CLOUDINARY_CLOUD_NAME=tu_cloud_name
 CLOUDINARY_API_KEY=tu_api_key
 CLOUDINARY_API_SECRET=tu_api_secret
+
+GMAIL_USER=tu_correo@gmail.com
+GMAIL_APP_PASSWORD=tu_app_password
 ```
 
 ### Frontend (`.env`)
@@ -391,30 +326,27 @@ PUBLIC_API_URL=http://localhost:8000
 
 ---
 
-## ✅ Estado del Proyecto
+## Estado del Proyecto
 
 | Área | Estado |
 |---|---|
-| Estructura de módulos backend | ✅ Completa |
-| Modelos de base de datos | ✅ Completa |
-| Autenticación JWT + bcrypt | ✅ Completa |
-| RBAC (4 roles) | ✅ Completa |
+| Autenticación JWT + bcrypt + blocklist | ✅ Completa |
+| RBAC (3 roles: admin, leader, user) | ✅ Completa |
 | Seed automático de roles/admin | ✅ Completa |
+| CRUD Comunidades | ✅ Completa |
+| Módulo Eventos (CRUD + aprobación + inscripciones) | ✅ Completa |
+| Notificaciones in-app | ✅ Completa |
+| Email de confirmación de inscripción | ✅ Completa |
+| Subida de imágenes (Cloudinary) | ✅ Completa |
+| Métricas admin y líder | ✅ Completa |
 | Panel Admin (UI) | ✅ En uso |
 | Panel Leader (UI) | ✅ En uso |
-| Panel Mentor (UI) | ✅ En uso |
 | Panel User (UI) | ✅ En uso |
 | Landing page pública | ✅ Completa |
-| Sistema multi-sesión frontend | ✅ Completa |
-| Integración Cloudinary | ✅ Configurada |
-| CRUD Comunidades (Admin) | ✅ Funcional |
-| CRUD Líderes (edición parcial PATCH) | ✅ Funcional |
-| Formularios con validación | ✅ Funcional |
-| Pruebas (tests/) | 🔄 En progreso |
 
 ---
 
-## 👥 Equipo
+## Equipo
 
 Proyecto desarrollado como trabajo de grado para el **SENA — Tecnólogo en Análisis y Desarrollo de Software**
 Ficha **2995403**
