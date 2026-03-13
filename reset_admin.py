@@ -1,10 +1,9 @@
 import sys
 import os
 
-# Añadir el path al backend
-sys.path.append(os.path.join(os.getcwd(), 'backend'))
+# Añadir el path al backend usando la ubicación del archivo, no el cwd
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backend'))
 
-from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.modules.users.models import User, Role
 from app.modules.auth.service import get_password_hash
@@ -12,19 +11,21 @@ from app.core.config import get_settings
 
 def reset_admin():
     settings = get_settings()
-    db = SessionLocal()
-    
+
     email = settings.ADMIN_EMAIL
     password = settings.ADMIN_PASSWORD
-    
+
     print(f"Checking for admin: {email}")
-    
+
+    db = SessionLocal()
     try:
         admin_user = db.query(User).filter(User.email == email).first()
-        
+
         if admin_user:
             print(f"Admin found. Resetting password to: {password}")
             admin_user.password_hash = get_password_hash(password)
+            admin_user.status = "active"
+            admin_user.is_email_verified = True
             db.commit()
             print("Password reset successful.")
         else:
@@ -37,7 +38,7 @@ def reset_admin():
                 db.add(admin_role)
                 db.commit()
                 db.refresh(admin_role)
-            
+
             new_admin = User(
                 email=email,
                 password_hash=get_password_hash(password),
@@ -49,7 +50,7 @@ def reset_admin():
             db.add(new_admin)
             db.commit()
             print("Admin created successfully.")
-            
+
     except Exception as e:
         print(f"Error: {e}")
         db.rollback()
