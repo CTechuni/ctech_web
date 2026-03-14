@@ -108,6 +108,33 @@ def reject_event(db: Session, event_id: int):
             )
     return event
 
+def cancel_event(db: Session, event_id: int):
+    event = repository.cancel(db, event_id)
+    if event:
+        # Notificar al creador si no es él quien cancela (opcional, por ahora simple)
+        if event.creator_id:
+            notification_service.add_notification(
+                db,
+                "Evento cancelado 🚫",
+                f"El evento '{event.title}' ha sido cancelado.",
+                "event",
+                recipient_id=event.creator_id
+            )
+    return event
+
+def postpone_event(db: Session, event_id: int):
+    event = repository.postpone(db, event_id)
+    if event:
+        if event.creator_id:
+            notification_service.add_notification(
+                db,
+                "Evento aplazado ⏳",
+                f"El evento '{event.title}' ha sido aplazado. Se informará la nueva fecha próximamente.",
+                "event",
+                recipient_id=event.creator_id
+            )
+    return event
+
 def notify_event_published(db: Session, event):
     """
     Notifica a usuarios sobre un nuevo evento publicado.

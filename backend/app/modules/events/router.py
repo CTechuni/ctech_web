@@ -217,6 +217,36 @@ def reject_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
 
     return service.reject_event(db, event_id)
 
+# ── PATCH cancelar evento ──────────────────────────────────────────────────────
+@router.patch("/{event_id}/cancel", response_model=schemas.EventResponse)
+def cancel_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id not in [1, 3]:
+        raise HTTPException(status_code=403, detail="No tienes permisos para cancelar eventos")
+
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    if current.rol_id == 3 and event.community_id != current.community_id:
+        raise HTTPException(status_code=403, detail="Solo puedes cancelar eventos de tu comunidad")
+
+    return service.cancel_event(db, event_id)
+
+# ── PATCH aplazar evento ───────────────────────────────────────────────────────
+@router.patch("/{event_id}/postpone", response_model=schemas.EventResponse)
+def postpone_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    if current.rol_id not in [1, 3]:
+        raise HTTPException(status_code=403, detail="No tienes permisos para aplazar eventos")
+
+    event = repository.get_by_id(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+
+    if current.rol_id == 3 and event.community_id != current.community_id:
+        raise HTTPException(status_code=403, detail="Solo puedes aplazar eventos de tu comunidad")
+
+    return service.postpone_event(db, event_id)
+
 # ── POST registrarse a un evento ──────────────────────────────────────────────
 @router.post("/{event_id}/register")
 def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):

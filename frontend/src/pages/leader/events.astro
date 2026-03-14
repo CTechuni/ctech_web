@@ -641,27 +641,36 @@ function renderPending() {
                 </div>
             </div>
             <div class="pending-actions">
-                <button class="btn-approve" onclick="approveEvent(${ev.id})"><i class="fa-solid fa-check"></i> Aprobar</button>
-                <button class="btn-reject"  onclick="rejectEvent(${ev.id})"><i class="fa-solid fa-times"></i> Rechazar</button>
+                <span class="status-msg pending"><i class="fa-solid fa-clock"></i> Esperando aprobación del administrador</span>
             </div>
         </div>`;
     }).join('');
 }
 
-window.approveEvent = async function(id) {
-    if (!confirm('¿Aprobar este evento? Se publicará en la comunidad.')) return;
+// Los líderes ya no pueden aprobar/rechazar desde su interfaz, 
+// pero mantenemos las funciones vacías o las eliminamos si no se usan más.
+// El Admin se encargará de esto ahora.
+
+window.postponeEvent = async function(id) {
+    if (!confirm('¿Deseas aplazar este evento? Se notificará a los inscritos.')) return;
     try {
-        const result = await AuthManager.fetch(`/events/${id}/approve`, { method: 'PATCH' });
-        if (result) { pendingEvents = pendingEvents.filter(e => e.id !== id); allEvents.push(result); renderPending(); renderGrid(); }
-    } catch(e) { alert('Error al aprobar: ' + e.message); }
+        const result = await AuthManager.fetch(`/events/${id}/postpone`, { method: 'PATCH' });
+        if (result) {
+            allEvents = allEvents.map(e => e.id === id ? { ...e, status: 'postponed' } : e);
+            renderGrid();
+        }
+    } catch(e) { alert('Error al aplazar: ' + e.message); }
 };
 
-window.rejectEvent = async function(id) {
-    if (!confirm('¿Rechazar este evento? Se notificará al mentor.')) return;
+window.cancelEvent = async function(id) {
+    if (!confirm('¿ESTÁS SEGURO de cancelar este evento? Esta acción no se puede deshacer.')) return;
     try {
-        const result = await AuthManager.fetch(`/events/${id}/reject`, { method: 'PATCH' });
-        if (result) { pendingEvents = pendingEvents.filter(e => e.id !== id); renderPending(); }
-    } catch(e) { alert('Error al rechazar: ' + e.message); }
+        const result = await AuthManager.fetch(`/events/${id}/cancel`, { method: 'PATCH' });
+        if (result) {
+            allEvents = allEvents.filter(e => e.id !== id);
+            renderGrid();
+        }
+    } catch(e) { alert('Error al cancelar: ' + e.message); }
 };
 
 // ── Grid ──────────────────────────────────────────────────────────────────────
@@ -716,7 +725,8 @@ function renderGrid() {
                 </div>
                 <div class="card-actions">
                     <button class="btn-ic" onclick="openEdit(${ev.id})" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                    <button class="btn-ic del" onclick="deleteEvent(${ev.id})" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn-ic" onclick="postponeEvent(${ev.id})" title="Aplazar"><i class="fa-solid fa-hourglass-start"></i></button>
+                    <button class="btn-ic del" onclick="cancelEvent(${ev.id})" title="Cancelar/Eliminar"><i class="fa-solid fa-ban"></i></button>
                 </div>
             </div>
             ${imgHtml}

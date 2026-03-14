@@ -123,6 +123,12 @@ def approve(db: Session, event_id: int):
 def reject(db: Session, event_id: int):
     return update(db, event_id, {"status": "rejected"})
 
+def cancel(db: Session, event_id: int):
+    return update(db, event_id, {"status": "cancelled"})
+
+def postpone(db: Session, event_id: int):
+    return update(db, event_id, {"status": "postponed"})
+
 def get_upcoming(db: Session, limit: int = 5, public_only: bool = False):
     from datetime import date
     today = date.today()
