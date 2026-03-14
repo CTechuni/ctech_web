@@ -101,9 +101,8 @@
 }
 ```
 
-| `GET` | `/metrics/admin` | 👑 | Retorna métricas del dashboard administrativo |
+| `GET` | `/metrics/admin` | 🔐 | Retorna métricas del dashboard administrativo |
 | `GET` | `/metrics/community/{community_id}` | 🔐 | Retorna métricas de una comunidad. Acceso: 👑 admin (cualquier comunidad) o líder solo de su propia comunidad |
-
 ---
 
 ## 🔔 Notifications — `/api/v1/notifications`

@@ -39,3 +39,7 @@ class Settings(BaseSettings):
 
 def get_settings():
     return Settings()
+<<<<<<< HEAD
+=======
+    
+>>>>>>> origin/main

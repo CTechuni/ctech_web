@@ -142,6 +142,7 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
         raise HTTPException(status_code=403, detail="No tienes permisos para crear eventos")
 
     if current.rol_id == 3:
+    if current.rol_id == 3:
         # El líder siempre crea eventos en su propia comunidad
         data = data.model_copy(update={"community_id": current.community_id})
 
@@ -160,7 +161,6 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
         auto_approve = True
 
     event = service.create_event(db, data, auto_approve=auto_approve)
-
     return event
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────

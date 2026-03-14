@@ -288,7 +288,11 @@
     }
 
     .role-badge.admin   { background: #FEF3C7; color: #D97706; }
+<<<<<<< HEAD
 
+=======
+    .role-badge.mentor  { background: #F5F3FF; color: #7C3AED; }
+>>>>>>> origin/main
     .role-badge.leader  { background: #ECFDF5; color: #059669; }
     .role-badge.user    { background: #EFF6FF; color: #2563EB; }
 
@@ -322,11 +326,27 @@
         height: 18px !important;
     }
 
+<<<<<<< HEAD
+=======
+    .promote-btn:hover {
+        color: #3b82f6;
+        background: #eff6ff;
+    }
+
+>>>>>>> origin/main
     .delete-btn:hover {
         color: #ef4444;
         background: #fef2f2;
     }
 
+<<<<<<< HEAD
+=======
+    .demote-btn:hover {
+        color: #f97316;
+        background: #fff7ed;
+    }
+
+>>>>>>> origin/main
     /* PAGINATION */
     .table-pagination {
         padding: 1.25rem 1.5rem;
@@ -464,6 +484,52 @@
     const limit = 6;
     let currentUsersList = [];
     let communities = [];
+<<<<<<< HEAD
+=======
+    let specialties = [];
+
+    // Modal Promotion Refs
+    const confirmModal = document.getElementById('confirmPromoteModal');
+    const confirmModalText = document.getElementById('confirmModalText');
+    const promoteSpecialtySelect = document.getElementById('promoteSpecialtySelect') as HTMLSelectElement;
+    const acceptPromoteBtn = document.getElementById('acceptPromoteBtn') as HTMLButtonElement;
+    const cancelPromoteBtn = document.getElementById('cancelPromoteBtn');
+    let userToPromoteId = null;
+
+    // Modal Demotion Refs
+    const demoteModal = document.getElementById('confirmDemoteModal');
+    const demoteModalText = document.getElementById('confirmDemoteModalText');
+    const acceptDemoteBtn = document.getElementById('acceptDemoteBtn') as HTMLButtonElement;
+    const cancelDemoteBtn = document.getElementById('cancelDemoteBtn');
+    let userToDemoteId = null;
+
+    function openConfirmPromote(id, name) {
+        userToPromoteId = id;
+        if (confirmModalText) confirmModalText.textContent = `¿Quieres asignar a ${name} como mentor?`;
+        confirmModal?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmPromote() {
+        confirmModal?.classList.remove('active');
+        document.body.style.overflow = '';
+        userToPromoteId = null;
+        if (promoteSpecialtySelect) promoteSpecialtySelect.value = "";
+    }
+
+    function openConfirmDemote(id, name) {
+        userToDemoteId = id;
+        if (demoteModalText) demoteModalText.textContent = `¿Quieres designar a ${name} a usuario?`;
+        demoteModal?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmDemote() {
+        demoteModal?.classList.remove('active');
+        document.body.style.overflow = '';
+        userToDemoteId = null;
+    }
+>>>>>>> origin/main
 
     async function fetchData(page = 1) {
         try {
@@ -473,16 +539,23 @@
 
             const roleVal = (document.getElementById('roleFilter') as HTMLSelectElement)?.value || 'all';
             const searchVal = (document.getElementById('userSearch') as HTMLInputElement)?.value || '';
+<<<<<<< HEAD
             const [resp, communitiesData] = await Promise.all([
                 AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
                 AuthManager.fetch('/communities'),
             ]);
 
-            currentUsersList = resp.users || [];
-            totalUsers = resp.total || 0;
-            currentPage = page;
+=======
+            const [resp, communitiesData, specialtiesData] = await Promise.all([
+                AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
+                AuthManager.fetch('/communities'),
+                AuthManager.fetch('/specialties/')
+            ]);
+            
             communities = Array.isArray(communitiesData) ? communitiesData : [];
-
+            specialties = Array.isArray(specialtiesData) ? specialtiesData : [];
+            
+            populateSpecialtySelect();
             renderUsers(currentUsersList);
             updatePaginationUI();
         } catch (error) {
@@ -490,9 +563,20 @@
         }
     }
 
+    function populateSpecialtySelect() {
+        if (!promoteSpecialtySelect) return;
+        const currentVal = promoteSpecialtySelect.value;
+        let html = '<option value="" disabled selected>Selecciona una especialidad</option>';
+        specialties.forEach(s => {
+            html += `<option value="${s.id}">${s.name}</option>`;
+        });
+        promoteSpecialtySelect.innerHTML = html;
+        promoteSpecialtySelect.value = currentVal;
+    }
 
     const ROLE_MAP = {
         1: 'admin',
+        2: 'mentor',
         3: 'leader',
         4: 'user'
     };
@@ -543,6 +627,20 @@
                     <td><span class="text-muted" style="font-size: 0.82rem;">${regDate}</span></td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
+                            ${role === 'user' ? `
+                                <button class="leader-action-btn promote-btn" data-id="${u.id}" data-name="${u.name_user}" title="Asignar como Mentor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                                    </svg>
+                                </button>
+                            ` : ''}
+                            ${role === 'mentor' ? `
+                                <button class="leader-action-btn demote-btn" data-id="${u.id}" data-name="${u.name_user}" title="Designar a Usuario">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;">
+                                      <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 4.5-15 15m0 0h11.25m-11.25 0V8.25" />
+                                    </svg>
+                                </button>
+                            ` : ''}
                             ${role !== 'admin' ? `
                                 <button class="leader-action-btn delete-btn" data-id="${u.id}" data-name="${u.name_user}" title="Eliminar Usuario">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1 -2.244 2.077H8.084a2.25 2.25 0 0 1 -2.244 -2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0 -3.478 -.397m-12 .562c.34 -.059.68 -.114 1.022 -.165m0 0a48.11 48.11 0 0 1 3.478 -.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0 -3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0 -7.5 0"/></svg>
@@ -624,12 +722,31 @@
         }
     }
 
+<<<<<<< HEAD
+=======
+    async function promoteUser(id, name) {
+        openConfirmPromote(id, name);
+    }
+
+>>>>>>> origin/main
     // Event Listeners
     document.getElementById('usersBody')?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
         const deleteBtn = target.closest('.delete-btn') as HTMLElement;
+<<<<<<< HEAD
         if (deleteBtn) {
             deleteUser(Number(deleteBtn.dataset.id), deleteBtn.dataset.name);
+=======
+        const promoteBtn = target.closest('.promote-btn') as HTMLElement;
+        const demoteBtn = target.closest('.demote-btn') as HTMLElement;
+
+        if (deleteBtn) {
+            deleteUser(Number(deleteBtn.dataset.id), deleteBtn.dataset.name);
+        } else if (promoteBtn) {
+            promoteUser(Number(promoteBtn.dataset.id), promoteBtn.dataset.name);
+        } else if (demoteBtn) {
+            openConfirmDemote(Number(demoteBtn.dataset.id), demoteBtn.dataset.name);
+>>>>>>> origin/main
         }
     });
 
@@ -645,5 +762,52 @@
     document.getElementById('userSearch')?.addEventListener('input', applyFilters);
     document.getElementById('roleFilter')?.addEventListener('change', applyFilters);
 
+<<<<<<< HEAD
+=======
+    acceptPromoteBtn?.addEventListener('click', async () => {
+        if (!userToPromoteId) return;
+        
+        const specialtyId = promoteSpecialtySelect?.value;
+        if (!specialtyId) {
+            alert('Por favor, selecciona una especialidad para el mentor');
+            return;
+        }
+
+        try {
+            acceptPromoteBtn.disabled = true;
+            await AuthManager.fetch(`/users/${userToPromoteId}/promote`, { 
+                method: 'PATCH',
+                body: JSON.stringify({ specialty_id: specialtyId })
+            });
+            closeConfirmPromote();
+            fetchData(currentPage);
+            alert('El usuario ha sido asignado como mentor con su especialidad correctamente.');
+        } catch (e) {
+            alert('Error al asignar mentor: ' + e.message);
+        } finally {
+            acceptPromoteBtn.disabled = false;
+        }
+    });
+
+    acceptDemoteBtn?.addEventListener('click', async () => {
+        if (!userToDemoteId) return;
+        try {
+            acceptDemoteBtn.disabled = true;
+            acceptDemoteBtn.textContent = 'Procesando...';
+            await AuthManager.fetch(`/users/${userToDemoteId}/demote`, { method: 'PATCH' });
+            closeConfirmDemote();
+            fetchData(currentPage);
+        } catch (e) {
+            alert('Error al designar mentor: ' + e.message);
+        } finally {
+            acceptDemoteBtn.disabled = false;
+            acceptDemoteBtn.textContent = 'Designar';
+        }
+    });
+
+    cancelPromoteBtn?.addEventListener('click', closeConfirmPromote);
+    cancelDemoteBtn?.addEventListener('click', closeConfirmDemote);
+
+>>>>>>> origin/main
     fetchData();
 </script>
