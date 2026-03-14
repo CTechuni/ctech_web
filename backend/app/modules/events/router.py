@@ -5,6 +5,12 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.auth.router import get_current_user
 from . import schemas, service, repository
+from app.modules.notifications.service import add_notification
+from app.core.email_service import email_service
+from app.modules.communities.models import Community
+from app.modules.users.models import User
+from app.core.cloudinary_service import upload_image
+import io
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
@@ -93,7 +99,6 @@ def get_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_
         if event.status != "approved":
             raise HTTPException(status_code=404, detail="Evento no encontrado")
 
-    from app.modules.communities.models import Community
     comm = db.query(Community).filter(Community.id_community == event.community_id).first()
     event.community_name = comm.name_community if comm else None
     event.registered_count = repository.count_registrations(db, event_id)
@@ -111,7 +116,6 @@ def check_registration(event_id: int, db: Session = Depends(get_db), current=Dep
 # ── POST subir imagen de evento ────────────────────────────────────────────────
 @router.post("/upload-image")
 async def upload_event_image(file: UploadFile = File(...), current=Depends(get_current_user)):
-    from app.core.cloudinary_service import upload_image
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para subir imágenes")
 
@@ -124,7 +128,6 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
     if len(contents) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=400, detail=f"La imagen no puede superar {MAX_SIZE_MB}MB")
 
-    import io
     url = upload_image(io.BytesIO(contents), folder="events")
     if not url:
         raise HTTPException(status_code=500, detail="Error al subir la imagen a Cloudinary")
@@ -141,7 +144,6 @@ def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), curre
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para crear eventos")
 
-    if current.rol_id == 3:
     if current.rol_id == 3:
         # El líder siempre crea eventos en su propia comunidad
         data = data.model_copy(update={"community_id": current.community_id})
@@ -218,9 +220,6 @@ def reject_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
 # ── POST registrarse a un evento ──────────────────────────────────────────────
 @router.post("/{event_id}/register")
 def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    from app.modules.users.models import User
-    from app.modules.communities.models import Community
-    from app.modules.notifications.service import add_notification
 
     # Valida duplicado, capacidad y status — lanza HTTPException si falla
     service.register_user_to_event(db, event_id, current.id)
@@ -230,7 +229,6 @@ def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Sess
     community = db.query(Community).filter(Community.id_community == event.community_id).first()
 
     # Email de confirmación al usuario
-    from app.core.email_service import email_service
     background_tasks.add_task(
         email_service.send_event_registration_email,
         recipient_email=user.email,

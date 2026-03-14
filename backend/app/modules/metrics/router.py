@@ -33,3 +33,15 @@ def get_community_metrics(community_id: int, db: Session = Depends(get_db), curr
 
     # Otros roles no tienen acceso
     raise HTTPException(status_code=403, detail="No tienes permisos para ver métricas de comunidad")
+
+@router.get("/me")
+def get_my_metrics(db: Session = Depends(get_db), current=Depends(get_current_user)):
+    from app.modules.events.repository import count_user_registrations
+    events_count = count_user_registrations(db, current.id)
+    
+    # Por ahora, cursos y completados son 0 ya que el módulo de cursos no está implementado
+    return {
+        "inscribed_courses": 0,
+        "completed_courses": 0,
+        "events_count": events_count
+    }

@@ -168,6 +168,11 @@ def count_registrations(db: Session, event_id: int) -> int:
         models.EventRegistration.event_id == event_id
     ).count()
 
+def count_user_registrations(db: Session, user_id: int) -> int:
+    return db.query(models.EventRegistration).filter(
+        models.EventRegistration.user_id == user_id
+    ).count()
+
 def create_registration(db: Session, event_id: int, user_id: int):
     reg = models.EventRegistration(event_id=event_id, user_id=user_id)
     db.add(reg)
