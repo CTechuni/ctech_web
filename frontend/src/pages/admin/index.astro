@@ -249,14 +249,34 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
     async function loadStats() {
         console.log('[Dashboard] Intentando obtener métricas de /metrics/admin...');
+
+        // Log de token actual para verificar auth
+        const rawToken = sessionStorage.getItem('authToken');
+        console.log(
+            '[Dashboard] Token presente:',
+            !!rawToken,
+            rawToken ? rawToken.slice(0, 20) + '...' : 'sin token'
+        );
+
         try {
             const data = await AuthManager.fetch('/metrics/admin');
-            console.log('[Dashboard] Datos recibidos:', data);
+            console.log('[Dashboard] Datos recibidos de /metrics/admin:', data);
             
             if (data) {
+                console.log(
+                    '[Dashboard] Campos métricas:',
+                    'total_users=', data.total_users,
+                    'total_communities=', data.total_communities,
+                    'active_events=', data.active_events,
+                    'role_distribution=', data.role_distribution,
+                    'community_distribution=', data.community_distribution,
+                    'user_growth=', data.user_growth,
+                );
+
                 // Actualizar contadores
                 const updateCounter = (id, value) => {
                     const el = document.getElementById(id);
+                    console.log('[Dashboard] Actualizando card', id, 'con valor', value, 'elemento encontrado?', !!el);
                     if (el) {
                         el.textContent = value !== undefined ? value.toString() : '0';
                     }
@@ -266,6 +286,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 updateCounter('totalCommunities', data.total_communities);
                 updateCounter('totalEvents', data.active_events);
                 
+                console.log('[Dashboard] Enviando datos a initCharts:', {
+                    user_growth: data.user_growth,
+                    role_distribution: data.role_distribution,
+                    community_distribution: data.community_distribution,
+                });
                 // Inicializar gráficas con datos reales
                 initCharts(data);
             } else {
@@ -274,8 +299,9 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
             }
 
             // Cargar Eventos
-            console.log('[Dashboard] Intentando obtener eventos...');
+            console.log('[Dashboard] Intentando obtener eventos de /events/ ...');
             const events = await AuthManager.fetch('/events/');
+            console.log('[Dashboard] Eventos recibidos (length):', Array.isArray(events) ? events.length : 'no array');
             renderEvents(events);
         } catch (e) { 
             console.error('[Dashboard] Error fatal al cargar estadísticas:', e);
@@ -325,7 +351,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     }
 
     function initCharts(apiData = null) {
-        console.log('[Dashboard] Inicializando gráficas...');
+        console.log('[Dashboard] Inicializando gráficas con apiData:', apiData);
         // @ts-ignore
         const ChartLib = window.Chart;
         if (!ChartLib) {
@@ -351,6 +377,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
 
         const growthLabels = getLast7Months();
         const growthData = apiData?.user_growth || [0, 0, 0, 0, 0, 0, 0];
+        console.log('[Dashboard] user_growth usado en línea:', growthData);
 
         new ChartLib(growthCtx, {
             type: 'line',
@@ -420,6 +447,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         
         const roleLabels = apiData?.role_distribution ? Object.keys(apiData.role_distribution) : ['Usuarios', 'Mentores', 'Líderes'];
         const roleValues = apiData?.role_distribution ? Object.values(apiData.role_distribution) : [0, 0, 0];
+        console.log('[Dashboard] role_distribution usado en doughnut:', { roleLabels, roleValues });
 
         new ChartLib(roleCtx, {
             type: 'doughnut',
@@ -447,6 +475,7 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
         
         const commLabels = apiData?.community_distribution ? Object.keys(apiData.community_distribution) : ['Sin datos'];
         const commValues = apiData?.community_distribution ? Object.values(apiData.community_distribution) : [0];
+        console.log('[Dashboard] community_distribution usado en barras:', { commLabels, commValues });
 
         new ChartLib(commCtx, {
             type: 'bar',

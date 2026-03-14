@@ -8,7 +8,12 @@ def get_counts(db: Session):
     # Conteos básicos
     # Cambiamos para contar todos los usuarios en el sistema para el admin
     total_users = db.query(User).count()
-    total_communities = db.query(Community).filter(Community.status_community == 'Activo').count()
+    # Contar comunidades activas (normalizando mayúsculas/minúsculas e idioma)
+    # Acepta variantes como: 'Activo', 'ACTIVO', 'active', 'ACTIVE', etc.
+    status_normalized = func.lower(Community.status_community)
+    total_communities = db.query(Community).filter(
+        status_normalized.in_(["activo", "active"])
+    ).count()
     active_events = db.query(Event).count()
 
     print(f"[Metrics] Admin Dashboard - Users: {total_users}, Communities: {total_communities}, Events: {active_events}")
