@@ -132,22 +132,35 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
 
 # ── POST crear evento ──────────────────────────────────────────────────────────
 # Admin(1), líder(3), pueden crear eventos
-# líder se auto-asignan a su comunidad
-# Líder: evento se aprueba automáticamente
+# Líder se auto-asigna a su comunidad
+# Regla de negocio:
+# - Eventos PRIVADOS → se aprueban automáticamente (admin o líder)
+# - Eventos PÚBLICOS → si los crea un líder quedan pendientes; si los crea el admin se aprueban al crearse
 @router.post("/", response_model=schemas.EventResponse)
 def create_event(data: schemas.EventCreate, db: Session = Depends(get_db), current=Depends(get_current_user)):
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para crear eventos")
 
     if current.rol_id == 3:
+        # El líder siempre crea eventos en su propia comunidad
         data = data.model_copy(update={"community_id": current.community_id})
 
+    # Asignar creador
     data = data.model_copy(update={"creator_id": current.id})
 
-    # Líder y admin: el evento se aprueba automáticamente
-    auto_approve = current.rol_id in [1, 3]
+    # Determinar si se auto-aprueba según visibilidad y rol
+    visibility = data.visibility or "publico"
+    auto_approve = False
+
+    # Eventos privados: siempre auto-aprobados
+    if visibility == "privado":
+        auto_approve = True
+    # Eventos públicos: solo el admin los puede auto-aprobar al crearlos
+    elif visibility == "publico" and current.rol_id == 1:
+        auto_approve = True
+
     event = service.create_event(db, data, auto_approve=auto_approve)
-    
+
     return event
 
 # ── PUT editar evento ──────────────────────────────────────────────────────────
@@ -171,30 +184,34 @@ def update_event(event_id: int, data: schemas.EventUpdate, db: Session = Depends
 # ── PATCH aprobar evento ───────────────────────────────────────────────────────
 @router.patch("/{event_id}/approve", response_model=schemas.EventResponse)
 def approve_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id not in [1, 3]:
-        raise HTTPException(status_code=403, detail="Solo líder o admin puede aprobar eventos")
+    # Solo el administrador puede aprobar eventos
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede aprobar eventos")
 
     event = repository.get_by_id(db, event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
 
-    if current.rol_id == 3 and event.community_id != current.community_id:
-        raise HTTPException(status_code=403, detail="Solo puedes aprobar eventos de tu comunidad")
+    # Solo tiene sentido aprobar eventos públicos que estén pendientes
+    if event.visibility != "publico" or event.status != "pending":
+        raise HTTPException(status_code=400, detail="Solo se pueden aprobar eventos públicos en estado pendiente")
 
     return service.approve_event(db, event_id)
 
 # ── PATCH rechazar evento ──────────────────────────────────────────────────────
 @router.patch("/{event_id}/reject", response_model=schemas.EventResponse)
 def reject_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    if current.rol_id not in [1, 3]:
-        raise HTTPException(status_code=403, detail="Solo líder o admin puede rechazar eventos")
+    # Solo el administrador puede rechazar eventos
+    if current.rol_id != 1:
+        raise HTTPException(status_code=403, detail="Solo el administrador puede rechazar eventos")
 
     event = repository.get_by_id(db, event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Evento no encontrado")
 
-    if current.rol_id == 3 and event.community_id != current.community_id:
-        raise HTTPException(status_code=403, detail="Solo puedes rechazar eventos de tu comunidad")
+    # Solo tiene sentido rechazar eventos públicos que estén pendientes
+    if event.visibility != "publico" or event.status != "pending":
+        raise HTTPException(status_code=400, detail="Solo se pueden rechazar eventos públicos en estado pendiente")
 
     return service.reject_event(db, event_id)
 
