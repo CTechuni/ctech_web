@@ -247,7 +247,6 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     }
 
     async function loadHeaderProfile() {
-    async function loadHeaderProfile() {
         const user = authManager.getUser();
         if (!user) return;
         applyUser(user);

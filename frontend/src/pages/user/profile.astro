@@ -295,7 +295,7 @@ const title = "Mi Perfil";
     <script>
         import { authManager } from "../../utils/auth.js";
 
-        function loadUserProfile() {
+        async function loadUserProfile() {
             const user = authManager.getUser();
             if (user) {
                 // Update text content
@@ -314,14 +314,21 @@ const title = "Mi Perfil";
                 if (emailInput) emailInput.value = user.email || '';
                 if (communityInput) communityInput.value = user.community_name || 'General';
 
-                // Simulated stats (to be replaced with actual API call)
-                const statInscribed = document.getElementById('statInscribed');
-                const statCompleted = document.getElementById('statCompleted');
-                const statEvents = document.getElementById('statEvents');
+                // Fetch real stats
+                try {
+                    const stats = await AuthManager.fetch('/metrics/me');
+                    if (stats) {
+                        const statInscribed = document.getElementById('statInscribed');
+                        const statCompleted = document.getElementById('statCompleted');
+                        const statEvents = document.getElementById('statEvents');
 
-                if (statInscribed) statInscribed.textContent = "12";
-                if (statCompleted) statCompleted.textContent = "4";
-                if (statEvents) statEvents.textContent = "8";
+                        if (statInscribed) statInscribed.textContent = String(stats.inscribed_courses || 0);
+                        if (statCompleted) statCompleted.textContent = String(stats.completed_courses || 0);
+                        if (statEvents) statEvents.textContent = String(stats.events_count || 0);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user stats:', error);
+                }
             }
         }
 

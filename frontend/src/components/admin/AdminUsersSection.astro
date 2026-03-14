@@ -288,11 +288,7 @@
     }
 
     .role-badge.admin   { background: #FEF3C7; color: #D97706; }
-<<<<<<< HEAD
-
-=======
     .role-badge.mentor  { background: #F5F3FF; color: #7C3AED; }
->>>>>>> origin/main
     .role-badge.leader  { background: #ECFDF5; color: #059669; }
     .role-badge.user    { background: #EFF6FF; color: #2563EB; }
 
@@ -326,27 +322,21 @@
         height: 18px !important;
     }
 
-<<<<<<< HEAD
-=======
     .promote-btn:hover {
         color: #3b82f6;
         background: #eff6ff;
     }
 
->>>>>>> origin/main
     .delete-btn:hover {
         color: #ef4444;
         background: #fef2f2;
     }
 
-<<<<<<< HEAD
-=======
     .demote-btn:hover {
         color: #f97316;
         background: #fff7ed;
     }
 
->>>>>>> origin/main
     /* PAGINATION */
     .table-pagination {
         padding: 1.25rem 1.5rem;
@@ -484,8 +474,6 @@
     const limit = 6;
     let currentUsersList = [];
     let communities = [];
-<<<<<<< HEAD
-=======
     let specialties = [];
 
     // Modal Promotion Refs
@@ -529,7 +517,6 @@
         document.body.style.overflow = '';
         userToDemoteId = null;
     }
->>>>>>> origin/main
 
     async function fetchData(page = 1) {
         try {
@@ -539,13 +526,6 @@
 
             const roleVal = (document.getElementById('roleFilter') as HTMLSelectElement)?.value || 'all';
             const searchVal = (document.getElementById('userSearch') as HTMLInputElement)?.value || '';
-<<<<<<< HEAD
-            const [resp, communitiesData] = await Promise.all([
-                AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
-                AuthManager.fetch('/communities'),
-            ]);
-
-=======
             const [resp, communitiesData, specialtiesData] = await Promise.all([
                 AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
                 AuthManager.fetch('/communities'),
@@ -722,21 +702,14 @@
         }
     }
 
-<<<<<<< HEAD
-=======
     async function promoteUser(id, name) {
         openConfirmPromote(id, name);
     }
 
->>>>>>> origin/main
     // Event Listeners
     document.getElementById('usersBody')?.addEventListener('click', (e) => {
         const target = e.target as HTMLElement;
         const deleteBtn = target.closest('.delete-btn') as HTMLElement;
-<<<<<<< HEAD
-        if (deleteBtn) {
-            deleteUser(Number(deleteBtn.dataset.id), deleteBtn.dataset.name);
-=======
         const promoteBtn = target.closest('.promote-btn') as HTMLElement;
         const demoteBtn = target.closest('.demote-btn') as HTMLElement;
 
@@ -746,7 +719,6 @@
             promoteUser(Number(promoteBtn.dataset.id), promoteBtn.dataset.name);
         } else if (demoteBtn) {
             openConfirmDemote(Number(demoteBtn.dataset.id), demoteBtn.dataset.name);
->>>>>>> origin/main
         }
     });
 
@@ -762,8 +734,6 @@
     document.getElementById('userSearch')?.addEventListener('input', applyFilters);
     document.getElementById('roleFilter')?.addEventListener('change', applyFilters);
 
-<<<<<<< HEAD
-=======
     acceptPromoteBtn?.addEventListener('click', async () => {
         if (!userToPromoteId) return;
         
@@ -808,6 +778,5 @@
     cancelPromoteBtn?.addEventListener('click', closeConfirmPromote);
     cancelDemoteBtn?.addEventListener('click', closeConfirmDemote);
 
->>>>>>> origin/main
     fetchData();
 </script>

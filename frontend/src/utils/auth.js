@@ -131,7 +131,6 @@ export class AuthManager {
         });
     }
 
-<<<<<<< HEAD
     async logout(reason = '') {
         const token = this.getToken();
         if (token) {
@@ -142,9 +141,6 @@ export class AuthManager {
                 });
             } catch { /* silencioso — igual limpiamos la sesión local */ }
         }
-=======
-    logout(reason = '') {
->>>>>>> origin/main
         this.clearAuthData();
         window.location.href = reason === 'inactivity' ? '/?reason=inactivity' : '/';
     }
