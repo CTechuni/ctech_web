@@ -246,16 +246,6 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         if (comm && user.community_name) comm.textContent = user.community_name;
     }
 
-    async function loadHeaderProfile() {
-        applyUser(authManager.getUser());
-        try {
-            const fresh = await AuthManager.fetch('/users/me');
-            if (fresh) {
-                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'user' });
-                applyUser(fresh);
-            }
-        } catch (_) {}
-    }
 
     // ── Notificaciones ────────────────────────────────────────────────────────
     let notifications = [];

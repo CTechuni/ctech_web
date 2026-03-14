@@ -431,9 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const userData = {
-                community_id: community,      
-                inviteCode,
-                fullName,
+                community_id: parseInt(community, 10),      
+                invite_code: inviteCode,
+                name_user: fullName,
                 email,
                 password
             };

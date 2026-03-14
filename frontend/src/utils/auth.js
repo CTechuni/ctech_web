@@ -185,7 +185,10 @@ export class AuthManager {
             }
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
-                throw new Error(error.detail || `Error ${response.status}`);
+                const detail = Array.isArray(error.detail)
+                    ? error.detail.map(e => e.msg).join(', ')
+                    : (error.detail || `Error ${response.status}`);
+                throw new Error(detail);
             }
 
             const contentType = response.headers.get('content-type') || '';
