@@ -21,8 +21,11 @@ def get_all(db: Session, user_id: int = None, is_admin: bool = False, limit: int
         
     return query.order_by(models.Notification.created_at.desc()).limit(limit).all()
 
-def mark_as_read(db: Session, notification_id: int):
-    notification = db.query(models.Notification).filter(models.Notification.id == notification_id).first()
+def mark_as_read(db: Session, notification_id: int, user_id: int):
+    notification = db.query(models.Notification).filter(
+        models.Notification.id == notification_id,
+        models.Notification.recipient_id == user_id
+    ).first()
     if notification:
         notification.is_read = True
         db.commit()

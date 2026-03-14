@@ -14,7 +14,7 @@ def get_notifications(db: Session = Depends(get_db), current_user = Depends(get_
 
 @router.patch("/{id}/read", response_model=schemas.NotificationResponse)
 def mark_as_read(id: int, db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):
-    return service.mark_as_read(db, id)
+    return service.mark_as_read(db, id, current_user.id)
 
 @router.post("/read-all")
 def mark_all_as_read(db: Session = Depends(get_db), current_user = Depends(get_current_active_user)):

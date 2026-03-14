@@ -2,10 +2,6 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, DateT
 
 from app.core.database import Base
 
-def jls_extract_def():
-    # role, event
-    return 
-
 
 class Notification(Base):
 
