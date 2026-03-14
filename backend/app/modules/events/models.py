@@ -10,7 +10,7 @@ class Event(Base):
     description = Column(Text, name="description_event")
     event_date = Column(Date, name="date_events")
     event_time = Column(Time, name="time_events")
-    location = Column(String(255), name="place")
+    location = Column(Text, name="place")
     image_url = Column(Text, name="image")
     status = Column(String(50), default="pending")   # draft | pending | approved | rejected
     visibility = Column(String(20), default="publico") # publico | privado
