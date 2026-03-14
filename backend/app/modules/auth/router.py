@@ -29,22 +29,17 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
     if data.invite_code != 'ADMIN_CREATE' and community.code != data.invite_code:
         raise HTTPException(status_code=400, detail="El código de invitación es incorrecto para esta comunidad")
 
-    # 4. Crear Usuario
+    # 4. Crear Usuario (registro público siempre crea rol estándar = 4)
     new_user = models.User(
         email=data.email,
         password_hash=service.get_password_hash(data.password),
         name_user=data.name_user,
-        rol_id=4, # Público siempre es User estándar
+        rol_id=4,  # Público siempre es User estándar
         community_id=data.community_id
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-
-    # 4.1. Si es líder (3), sincronizar con la comunidad
-    if new_user.rol_id == 3 and new_user.community_id:
-        db.query(Community).filter(Community.id_community == new_user.community_id).update({"leader_id": new_user.id})
-        db.commit()
 
     # 5. Vincular Perfil vacío automáticamente
     from app.modules.users.models import Profile
