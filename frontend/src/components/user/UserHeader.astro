@@ -247,20 +247,6 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
     }
 
     async function loadHeaderProfile() {
-        applyUser(authManager.getUser());
-        try {
-            const fresh = await AuthManager.fetch('/users/me');
-            if (fresh) {
-                authManager.setAuthData(authManager.getToken(), { ...fresh, role: 'user' });
-                applyUser(fresh);
-            }
-        } catch (_) {}
-    }
-
-    // ── Notificaciones ────────────────────────────────────────────────────────
-    let notifications = [];
-
-    async function loadHeaderProfile() {
         const user = authManager.getUser();
         if (!user) return;
         applyUser(user);
@@ -272,6 +258,9 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
             }
         } catch (_) {}
     }
+
+    // ── Notificaciones ────────────────────────────────────────────────────────
+    let notifications = [];
 
     async function loadNotifications() {
         try {
