@@ -7,6 +7,7 @@ sys.path.append(os.getcwd())
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.modules.users.models import User, Role
+from app.modules.communities.models import Community
 from app.modules.auth.service import get_password_hash
 from app.core.config import get_settings
 

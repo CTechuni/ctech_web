@@ -3,8 +3,15 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from . import schemas, service, models
-from fastapi.security import HTTPAuthorizationCredentials
 from .service import get_current_user, oauth2_scheme
+from app.modules.communities.models import Community
+from app.modules.users.models import Profile
+from app.core.email_service import email_service
+from app.modules.notifications.service import add_notification
+from fastapi.security import HTTPAuthorizationCredentials
+import re
+import secrets
+from datetime import datetime, timedelta
 
 router = APIRouter(tags=["Auth"])
 
@@ -21,7 +28,6 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
         raise HTTPException(status_code=400, detail="El correo electrónico ya se encuentra registrado")
     
     # 3. Validar Comunidad e Invitación
-    from app.modules.communities.models import Community
     community = db.query(Community).filter(Community.id_community == data.community_id).first()
     if not community:
         raise HTTPException(status_code=404, detail="La comunidad seleccionada no existe")
@@ -47,13 +53,11 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
         db.commit()
 
     # 5. Vincular Perfil vacío automáticamente
-    from app.modules.users.models import Profile
     new_profile = Profile(user_id=new_user.id)
     db.add(new_profile)
     db.commit()
 
     # 6. Enviar Correo de Bienvenida (Background Task)
-    from app.core.email_service import email_service
     
     background_tasks.add_task(
         email_service.send_welcome_email, 
@@ -64,8 +68,6 @@ def register(data: schemas.UserCreate, background_tasks: BackgroundTasks, db: Se
 
     # 7. Notificaciones
     if new_user.community_id:
-        from app.modules.communities.models import Community
-        from app.modules.notifications.service import add_notification
         comm = db.query(Community).filter(Community.id_community == new_user.community_id).first()
         if comm and comm.leader_id:
             add_notification(
@@ -110,14 +112,12 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     token = service.create_access_token(data={"sub": user.email, "role": role_name, "id": user.id})
 
     # Registrar último login
-    from datetime import datetime
     user.last_login = datetime.utcnow()
     db.commit()
     
     # Obtener nombre de la comunidad si existe
     community_name = "Sin Comunidad"
     if user.community_id:
-        from app.modules.communities.models import Community
         community = db.query(Community).filter(Community.id_community == user.community_id).first()
         if community:
             community_name = community.name_community
@@ -141,8 +141,6 @@ def logout(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme), d
     service.block_token(db, credentials.credentials)
     return {"message": "Sesión cerrada exitosamente"}
 
-import secrets
-from datetime import datetime, timedelta
 from . import repository
 
 @router.post("/forgot-password")
@@ -161,8 +159,6 @@ def forgot_password(data: schemas.ForgotPasswordRequest, background_tasks: Backg
     expires = datetime.utcnow() + timedelta(hours=1)
     
     repository.set_reset_token(db, user.id, token, expires)
-    
-    from app.core.email_service import email_service
     background_tasks.add_task(
         email_service.send_reset_password_email,
         recipient_email=user.email,
