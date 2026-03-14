@@ -1089,9 +1089,7 @@
                 }
                 if (currentCode !== originalData.code) {
                     payload.code = currentCode;
-                    if (!originalData.access_code || originalData.access_code === originalData.code) {
-                        payload.access_code = currentCode;
-                    }
+                    payload.access_code = currentCode; // Sincronizar siempre ambos campos
                     hasChanges = true;
                 }
                 
