@@ -615,6 +615,7 @@
     // ═══════════ STATE ═══════════
     let listStore: any[] = [];
     let selectedFile: File | null = null;
+    let logoCleared = false; // Usuario borró el logo en modo edición
     let editingId: number | null = null;
     let originalData: any = null; // Store state before editing
 
@@ -674,6 +675,7 @@
             span.style.display = mode === 'edit' ? 'none' : '';
         });
 
+        logoCleared = false;
         if (mode === 'edit') {
             nameInput.value = data.name_community;
             codeInput.value = data.code;
@@ -788,6 +790,7 @@
     function resetForm() {
         form.reset();
         selectedFile = null;
+        logoCleared = false;
         logoInput.value = '';
         uploadPlaceholder.style.display = '';
         uploadPreview.style.display = 'none';
@@ -829,6 +832,7 @@
     document.getElementById('removePreview')?.addEventListener('click', (e) => {
         e.stopPropagation();
         selectedFile = null;
+        logoCleared = true; // El usuario quiere eliminar el logo en DB
         logoInput.value = '';
         previewImg.src = '';
         previewImg.style.display = 'none';
@@ -857,6 +861,7 @@
         }
 
         selectedFile = file;
+        logoCleared = false; // Al elegir archivo nuevo, ya no estamos "clearing"
         const reader = new FileReader();
         reader.onload = (ev) => {
             previewImg.src = ev.target?.result as string;
@@ -1052,6 +1057,11 @@
             const leadVal = parseInt(leaderSelect.value);
             const currentLeaderId = isNaN(leadVal) ? null : leadVal;
             let logoUrl = editingId ? (originalData.logo_url || '') : '';
+
+            // Si el usuario borró el logo en modo edición, forzar logoUrl vacío
+            if (editingId && logoCleared) {
+                logoUrl = '';
+            }
 
             // Handle Cloudinary Upload if a new file is selected
             if (selectedFile) {
