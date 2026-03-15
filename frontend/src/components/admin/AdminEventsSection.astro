@@ -13,6 +13,10 @@
                 <button class="seg-btn active" data-filter="all">Todos</button>
                 <button class="seg-btn" data-filter="virtual">Virtual</button>
                 <button class="seg-btn" data-filter="presencial">Presencial</button>
+                <button class="seg-btn" data-filter="pending" id="pendingFilterBtn" style="display:none">
+                    Pendientes
+                    <span class="badge-count" id="pendingBadge">0</span>
+                </button>
             </div>
 
             <button class="btn-create" id="openNewEventBtn">
@@ -24,20 +28,10 @@
         </div>
     </div>
 
-    <!-- Pending Events Section -->
-    <div class="pending-section" id="pendingSection" style="display:none">
-        <div class="section-title-modern">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-amber-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            <h2>Eventos Pendientes de Aprobación</h2>
-            <span class="count-pill" id="pendingCount">0</span>
-        </div>
-        <div class="pending-grid" id="pendingGrid"></div>
-    </div>
+    <h2 id="gridTitle" class="section-title-ctech">Calendario Global</h2>
 
     <!-- Events Grid -->
-    <div class="events-grid-modern" id="eventsGrid">
+    <div class="row g-4" id="eventsGrid">
         <div class="loading-state">
             <div class="spinner"></div>
             <span>Sincronizando calendario de eventos...</span>
@@ -173,6 +167,26 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
+    .badge-count {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 6px;
+        margin-left: 6px;
+        font-weight: 700;
+        border: 1px solid rgba(239, 68, 68, 0.15);
+    }
+
+    .section-title-ctech {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+
     .btn-create {
         background: var(--color-azure-radiant);
         color: white;
@@ -190,70 +204,152 @@
 
     .btn-create:hover { background: #0062cc; transform: translateY(-1px); }
 
-    .events-grid-modern {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
+    /* Responsive overrides removed in favor of Bootstrap-like grid classes */
+
+    /* Pending Cards with CTech Premium Style */
+    :global(.pending-adm-card) { 
+        background: white; 
+        border-radius: 16px; 
+        padding: 1.25rem; 
+        border: 1px solid rgba(0, 115, 255, 0.08); 
+        display: flex; 
+        flex-direction: column; 
+        gap: 1rem; 
+        position: relative; 
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px -10px rgba(0, 115, 255, 0.05);
+        border-left: 4px solid var(--color-azure-radiant);
+        height: 100%;
     }
 
-    @media (max-width: 1200px) { .events-grid-modern { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 768px) { 
-        .events-toolbar { flex-direction: column; align-items: stretch; }
-        .toolbar-right { flex-direction: column; align-items: stretch; }
-        .events-grid-modern { grid-template-columns: 1fr; }
+    :global(.pending-adm-card:hover) {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 115, 255, 0.12);
+        border-color: rgba(0, 115, 255, 0.2);
     }
 
-    /* Pending Events Section */
-    .pending-section { margin-bottom: 3rem; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 24px; padding: 1.5rem; }
-    .section-title-modern { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
-    .section-title-modern h2 { font-size: 1.1rem; font-weight: 800; color: #92400e; margin: 0; }
-    .count-pill { background: #fef3c7; color: #d97706; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; border: 1px solid #fcd34d; }
+    :global(.p-card-header) { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    :global(.p-title-wrap) { display: flex; flex-direction: column; gap: 6px; }
+    :global(.p-title) { font-size: 1.2rem; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.2; letter-spacing: -0.01em; }
     
-    .pending-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    :global(.p-comm) { 
+        font-size: 0.65rem; 
+        font-weight: 800; 
+        color: var(--color-azure-radiant); 
+        background: rgba(0, 115, 255, 0.06); 
+        padding: 4px 12px; 
+        border-radius: 50px; 
+        width: fit-content;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
     
-    :global(.pending-adm-card) { background: white; border-radius: 18px; padding: 1.25rem; border: 1px solid #fef3c7; display: flex; flex-direction: column; gap: 12px; position: relative; }
-    :global(.p-card-header) { display: flex; justify-content: space-between; align-items: flex-start; }
-    :global(.p-title) { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0; }
-    :global(.p-comm) { font-size: 0.75rem; font-weight: 600; color: #d97706; background: #fffbeb; padding: 2px 8px; border-radius: 6px; }
-    :global(.p-desc) { font-size: 0.82rem; color: #64748b; line-height: 1.5; height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    :global(.p-meta-info) { 
+        display: flex; 
+        align-items: center; 
+        gap: 1.25rem; 
+        padding-top: 0.85rem; 
+        border-top: 1px dashed #e2e8f0; 
+        margin-top: auto; 
+    }
     
-    :global(.p-actions) { display: flex; gap: 10px; margin-top: auto; padding-top: 12px; border-top: 1px solid #fffbeb; }
-    :global(.btn-approve-adm) { flex: 1; background: #10b981; color: white; border: none; padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
-    :global(.btn-approve-adm:hover) { background: #059669; }
-    :global(.btn-reject-adm) { flex: 1; background: #fff; color: #ef4444; border: 1.5px solid #fecaca; padding: 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
-    :global(.btn-reject-adm:hover) { background: #fef2f2; border-color: #f87171; }
+    :global(.p-meta-item) { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #64748b; font-weight: 600; }
+    :global(.p-meta-item svg) { width: 16px; height: 16px; color: var(--color-azure-radiant); opacity: 0.8; }
+
+    :global(.p-desc) { 
+        font-size: 0.9rem; 
+        color: #475569; 
+        line-height: 1.6; 
+        height: 2.8rem; 
+        overflow: hidden; 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        margin: 0; 
+    }
+    
+    :global(.p-actions) { display: flex; gap: 12px; margin-top: 0.5rem; }
+
+    :global(.btn-approve-adm) { 
+        flex: 1.4; 
+        background: linear-gradient(135deg, var(--color-azure-radiant) 0%, #0056b3 100%); 
+        color: white; 
+        border: none; 
+        padding: 12px; 
+        border-radius: 14px; 
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; 
+        transition: all 0.3s; 
+        box-shadow: 0 4px 15px rgba(0, 115, 255, 0.2);
+    }
+
+    :global(.btn-approve-adm:hover) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 115, 255, 0.3);
+        filter: brightness(1.1);
+    }
+
+    :global(.btn-reject-adm) { 
+        flex: 1; 
+        background: white; 
+        color: #ef4444; 
+        border: 1.5px solid rgba(239, 68, 68, 0.2); 
+        padding: 12px; 
+        border-radius: 14px; 
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        gap: 8px; 
+        transition: all 0.3s; 
+    }
+
+    :global(.btn-reject-adm:hover) {
+        background: #fff5f5;
+        border-color: #ef4444;
+        color: #ef4444;
+    }
     :global(.event-card-modern) {
         background: white;
-        border-radius: 20px;
-        padding: 1.5rem;
+        border-radius: 16px;
+        padding: 1.25rem;
         border: 1px solid #f1f5f9;
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
-        transition: all 0.3s ease;
+        gap: 1rem;
+        transition: all 0.2s ease;
+        position: relative;
+        height: 100%;
     }
 
     :global(.event-card-modern:hover) {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 20px -5px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         border-color: #e2e8f0;
     }
 
     :global(.card-header-flex) { display: flex; justify-content: space-between; align-items: flex-start; }
-    :global(.modal-badge) { font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 40px; text-transform: uppercase; }
-    :global(.badge-virtual), :global(.badge-online) { background: #e0f2fe; color: #0073ff; }
-    :global(.badge-presencial) { background: #fce7f3; color: #db2777; }
+    :global(.modal-badge) { font-size: 0.65rem; font-weight: 800; padding: 3px 10px; border-radius: 40px; text-transform: uppercase; }
+    :global(.badge-virtual), :global(.badge-online) { background: #f1f5f9; color: var(--color-azure-radiant); }
+    :global(.badge-presencial) { background: #f1f5f9; color: #db2777; }
 
     :global(.date-badge) { text-align: right; line-height: 1; }
-    :global(.date-day) { font-size: 1.8rem; font-weight: 800; color: var(--color-azure-radiant); display: block; }
-    :global(.date-month) { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+    :global(.date-day) { font-size: 1.5rem; font-weight: 800; color: var(--color-azure-radiant); display: block; }
+    :global(.date-month) { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
 
-    :global(.card-content h3) { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0 0 0.5rem; }
-    :global(.card-desc) { font-size: 0.88rem; color: #64748b; line-height: 1.5; height: 2.6rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    :global(.card-content h3) { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0 0 0.4rem; line-height: 1.3; }
+    :global(.card-desc) { font-size: 0.82rem; color: #64748b; line-height: 1.5; height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-    :global(.card-footer-details) { display: flex; align-items: center; gap: 1rem; padding-top: 1rem; border-top: 1px dashed #f1f5f9; margin-top: auto; }
-    :global(.footer-detail-item) { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
-    :global(.footer-detail-item svg) { width: 14px; height: 14px; }
+    :global(.card-footer-details) { display: flex; align-items: center; justify-content: space-between; padding-top: 0.85rem; border-top: 1px solid #f1f5f9; margin-top: auto; }
+    :global(.footer-detail-item) { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #64748b; font-weight: 600; }
+    :global(.footer-detail-item svg) { width: 14px; height: 14px; color: #94a3b8; }
 
     /* Modal */
     .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; }
@@ -298,54 +394,86 @@
             allEvents = Array.isArray(eventsRes) ? eventsRes : [];
             pendingEvents = Array.isArray(pendingRes) ? pendingRes : [];
             
-            renderPending();
+            updatePendingBadge();
             applyFilters();
         } catch (error) {
             console.error('Error fetching events:', error);
         }
     }
 
-    function renderPending() {
-        const section = document.getElementById('pendingSection');
-        const count = document.getElementById('pendingCount');
-        const grid = document.getElementById('pendingGrid');
-        if (!section || !grid) return;
+    function updatePendingBadge() {
+        const btn = document.getElementById('pendingFilterBtn');
+        const badge = document.getElementById('pendingBadge');
+        if (!btn || !badge) return;
 
-        if (pendingEvents.length === 0) {
-            section.style.display = 'none';
+        if (pendingEvents.length > 0) {
+            btn.style.display = 'flex';
+            badge.textContent = String(pendingEvents.length);
+        } else {
+            btn.style.display = 'none';
+        }
+    }
+
+    function renderPendingList(list) {
+        const grid = document.getElementById('eventsGrid');
+        if (!grid) return;
+
+        if (list.length === 0) {
+            grid.innerHTML = '<div class="loading-state"><span>No hay eventos pendientes de revisión.</span></div>';
             return;
         }
 
-        section.style.display = 'block';
-        count.textContent = String(pendingEvents.length);
-
-        grid.innerHTML = pendingEvents.map(e => {
+        grid.innerHTML = list.map(e => {
             const dateObj = new Date(e.event_date + 'T00:00:00');
-            const dateStr = dateObj.toLocaleDateString('es', { day: 'numeric', month: 'short' });
+            const dayStr = dateObj.getDate();
+            const monthStr = dateObj.toLocaleDateString('es', { month: 'short' }).toUpperCase();
             
             return `
-                <div class="pending-adm-card">
-                    <div class="p-card-header">
-                        <div>
-                            <h4 class="p-title">${e.title}</h4>
-                            <span class="p-comm">${e.community_name || 'Comunidad'}</span>
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="pending-adm-card">
+                        <div class="p-card-header">
+                            <div class="p-title-wrap">
+                                <h4 class="p-title">${e.title}</h4>
+                                <span class="p-comm">${e.community_name || 'Sin Comunidad'}</span>
+                            </div>
+                            <div class="date-badge" style="transform: scale(0.85); origin: top right;">
+                                <span class="date-day" style="color: var(--color-azure-radiant);">${dayStr}</span>
+                                <span class="date-month">${monthStr}</span>
+                            </div>
                         </div>
-                        <span class="date-month" style="color: #d97706;">${dateStr}</span>
-                    </div>
-                    <p class="p-desc">${e.description || 'Sin descripción'}</p>
-                    <div class="p-actions">
-                        <button class="btn-approve-adm" data-id="${e.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 16px; height: 16px;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                            </svg>
-                            Aprobar
-                        </button>
-                        <button class="btn-reject-adm" data-id="${e.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 16px; height: 16px;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                            Rechazar
-                        </button>
+
+                        <p class="p-desc">${e.description || 'Este evento requiere revisión antes de su publicación.'}</p>
+                        
+                        <div class="p-meta-info">
+                            <div class="p-meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span>${e.event_time || '18:30'}h</span>
+                            </div>
+                            <div class="p-meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                <span>${e.location || 'Local'}</span>
+                            </div>
+                        </div>
+
+                        <div class="p-actions">
+                            <button class="btn-approve-adm" data-id="${e.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width: 16px; height: 16px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                </svg>
+                                Aprobar
+                            </button>
+                            <button class="btn-reject-adm" data-id="${e.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 16px; height: 16px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                </svg>
+                                Rechazar
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -391,6 +519,14 @@
     function applyFilters() {
         const searchTerm = (document.getElementById('eventSearch') as HTMLInputElement)?.value.toLowerCase() || '';
         
+        if (currentFilter === 'pending') {
+            const filteredPending = pendingEvents.filter(ev => 
+                ev.title.toLowerCase().includes(searchTerm) || (ev.location || '').toLowerCase().includes(searchTerm)
+            );
+            renderPendingList(filteredPending);
+            return;
+        }
+
         const filtered = allEvents.filter(ev => {
             const matchesSearch = ev.title.toLowerCase().includes(searchTerm) || (ev.location || '').toLowerCase().includes(searchTerm);
             
@@ -426,42 +562,44 @@
             const isVirtual = type === 'virtual';
 
             return `
-                <div class="event-card-modern" style="position: relative;">
-                    <button class="btn-delete-event" data-id="${e.id}" title="Eliminar evento">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.34 6.6a1.72 1.72 0 1 1-3.44 0L10.66 9m4.18-4.06.34-6.6a1.72 1.72 0 1 0-3.44 0l-.34 6.6M4.5 9h15" />
-                        </svg>
-                    </button>
-                    <div class="card-header-flex">
-                        <span class="modal-badge ${badgeClass}">${typeLabel}</span>
-                        <div class="date-badge">
-                            <span class="date-day">${day}</span>
-                            <span class="date-month">${month}</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <h3>${e.title}</h3>
-                        <p class="card-desc">${e.description || 'Evento global organizado por CTech.'}</p>
-                    </div>
-                    <div class="card-footer-details">
-                        <div class="footer-detail-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="event-card-modern" style="position: relative;">
+                        <button class="btn-delete-event" data-id="${e.id}" title="Eliminar evento">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.34 6.6a1.72 1.72 0 1 1-3.44 0L10.66 9m4.18-4.06.34-6.6a1.72 1.72 0 1 0-3.44 0l-.34 6.6M4.5 9h15" />
                             </svg>
-                            <span>${e.event_time || '18:30'}h</span>
+                        </button>
+                        <div class="card-header-flex">
+                            <span class="modal-badge ${badgeClass}">${typeLabel}</span>
+                            <div class="date-badge">
+                                <span class="date-day">${day}</span>
+                                <span class="date-month">${month}</span>
+                            </div>
                         </div>
-                        <div class="footer-detail-item">
-                            ${isVirtual ? `
+                        <div class="card-content">
+                            <h3>${e.title}</h3>
+                            <p class="card-desc">${e.description || 'Evento global organizado por CTech.'}</p>
+                        </div>
+                        <div class="card-footer-details">
+                            <div class="footer-detail-item">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
-                            ` : `
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                </svg>
-                            `}
-                            <span>${e.location || 'CTech Hub'}</span>
+                                <span>${e.event_time || '18:30'}h</span>
+                            </div>
+                            <div class="footer-detail-item">
+                                ${isVirtual ? `
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    </svg>
+                                ` : `
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                    </svg>
+                                `}
+                                <span>${e.location || 'CTech Hub'}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -504,6 +642,16 @@
             document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilter = btn.getAttribute('data-filter') || 'all';
+            
+            // Actualizar título
+            const titleEl = document.getElementById('gridTitle');
+            if (titleEl) {
+                if (currentFilter === 'all') titleEl.textContent = 'Calendario Global';
+                else if (currentFilter === 'virtual') titleEl.textContent = 'Eventos Virtuales';
+                else if (currentFilter === 'presencial') titleEl.textContent = 'Eventos Presenciales';
+                else if (currentFilter === 'pending') titleEl.textContent = 'Eventos por Aprobar';
+            }
+
             applyFilters();
         });
     });
