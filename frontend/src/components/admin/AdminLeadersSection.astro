@@ -137,7 +137,7 @@
             </div>
 
             <div class="comm-form-group" id="communitySelectGroup">
-                <label class="comm-label" for="leaderCommunity">Vincular Comunidad <span class="comm-required">*</span></label>
+                <label class="comm-label" for="leaderCommunity">Vincular Comunidad <span class="comm-required-marker" style="display:none;">*</span></label>
                 <select id="leaderCommunity" class="comm-input comm-select">
                     <option value="">Seleccionar comunidad</option>
                     <!-- Dinámico -->
@@ -854,11 +854,13 @@
             }
         }
 
-        // 4. Community — required on create; optional on edit
+        // 4. Community — optional
+        /* 
         if (!isEdit && !communitySelect.value) {
             if (showErrors) communityError.textContent = 'Debes vincular una comunidad.';
             isValid = false;
         }
+        */
 
         return isValid;
     }
@@ -1089,10 +1091,9 @@
                     email: emailInput.value.trim(),
                     rol_id: 3,
                     password: passInput.value,
-                    community_id: parseInt(communitySelect.value),
-                    invite_code: 'ADMIN_CREATE',
+                    community_id: communitySelect.value ? parseInt(communitySelect.value) : null
                 };
-                url = '/auth/register';
+                url = '/users/';
                 method = 'POST';
             }
 

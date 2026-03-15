@@ -20,7 +20,8 @@ def get_all(db: Session, leader_id: int = None):
         models.Community,
         func.count(Member.id).label("member_count"),
         Leader.name_user.label("leader_name_direct"),
-        Leader.email.label("leader_email")
+        Leader.email.label("leader_email"),
+        Leader.id.label("actual_leader_id")
     ).outerjoin(Member, Member.community_id == models.Community.id_community)\
      .outerjoin(Leader, leader_join_cond)\
      .group_by(models.Community.id_community, Leader.id)
@@ -31,10 +32,13 @@ def get_all(db: Session, leader_id: int = None):
     results = query.all()
     
     final = []
-    for comm, count, l_name, l_email in results:
+    for comm, count, l_name, l_email, l_id in results:
         comm.member_count = count
         # Fallback logic: prefer name_user, use email if name is empty/null
         comm.leader_name = l_name if l_name else l_email
+        # IF the community table has leader_id=None but we found a leader via sync logic, populate it
+        if comm.leader_id is None and l_id is not None:
+            comm.leader_id = l_id
         final.append(comm)
         
     return final
@@ -53,7 +57,8 @@ def get_by_id(db: Session, community_id: int):
         models.Community,
         func.count(Member.id).label("member_count"),
         Leader.name_user.label("leader_name_direct"),
-        Leader.email.label("leader_email")
+        Leader.email.label("leader_email"),
+        Leader.id.label("actual_leader_id")
     ).outerjoin(Member, Member.community_id == models.Community.id_community)\
      .outerjoin(Leader, leader_join_cond)\
      .filter(models.Community.id_community == community_id)\
@@ -61,9 +66,11 @@ def get_by_id(db: Session, community_id: int):
      .first()
 
     if result:
-        comm, count, l_name, l_email = result
+        comm, count, l_name, l_email, l_id = result
         comm.member_count = count or 0
         comm.leader_name = l_name if l_name else l_email
+        if comm.leader_id is None and l_id is not None:
+            comm.leader_id = l_id
         return comm
     return None
 
