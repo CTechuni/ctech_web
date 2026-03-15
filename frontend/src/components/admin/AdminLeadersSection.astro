@@ -823,7 +823,10 @@
 
         // 2. Email — required on create; validated only if filled on edit
         const emailVal = emailInput.value.trim();
-        if (!isEdit && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        if (/\s/.test(emailInput.value)) {
+            if (showErrors) emailError.textContent = 'El correo no puede contener espacios.';
+            isValid = false;
+        } else if (!isEdit && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
             if (showErrors) emailError.textContent = 'Formato de correo inválido.';
             isValid = false;
         } else if (isEdit && emailVal.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
@@ -1207,6 +1210,11 @@
     [nameInput, emailInput, passInput, confirmInput, communitySelect, statusSelect].forEach(el => {
         el.addEventListener('input', updateSubmitButtonStyle);
         el.addEventListener('change', updateSubmitButtonStyle);
+    });
+
+    // Prevenir espacios en tiempo real para el email
+    emailInput.addEventListener('input', () => {
+        emailInput.value = emailInput.value.replace(/\s/g, '');
     });
 
     // Delegation for detail & edit/delete & toggle password
