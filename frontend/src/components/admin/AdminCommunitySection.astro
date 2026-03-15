@@ -818,6 +818,11 @@
             }
         }
     });
+    
+    // Prevenir espacios en tiempo real para el código
+    codeInput.addEventListener('input', () => {
+        codeInput.value = codeInput.value.replace(/\s/g, '');
+    });
 
     document.getElementById('addCommunityBtn')?.addEventListener('click', () => openModal('create'));
     document.getElementById('modalCloseX')?.addEventListener('click', closeModal);
@@ -976,6 +981,9 @@
                     valid = false;
                 } else if (!/[^a-zA-Z0-9]/.test(code)) {
                     codeError.textContent = 'Falta un signo especial (ej: #, $, !)';
+                    valid = false;
+                } else if (/\s/.test(code)) {
+                    codeError.textContent = 'El código no puede contener espacios';
                     valid = false;
                 }
                 
