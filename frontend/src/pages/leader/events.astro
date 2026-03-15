@@ -115,10 +115,16 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <label>Tipo de evento</label>
                     <div class="type-toggle" id="typeToggle">
                         <button type="button" class="type-btn active" data-val="virtual">
-                            <i class="fa-solid fa-video"></i> Virtual
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 1.1rem; height: 1.1rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                            Virtual
                         </button>
                         <button type="button" class="type-btn" data-val="presencial">
-                            <i class="fa-solid fa-map-marker-alt"></i> Presencial
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 1.1rem; height: 1.1rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                            </svg> Presencial
                         </button>
                     </div>
                     <input type="hidden" id="fType" value="virtual" />
@@ -147,7 +153,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <label class="vis-opt">
                         <input type="radio" name="fVisibility" value="publico" checked />
                         <span class="vis-card">
-                            <i class="fa-solid fa-globe-americas"></i>
                             <strong>Público</strong>
                             <small>Visible para todos</small>
                         </span>
@@ -155,7 +160,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <label class="vis-opt">
                         <input type="radio" name="fVisibility" value="privado" />
                         <span class="vis-card">
-                            <i class="fa-solid fa-lock"></i>
                             <strong>Privado</strong>
                             <small>Solo miembros registrados</small>
                         </span>
@@ -351,7 +355,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 .fi.error { border-color: #ef4444; }
 .fi.error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.1); }
 textarea.fi { resize: vertical; }
-.req { color: #ef4444; }
+:global(.req) { color: #ef4444; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 /* Icon wrap for link field */
@@ -634,7 +638,10 @@ function renderPending() {
                 <h4>${ev.title}</h4>
                 <p>${ev.description || 'Sin descripción.'}</p>
                 <div class="pending-meta">
-                    <span class="pm-it"><i class="fa-solid fa-${type === 'presencial' ? 'map-marker-alt' : 'video'}"></i> ${type === 'presencial' ? 'Presencial' : 'Virtual'}</span>
+                    <span class="pm-it">
+                        ${type === 'presencial' ? '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 14px; height: 14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>'} 
+                        ${type === 'presencial' ? 'Presencial' : 'Virtual'}
+                    </span>
                     ${ev.event_time ? `<span class="pm-it"><i class="fa-regular fa-clock"></i> ${String(ev.event_time).substring(0,5)}h</span>` : ''}
                     ${ev.capacity  ? `<span class="pm-it"><i class="fa-solid fa-users"></i> ${ev.capacity} personas</span>` : ''}
                     <span class="pm-it"><i class="fa-solid fa-${ev.visibility === 'privado' ? 'lock' : 'globe'}"></i> ${ev.visibility === 'privado' ? 'Privado' : 'Público'}</span>

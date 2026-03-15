@@ -38,56 +38,135 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-backdrop" id="eventModal">
-    <div class="modal-card">
-        <h3>Nuevo Evento Global</h3>
-        <p class="modal-intro">Completa los datos para programar una nueva actividad.</p>
-        
-        <form id="newEventForm" class="event-form">
-            <div class="form-group">
-                <label for="event_title">Título del Evento</label>
-                <input type="text" id="event_title" name="title" placeholder="Ej: Hackathon CTech 2026" required />
-            </div>
+<!-- ══ Modal Crear / Editar Evento ══ -->
+<div class="m-overlay" id="eventModal">
+    <div class="m-card">
+        <div class="m-header">
+            <h4 id="mTitle">Nuevo Evento Global</h4>
+            <button class="m-close" id="btnCloseModal">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="event_date">Fecha</label>
-                    <input type="date" id="event_date" name="event_date" required />
+        <form id="eventForm" class="m-body">
+            <input type="hidden" id="fId" name="id" />
+            <input type="hidden" id="fImageUrl" name="image_url" />
+
+            <!-- Imagen informativa -->
+            <div class="fg">
+                <label>Imagen informativa del evento</label>
+                <div class="img-upload-area" id="imgUploadArea">
+                    <div class="img-placeholder" id="imgPlaceholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mb-2 opacity-50">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                        </svg>
+                        <span>Arrastra una imagen o haz clic para seleccionar</span>
+                        <small>JPG, PNG o WebP — máx. 5 MB</small>
+                    </div>
+                    <img id="imgPreview" class="img-preview" src="" alt="Vista previa" style="display:none" />
+                    <div class="img-actions" id="imgActions" style="display:none">
+                        <button type="button" class="btn-img-change" id="btnChangeImg">
+                            Cambiar
+                        </button>
+                        <button type="button" class="btn-img-remove" id="btnRemoveImg">
+                            Eliminar
+                        </button>
+                    </div>
+                    <input type="file" id="fImage" accept="image/*" style="display:none" />
                 </div>
-                <div class="form-group">
-                    <label for="event_time">Hora</label>
-                    <input type="time" id="event_time" name="event_time" required />
+                <!-- Progress bar (hidden by default) -->
+                <div class="upload-progress" id="uploadProgress" style="display:none; margin-top: 10px;">
+                    <div class="progress-bar-track" style="flex: 1; height: 6px; background: #dbeafe; border-radius: 6px; overflow: hidden;">
+                        <div class="progress-bar" id="progressBar" style="height: 100%; background: #3b82f6; border-radius: 6px; width: 0%; transition: width .3s;"></div>
+                    </div>
+                    <span id="uploadStatus" style="font-size: .75rem; font-weight: 600; color: #1d4ed8; margin-left: 10px;">Subiendo...</span>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="event_type">Tipo</label>
-                    <select id="event_type" name="event_type" required>
-                        <option value="virtual">Virtual</option>
-                        <option value="presencial">Presencial</option>
-                    </select>
+            <div class="fg">
+                <label>Título del evento <span class="req">*</span></label>
+                <input type="text" id="fTitle" name="title" class="fi" placeholder="Ej: Hackathon CTech 2026" required />
+            </div>
+
+            <div class="fg">
+                <label>Descripción</label>
+                <textarea id="fDesc" name="description" class="fi" rows="3" placeholder="Breve detalle del evento..."></textarea>
+            </div>
+
+            <div class="row2">
+                <div class="fg">
+                    <label>Fecha <span class="req">*</span></label>
+                    <input type="date" id="fDate" name="event_date" class="fi" required />
                 </div>
-                <div class="form-group">
-                    <label for="event_capacity">Capacidad</label>
-                    <input type="number" id="event_capacity" name="capacity" placeholder="100" />
+                <div class="fg">
+                    <label>Hora <span class="req">*</span></label>
+                    <input type="time" id="fTime" name="event_time" class="fi" required />
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="event_location">Ubicación / Link</label>
-                <input type="text" id="event_location" name="location" placeholder="Google Meet o Dirección física" />
+            <div class="fg">
+                <label>Tipo de evento</label>
+                <div class="type-toggle" id="typeToggle">
+                    <button type="button" class="type-btn active" data-val="virtual">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 1.1rem; height: 1.1rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                        Virtual
+                    </button>
+                    <button type="button" class="type-btn" data-val="presencial">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 1.1rem; height: 1.1rem;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+                        Presencial
+                    </button>
+                </div>
+                <input type="hidden" id="fType" name="event_type" value="virtual" />
             </div>
 
-            <div class="form-group">
-                <label for="event_description">Descripción</label>
-                <textarea id="event_description" name="description" rows="3" placeholder="Breve detalle del evento..."></textarea>
+            <div class="fg">
+                <label>Capacidad</label>
+                <input type="number" id="fCapacity" name="capacity" class="fi" placeholder="Ej: 100" />
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" id="closeEventModal">Cancelar</button>
-                <button type="submit" class="btn-save">Crear Evento</button>
+            <div class="fg" id="locationGroup">
+                <label id="locationLabel">Link de la reunión <span class="req">*</span></label>
+                <div class="fi-icon-wrap">
+                    <div id="locationIcon">
+                        <!-- Icono dinámico vía JS -->
+                    </div>
+                    <input type="text" id="fLocation" name="location" class="fi fi-with-icon" placeholder="https://meet.google.com/..." required />
+                </div>
+                <span class="field-hint" id="locationHint">Debe ser una URL válida (https://...)</span>
+                <span class="field-error" id="locationError" style="display:none"></span>
+            </div>
+
+
+            <div class="fg">
+                <label>Visibilidad</label>
+                <div class="vis-toggle">
+                    <label class="vis-opt">
+                        <input type="radio" name="visibility" value="publico" checked />
+                        <span class="vis-card">
+                            <strong>Público</strong>
+                            <small>Visible para todos</small>
+                        </span>
+                    </label>
+                    <label class="vis-opt">
+                        <input type="radio" name="visibility" value="privado" />
+                        <span class="vis-card">
+                            <strong>Privado</strong>
+                            <small>Solo miembros</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="m-footer">
+                <button type="button" class="btn-ghost" id="closeEventModal">Cancelar</button>
+                <button type="submit" class="btn-save" id="btnSubmit">Crear Evento</button>
             </div>
         </form>
     </div>
@@ -309,27 +388,105 @@
     :global(.footer-detail-item) { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #64748b; font-weight: 600; }
     :global(.footer-detail-item svg) { width: 14px; height: 14px; color: #94a3b8; }
 
-    /* Modal */
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2000; }
-    .modal-card { background: white; padding: 2rem; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; }
-    .btn-primary-ctech { background: var(--color-azure-radiant); color: white; border: none; width: 100%; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    /* ══ Modal ══ */
+    .m-overlay {
+        position: fixed; inset: 0;
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
+        display: none; align-items: center; justify-content: center;
+        z-index: 3000; padding: 20px;
+    }
+    .m-overlay.open { display: flex; }
+    .m-card {
+        background: #fff; border-radius: 22px;
+        width: 100%; max-width: 600px; max-height: 94vh; overflow-y: auto;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+        text-align: left;
+    }
+    .m-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 22px 28px 18px; border-bottom: 1px solid #f1f5f9;
+        position: sticky; top: 0; background: #fff; z-index: 10; border-radius: 22px 22px 0 0;
+    }
+    .m-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+    .m-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .m-close:hover { background: #e2e8f0; color: #ef4444; }
+    .m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 18px; }
+
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+    .fg label { font-size: .8rem; font-weight: 700; color: #475569; }
+    .fi {
+        border: 1.5px solid #e2e8f0; border-radius: 10px;
+        padding: 10px 13px; font-size: .88rem; color: #1e293b;
+        font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: border-color .2s;
+    }
+    .fi:focus { border-color: var(--color-azure-radiant); box-shadow: 0 0 0 3px rgba(0, 115, 255, 0.08); }
+    :global(.req) { color: #ef4444; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Icon wrap for link field */
+    .fi-icon-wrap { position: relative; }
+    :global(.fi-icon) { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; width: 16px; height: 16px; pointer-events: none; }
+    .fi-with-icon { padding-left: 38px; }
+    .field-hint  { font-size: .72rem; color: #94a3b8; margin-top: 4px; display: block; }
+    .field-error { font-size: .72rem; color: #ef4444; font-weight: 600; margin-top: 4px; display: block; }
+
+    /* Type toggle */
+    .type-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: #f8fafc; }
+    .type-btn { flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600; background: transparent; border: none; color: #64748b; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .type-btn:not(:last-child) { border-right: 1.5px solid #e2e8f0; }
+    .type-btn.active { background: var(--color-azure-radiant); color: #fff; }
+
+    /* Visibility */
+    .vis-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .vis-opt { cursor: pointer; }
+    .vis-opt input[type="radio"] { display: none; }
+    .vis-card { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 2.2px solid #e2e8f0; border-radius: 14px; padding: 12px 10px; text-align: center; transition: all 0.2s; }
+    .vis-card strong { font-size: .85rem; color: #475569; font-weight: 700; }
+    .vis-card small  { font-size: .7rem; color: #94a3b8; }
+    .vis-opt input:checked + .vis-card { border-color: var(--color-azure-radiant); background: #f0f7ff; }
+    .vis-opt input:checked + .vis-card strong { color: var(--color-azure-radiant); }
+
+    /* Image upload */
+    .img-upload-area {
+        border: 2px dashed #e2e8f0; border-radius: 14px; overflow: hidden;
+        cursor: pointer; transition: border-color .2s; position: relative; min-height: 130px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .img-upload-area:hover { border-color: var(--color-azure-radiant); background: #f8fbff; }
+    .img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px; color: #94a3b8; text-align: center; }
+    .img-placeholder span { font-size: .83rem; font-weight: 600; color: #64748b; }
+    .img-preview { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .img-actions { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 6px; }
+    .btn-img-change, .btn-img-remove {
+        background: rgba(255,255,255,.95); border: 1px solid #e2e8f0;
+        border-radius: 8px; padding: 6px 12px; font-size: .75rem; font-weight: 700;
+        color: #475569; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .btn-img-remove { color: #ef4444; border-color: #fca5a5; }
+
+    .m-footer {
+        display: flex; justify-content: flex-end; gap: 12px;
+        padding: 16px 28px 22px; border-top: 1px solid #f1f5f9;
+        position: sticky; bottom: 0; background: #fff; border-radius: 0 0 22px 22px;
+    }
+    .btn-ghost { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b; transition: all 0.2s; }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    .btn-save { 
+        background: var(--color-azure-radiant); 
+        color: #fff; border: none; 
+        padding: 10px 22px; border-radius: 10px; 
+        font-weight: 700; font-size: .88rem; 
+        cursor: pointer; display: flex; 
+        align-items: center; gap: 7px;
+        transition: all 0.2s;
+    }
+    .btn-save:hover { background: #0062cc; transform: translateY(-1px); }
+    .btn-save:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
 
     .spinner { width: 28px; height: 28px; border: 3px solid #f1f5f9; border-top-color: var(--color-azure-radiant); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .loading-state { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 4rem; color: #94a3b8; }
-
-    /* New Form Styles */
-    .event-form { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 0.8rem; font-weight: 700; color: #475569; }
-    .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.9rem; outline: none; transition: border 0.2s; }
-    .form-group input:focus { border-color: var(--color-azure-radiant); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .modal-intro { color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem; }
-    
-    .modal-footer { display: flex; gap: 12px; margin-top: 1rem; }
-    .btn-cancel { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #64748b; font-weight: 600; cursor: pointer; }
-    .btn-save { flex: 2; padding: 12px; border-radius: 12px; border: none; background: var(--color-azure-radiant); color: white; font-weight: 600; cursor: pointer; }
 
     :global(.btn-delete-event) { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: #fee2e2; color: #ef4444; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: all 0.2s; }
     :global(.event-card-modern:hover .btn-delete-event) { opacity: 1; }
@@ -419,10 +576,16 @@
                                 <span>${e.event_time || '18:30'}h</span>
                             </div>
                             <div class="footer-detail-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                </svg>
+                                ${type === 'virtual' ? `
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 14px; height: 14px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                    </svg>
+                                ` : `
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 14px; height: 14px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                    </svg>
+                                `}
                                 <span>${e.location || 'Local'}</span>
                             </div>
                         </div>
@@ -563,11 +726,11 @@
                             </div>
                             <div class="footer-detail-item">
                                 ${isVirtual ? `
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 14px; height: 14px;">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
                                     </svg>
                                 ` : `
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 14px; height: 14px;">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                                     </svg>
@@ -610,41 +773,213 @@
         });
     }
 
+    // ── Lógica de Modal y Formulario ──────────────────────────────────────────
+    const modal = document.getElementById('eventModal');
+    const eventForm = document.getElementById('eventForm') as HTMLFormElement;
+    let pendingImageFile = null;
+
+    // Configuración de Imágenes
+    function setupImageUpload() {
+        const area = document.getElementById('imgUploadArea');
+        const fileInput = document.getElementById('fImage') as HTMLInputElement;
+        const placeholder = document.getElementById('imgPlaceholder');
+        const preview = document.getElementById('imgPreview') as HTMLImageElement;
+        const actions = document.getElementById('imgActions');
+        const changeBtn = document.getElementById('btnChangeImg');
+        const removeBtn = document.getElementById('btnRemoveImg');
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result as string;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                actions.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+            pendingImageFile = file;
+        }
+
+        function clearImage() {
+            pendingImageFile = null;
+            if (fileInput) fileInput.value = '';
+            preview.src = '';
+            preview.style.display = 'none';
+            placeholder.style.display = 'flex';
+            actions.style.display = 'none';
+            (document.getElementById('fImageUrl') as HTMLInputElement).value = '';
+        }
+
+        area?.addEventListener('click', e => {
+            if ((e.target as HTMLElement).closest('.img-actions')) return;
+            fileInput.click();
+        });
+
+        fileInput?.addEventListener('change', () => {
+            const file = fileInput.files?.[0];
+            if (file) showPreview(file);
+        });
+
+        changeBtn?.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+        removeBtn?.addEventListener('click', e => { e.stopPropagation(); clearImage(); });
+
+        return clearImage;
+    }
+
+    const clearImageFn = setupImageUpload();
+
+    // Toggles y Ubicación Dinámica
+    function updateLocationUI(type) {
+        const label = document.getElementById('locationLabel');
+        const iconContainer = document.getElementById('locationIcon');
+        const input = document.getElementById('fLocation') as HTMLInputElement;
+        const hint = document.getElementById('locationHint');
+
+        if (type === 'virtual') {
+            if (label) label.innerHTML = 'Link de la reunión <span class="req">*</span>';
+            if (iconContainer) iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="fi-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>`;
+            if (input) input.placeholder = 'https://meet.google.com/abc-xyz';
+            if (hint) hint.textContent = 'Debe ser una URL válida (https://...)';
+        } else {
+            if (label) label.innerHTML = 'Ubicación física (Link de Maps) <span class="req">*</span>';
+            if (iconContainer) iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="fi-icon"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>`;
+            if (input) input.placeholder = 'https://goo.gl/maps/...';
+            if (hint) hint.textContent = 'Ingresa el link de Google Maps para que los asistentes puedan llegar.';
+        }
+    }
+
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const val = btn.getAttribute('data-val');
+            const fType = document.getElementById('fType') as HTMLInputElement;
+            if (fType) fType.value = val;
+            updateLocationUI(val);
+        });
+    });
+
+    const openModal = () => {
+        if(modal) {
+            modal.classList.add('open');
+            const mTitle = document.getElementById('mTitle');
+            if (mTitle) mTitle.textContent = 'Nuevo Evento Global';
+            
+            const btnSubmit = document.getElementById('btnSubmit');
+            if (btnSubmit) btnSubmit.textContent = 'Crear Evento';
+            
+            eventForm.reset();
+            clearImageFn();
+            
+            // Default toggles
+            const typeBtnVirtual = document.querySelector('.type-btn[data-val="virtual"]');
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b === typeBtnVirtual));
+            
+            const fType = document.getElementById('fType') as HTMLInputElement;
+            if (fType) fType.value = 'virtual';
+            updateLocationUI('virtual');
+
+            // Reset visibility radio
+            document.querySelectorAll('input[name="visibility"]').forEach((r: HTMLInputElement) => {
+                r.checked = r.value === 'publico';
+            });
+        }
+    };
+
+    const closeModal = () => { if(modal) modal.classList.remove('open'); };
+
+    document.getElementById('openNewEventBtn')?.addEventListener('click', openModal);
+    document.getElementById('btnCloseModal')?.addEventListener('click', closeModal);
+    document.getElementById('closeEventModal')?.addEventListener('click', closeModal);
+
+    // Cierre al hacer clic fuera
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Subida de imagen
+    async function uploadImageIfNeeded() {
+        if (!pendingImageFile) return null;
+        const progress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const statusTxt = document.getElementById('uploadStatus');
+
+        progress.style.display = 'flex';
+        progressBar.style.width = '30%';
+        statusTxt.textContent = 'Subiendo imagen...';
+
+        const form = new FormData();
+        form.append('file', pendingImageFile);
+
+        try {
+            const token = AuthManager.getToken();
+            const res = await fetch('http://localhost:8000/api/v1/events/upload-image', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: form,
+            });
+            if (!res.ok) throw new Error('Error al subir imagen');
+            const data = await res.json();
+            progressBar.style.width = '100%';
+            statusTxt.textContent = '¡Imagen lista!';
+            return data.url;
+        } catch (e) {
+            progress.style.display = 'none';
+            throw e;
+        }
+    }
+
+    // Submit del Formulario
+    eventForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btnSave = document.getElementById('btnSubmit') as HTMLButtonElement;
+        btnSave.disabled = true;
+        btnSave.textContent = 'Procesando...';
+
+        try {
+            // 1. Subir imagen si existe
+            const imageUrl = await uploadImageIfNeeded();
+            if (imageUrl) {
+                (document.getElementById('fImageUrl') as HTMLInputElement).value = imageUrl;
+            }
+
+            // 2. Recopilar datos
+            const formData = new FormData(eventForm);
+            const jsonData = Object.fromEntries(formData.entries());
+
+            // 3. Enviar a API
+            await AuthManager.fetch('/events/', {
+                method: 'POST',
+                body: JSON.stringify(jsonData)
+            });
+
+            (window as any).Swal?.fire({
+                title: '¡Evento Creado!',
+                text: 'La actividad global ha sido publicada con éxito.',
+                icon: 'success',
+                confirmButtonColor: '#0073ff'
+            }) || alert('Evento creado.');
+
+            closeModal();
+            fetchData();
+        } catch (err) {
+            console.error('Error al crear evento:', err);
+            (window as any).Swal?.fire('Error', 'No se pudo programar el evento: ' + err.message, 'error');
+        } finally {
+            btnSave.disabled = false;
+            btnSave.textContent = 'Crear Evento';
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+    });
+
     document.getElementById('eventSearch')?.addEventListener('input', applyFilters);
     document.querySelectorAll('.seg-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilter = btn.getAttribute('data-filter') || 'all';
-            
             applyFilters();
         });
-    });
-
-    const modal = document.getElementById('eventModal');
-    document.getElementById('openNewEventBtn')?.addEventListener('click', () => { if(modal) modal.style.display = 'flex'; });
-    const closeModal = () => { if(modal) modal.style.display = 'none'; };
-    document.getElementById('closeEventModal')?.addEventListener('click', closeModal);
-
-    // Create Event Form Logic
-    const eventForm = document.getElementById('newEventForm') as HTMLFormElement;
-    eventForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(eventForm);
-        const jsonData = Object.fromEntries(formData.entries());
-
-        try {
-            await AuthManager.fetch('/events/', {
-                method: 'POST',
-                body: JSON.stringify(jsonData)
-            });
-            (window as any).Swal?.fire('Éxito', 'Evento programado correctamente.', 'success') || alert('Evento creado.');
-            eventForm.reset();
-            closeModal();
-            fetchData();
-        } catch (err) {
-            (window as any).Swal?.fire('Error', 'No se pudo crear el evento.', 'error') || alert('Error al crear el evento.');
-        }
     });
 
     fetchData();
