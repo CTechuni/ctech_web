@@ -92,6 +92,13 @@
                 <div class="comm-field-hint">7-15 caracteres: mayúscula, minúscula, número y signo especial</div>
             </div>
 
+            <!-- Description -->
+            <div class="comm-form-group">
+                <label class="comm-label" for="commDesc">Descripción <span class="comm-optional">(Opcional)</span></label>
+                <textarea id="commDesc" class="comm-input" placeholder="Breve descripción del propósito de la comunidad..." rows="3" style="resize: none;"></textarea>
+                <div class="comm-field-error" id="commDescError"></div>
+            </div>
+
             <!-- Leader -->
             <div class="comm-form-group" id="leaderGroup">
                 <label class="comm-label" for="commLeader">Líder Asignado <span class="comm-optional">(Opcional)</span></label>
@@ -160,6 +167,11 @@
                 <div class="comm-detail-row">
                     <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Fecha de Creación</span>
                     <div class="comm-detail-value fw-semibold text-dark" id="detailCreatedAt"></div>
+                </div>
+
+                <div class="comm-detail-row">
+                    <span class="comm-detail-label text-muted small text-uppercase fw-bold letter-spacing-1">Descripción</span>
+                    <div class="comm-detail-value text-dark small" id="detailDesc" style="line-height: 1.5;"></div>
                 </div>
             </div>
             
@@ -647,11 +659,13 @@
 
     const nameInput = document.getElementById('commName') as HTMLInputElement;
     const codeInput = document.getElementById('commCode') as HTMLInputElement;
+    const descInput = document.getElementById('commDesc') as HTMLTextAreaElement;
     const leaderSelect = document.getElementById('commLeader') as HTMLSelectElement;
     const leaderGroup = document.getElementById('leaderGroup')!;
 
     const nameError = document.getElementById('commNameError')!;
     const codeError = document.getElementById('commCodeError')!;
+    const descError = document.getElementById('commDescError')!;
     const leaderError = document.getElementById('commLeaderError')!;
     const statusSelect = document.getElementById('commStatus') as HTMLSelectElement;
     const statusGroup = document.getElementById('statusGroup')!;
@@ -679,6 +693,7 @@
         if (mode === 'edit') {
             nameInput.value = data.name_community;
             codeInput.value = data.code;
+            descInput.value = data.description_community || '';
             if (data.logo_url) {
                 previewImg.style.display = 'block';
                 previewImg.src = data.logo_url;
@@ -728,6 +743,7 @@
     const detailCode = document.getElementById('detailCode')!;
     const detailLeader = document.getElementById('detailLeader')!;
     const detailCreatedAt = document.getElementById('detailCreatedAt')!;
+    const detailDesc = document.getElementById('detailDesc')!;
 
     function formatDate(dateStr: string) {
         if (!dateStr) return 'No disponible';
@@ -748,6 +764,7 @@
         detailCode.textContent = data.code;
         detailLeader.textContent = data.leader_name || 'Sin asignar';
         detailCreatedAt.textContent = formatDate(data.created_at);
+        detailDesc.textContent = data.description_community || 'Sin descripción disponible.';
 
         // Status
         const isActive = data.status_community !== 'Inactivo';
@@ -993,6 +1010,13 @@
 
         // Leader optional
 
+        const desc = descInput.value.trim();
+        if (desc.length > 500) {
+            descError.textContent = 'La descripción es muy larga (máx. 500 caracteres)';
+            descInput.classList.add('is-invalid');
+            valid = false;
+        }
+
         if (!valid) {
             alert('Por favor, revisa los errores en el formulario antes de continuar.');
         }
@@ -1061,6 +1085,7 @@
         try {
             const currentName = nameInput.value.trim();
             const currentCode = codeInput.value.trim();
+            const currentDesc = descInput.value.trim();
             const currentStatus = statusSelect.value;
             const leadVal = parseInt(leaderSelect.value);
             const currentLeaderId = isNaN(leadVal) ? null : leadVal;
@@ -1100,6 +1125,10 @@
                     payload.access_code = currentCode; // Sincronizar siempre ambos campos
                     hasChanges = true;
                 }
+                if (currentDesc !== (originalData.description_community || '')) {
+                    payload.description_community = currentDesc;
+                    hasChanges = true;
+                }
                 
                 let origStatus = originalData.status_community || 'Activo';
                 if (origStatus.toLowerCase() === 'active') origStatus = 'Activo';
@@ -1132,7 +1161,7 @@
                     code: currentCode,
                     status_community: 'Activo',
                     access_code: currentCode,
-                    description_community: '',
+                    description_community: currentDesc,
                     logo_url: logoUrl,
                     leader_id: currentLeaderId
                 };
