@@ -186,6 +186,55 @@ import UserLayout from '../../layouts/UserLayout.astro';
         }
         .full-calendar-btn:hover { background: #e2e8f0; color: #007bff; }
 
+        .mini-event-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-mini-reg {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-mini-reg:hover { background: #0062cc; }
+        .btn-mini-reg:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        .btn-mini-cancel {
+            background: white;
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-mini-cancel:hover { background: #fff5f5; border-color: #ef4444; }
+
+        .status-badge-mini {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .status-registered { background: #f0fdf4; color: #10b981; }
+        .status-full { background: #fef2f2; color: #ef4444; }
+
         @media (max-width: 1200px) {
             .user-sections { grid-template-columns: 1fr; }
         }
@@ -206,7 +255,8 @@ import UserLayout from '../../layouts/UserLayout.astro';
         if (!container) return;
 
         try {
-            const events = await AuthManager.fetch('/events/upcoming');
+            // Usamos el endpoint principal con filtros para obtener is_registered
+            const events = await AuthManager.fetch('/events/?upcoming_only=true&limit=5');
             
             // Actualizar contador en la card de stats
             const statText = document.getElementById('upcomingEventsStat');
@@ -234,23 +284,69 @@ import UserLayout from '../../layouts/UserLayout.astro';
                     timeStr = `${displayHour}:${m} ${ampm}`;
                 }
 
+                const isRegistered = event.is_registered;
+                const isFull = event.capacity && event.registered_count >= event.capacity;
+                
+                let actionButton = '';
+                if (isRegistered) {
+                    actionButton = `<button class="btn-mini-cancel" data-id="${event.id}">Cancelar</button>`;
+                } else if (isFull) {
+                    actionButton = `<button class="btn-mini-reg" disabled>Lleno</button>`;
+                } else {
+                    actionButton = `<button class="btn-mini-reg" data-id="${event.id}">Registrarme</button>`;
+                }
+
+                const statusBadge = isRegistered ? `<span class="status-badge-mini status-registered">Registrado</span>` : '';
+
                 return `
                     <div class="mini-event-card">
                         <div class="date-badge">
                             <span class="day">${day}</span>
                             <span class="month">${month}</span>
                         </div>
-                        <div class="event-details">
+                        <div class="event-details" style="flex: 1;">
                             <h4>${event.title}</h4>
                             <p>${timeStr} • ${event.location || 'Virtual'}</p>
+                            ${statusBadge}
+                            <div class="mini-event-actions">
+                                ${actionButton}
+                            </div>
                         </div>
                     </div>
                 `;
             }).join('');
 
+            // Agregar listeners
+            container.querySelectorAll('.btn-mini-reg, .btn-mini-cancel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = (e.currentTarget as HTMLElement).dataset.id;
+                    const isCancel = (e.currentTarget as HTMLElement).classList.contains('btn-mini-cancel');
+                    if (id) toggleRegistration(parseInt(id), isCancel);
+                });
+            });
+
         } catch (error) {
             console.error('[UpcomingEvents] Error:', error);
             container.innerHTML = '<div class="stat-label" style="color: #ef4444; padding: 10px;">Error al cargar eventos</div>';
+        }
+    }
+
+    async function toggleRegistration(eventId: number, isCancel: boolean) {
+        try {
+            if (isCancel) {
+                const confirm = window.confirm("¿Seguro que quieres cancelar tu asistencia?");
+                if (!confirm) return;
+                await AuthManager.fetch(`/events/${eventId}/register`, { method: 'DELETE' });
+                (window as any).Swal?.fire('Registro cancelado', 'Has cancelado tu asistencia.', 'info');
+            } else {
+                await AuthManager.fetch(`/events/${eventId}/register`, { method: 'POST' });
+                (window as any).Swal?.fire('¡Inscripción exitosa!', 'Te has registrado al evento.', 'success');
+            }
+            loadUpcomingEvents();
+        } catch (error: any) {
+            console.error('[Registration] Error:', error);
+            const msg = error.message || 'Error al procesar el registro.';
+            (window as any).Swal?.fire('Error', msg, 'error');
         }
     }
 
