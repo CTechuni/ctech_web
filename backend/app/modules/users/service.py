@@ -37,8 +37,8 @@ def change_role(db: Session, user_id: int, new_role_id: int):
         
     return updated_user
 
-def list_leaders(db: Session):
-    return repository.get_leaders_enriched(db)
+def list_leaders(db: Session, available: bool = False):
+    return repository.get_leaders_enriched(db, only_available=available)
 
 def update_user(db: Session, user_id: int, user_data: dict):
     if "email" in user_data and user_data["email"]:

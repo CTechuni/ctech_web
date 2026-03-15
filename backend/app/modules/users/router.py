@@ -60,8 +60,8 @@ def delete_me(db: Session = Depends(get_db), current=Depends(get_current_user)):
     return {"message": "Cuenta eliminada correctamente"}
 
 @router.get("/leaders", response_model=list[schemas.UserResponse])
-def get_leaders(db: Session = Depends(get_db), current=Depends(get_current_user)):
-    return service.list_leaders(db)
+def get_leaders(available: bool = False, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    return service.list_leaders(db, available=available)
 
 @router.patch("/{user_id}/role", response_model=schemas.UserResponse)
 def change_user_role(user_id: int, data: schemas.ChangeRoleRequest, db: Session = Depends(get_db), current=Depends(get_current_user)):

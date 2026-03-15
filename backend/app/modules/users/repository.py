@@ -65,7 +65,7 @@ def get_by_id(db: Session, user_id: int):
 def get_by_role(db: Session, role_id: int):
     return db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.rol_id == role_id).all()
 
-def get_leaders_enriched(db: Session):
+def get_leaders_enriched(db: Session, only_available: bool = False):
     """Returns leaders with community_name, community_code and member_count."""
     # Subquery: count members per community
     MemberCount = db.query(
@@ -73,25 +73,34 @@ def get_leaders_enriched(db: Session):
         func.count(models.User.id).label('member_count')
     ).filter(models.User.community_id != None).group_by(models.User.community_id).subquery()
 
-    results = db.query(
-        models.User,
+    # Base query centered on User
+    query = db.query(models.User).options(joinedload(models.User.profile)).filter(models.User.rol_id == 3)
+
+    # Join with Community and MemberCount
+    query = query.outerjoin(Community, models.User.community_id == Community.id_community)\
+                 .outerjoin(MemberCount, models.User.community_id == MemberCount.c.community_id)
+
+    # Add columns from joined tables
+    query = query.add_columns(
         Community.name_community,
         Community.code.label('community_code'),
         Community.status_community,
         MemberCount.c.member_count
-    ).options(joinedload(models.User.profile))\
-     .outerjoin(Community, models.User.community_id == Community.id_community)\
-     .outerjoin(MemberCount, models.User.community_id == MemberCount.c.community_id)\
-     .filter(models.User.rol_id == 3)\
-     .order_by(models.User.created_at.desc())\
-     .all()
+    )
+
+    if only_available:
+        query = query.filter(models.User.community_id == None)
+
+    results = query.order_by(models.User.created_at.desc()).all()
 
     leaders = []
-    for user, comm_name, comm_code, comm_status, member_count in results:
-        user.community_name = comm_name
-        user.community_code = comm_code
-        user.community_status = comm_status
-        user.member_count = member_count or 0
+    # results is a list of tuples: (User, name, code, status, count)
+    for row in results:
+        user = row[0]
+        user.community_name = row[1]
+        user.community_code = row[2]
+        user.community_status = row[3]
+        user.member_count = row[4] or 0
         leaders.append(user)
     return leaders
 
