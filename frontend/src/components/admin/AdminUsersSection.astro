@@ -21,9 +21,6 @@
             <select id="roleFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
                 <option value="all">Todos los Roles</option>
                 <option value="admin">Administradores</option>
-            <select id="roleFilter" class="form-select" style="border-radius: 12px; border-color: #e2e8f0; font-size: 0.88rem; box-shadow: none; cursor: pointer;">
-                <option value="all">Todos los Roles</option>
-                <option value="admin">Administradores</option>
                 <option value="leader">Líderes</option>
                 <option value="user">Usuarios</option>
             </select>
@@ -528,10 +525,13 @@
             const searchVal = (document.getElementById('userSearch') as HTMLInputElement)?.value || '';
             const [resp, communitiesData, specialtiesData] = await Promise.all([
                 AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
-                AuthManager.fetch('/communities'),
-                AuthManager.fetch('/specialties/')
+                AuthManager.fetch('/communities').catch(() => []),
+                AuthManager.fetch('/specialties/').catch(() => [])
             ]);
             
+            const list = resp?.users || [];
+            totalUsers = resp?.total || 0;
+            currentUsersList = list;
             communities = Array.isArray(communitiesData) ? communitiesData : [];
             specialties = Array.isArray(specialtiesData) ? specialtiesData : [];
             
