@@ -14,14 +14,20 @@ import io
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
-# Auth opcional: devuelve el usuario si hay token, None si no hay
-_optional_bearer = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token", auto_error=False)
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-def get_optional_user(token: str = Depends(_optional_bearer), db: Session = Depends(get_db)):
-    if not token:
+# Auth opcional: devuelve el usuario si hay token válido, None si no
+_auth_scheme = HTTPBearer(auto_error=False)
+
+def get_optional_user(
+    res: Optional[HTTPAuthorizationCredentials] = Depends(_auth_scheme), 
+    db: Session = Depends(get_db)
+):
+    if not res:
         return None
     try:
-        return get_current_user(token=token, db=db)
+        # get_current_user ya maneja la validación del token de forma centralizada
+        return get_current_user(credentials=res, db=db)
     except Exception:
         return None
 
@@ -42,7 +48,9 @@ def get_events(
 ):
     if current is None:
         return service.list_approved_public(db, skip, limit, upcoming_only, community_id, event_type)
+    # Si es Admin(1), respetamos el parámetro upcoming_only (por defecto False para admin si queremos ver todo)
     if current.rol_id == 1:
+        # Para el admin, permitimos ver todo el historial si upcoming_only es False
         return service.list_all(db, skip, limit, upcoming_only, community_id, event_type)
     if current.rol_id == 3:
         return service.list_by_community(db, current.community_id, skip, limit, upcoming_only, event_type)
@@ -100,7 +108,13 @@ def get_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_
             raise HTTPException(status_code=404, detail="Evento no encontrado")
 
     comm = db.query(Community).filter(Community.id_community == event.community_id).first()
-    event.community_name = comm.name_community if comm else None
+    if comm:
+        event.community_name = comm.name_community
+        leader = db.query(User).filter(User.id == comm.leader_id).first()
+        event.leader_name = leader.name_user if leader else None
+    else:
+        event.community_name = None
+        event.leader_name = None
     event.registered_count = repository.count_registrations(db, event_id)
     return event
 

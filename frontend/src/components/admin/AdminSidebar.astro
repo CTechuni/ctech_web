@@ -358,6 +358,15 @@ const menuItems = [
             console.warn('Could not read user info in AdminSidebar:', e);
         }
 
+        // Sincronizar cambios de perfil en tiempo real
+        window.addEventListener('user-updated', (e: any) => {
+            const fresh = e.detail;
+            const nameEl = document.getElementById('userNameSide');
+            if (fresh && nameEl) {
+                nameEl.textContent = fresh.name_user || 'Admin';
+            }
+        });
+
         // Logout
         const logoutBtn = document.getElementById('logoutBtn');
         logoutBtn?.addEventListener('click', () => {

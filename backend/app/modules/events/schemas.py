@@ -49,6 +49,7 @@ class EventResponse(EventBase):
     status: str = "pending"
     image_url: Optional[str] = None
     community_name: Optional[str] = None
+    leader_name: Optional[str] = None
     registered_count: Optional[int] = None
     is_registered: Optional[bool] = None
 

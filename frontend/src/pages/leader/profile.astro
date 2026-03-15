@@ -47,10 +47,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         <h3><i class="fa-solid fa-building-columns"></i> Tu comunidad</h3>
         <div class="comm-stats">
             <div class="cs-item">
-                <span class="cs-num" id="csMentors">—</span>
-                <span class="cs-lbl">Mentores</span>
-            </div>
-            <div class="cs-item">
                 <span class="cs-num" id="csUsers">—</span>
                 <span class="cs-lbl">Usuarios</span>
             </div>
@@ -106,7 +102,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 }
 .community-card h3 { margin: 0 0 20px; font-size: 1rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
 .community-card h3 i { color: #3b82f6; }
-.comm-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.comm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .cs-item { text-align: center; background: #f8fafc; border-radius: 12px; padding: 16px 10px; }
 .cs-num { display: block; font-size: 1.6rem; font-weight: 800; color: #0073ff; }
 .cs-lbl { display: block; font-size: .78rem; font-weight: 600; color: #64748b; margin-top: 2px; }
@@ -151,7 +147,6 @@ async function init() {
         try {
             const metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
             if (metrics) {
-                document.getElementById('csMentors').textContent = metrics.total_mentors ?? '—';
                 document.getElementById('csUsers').textContent   = metrics.total_users ?? '—';
                 document.getElementById('csCourses').textContent = metrics.total_courses ?? '—';
                 document.getElementById('csEvents').textContent  = metrics.active_events ?? '—';

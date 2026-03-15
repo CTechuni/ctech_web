@@ -28,3 +28,12 @@ package.json
 
 BACKEND_INTEGRATION.md
 .gitignore
+
+# Tests and temporary scripts
+test_*.py
+tests/
+__pycache__/
+*.pytest_cache/
+.pytest_cache/
+check_user_roles.py
+reset_admin.py
