@@ -5,8 +5,22 @@ from app.modules.communities.models import Community
 
 def _attach_names(results, registered_ids: set | None = None):
     events = []
-    for event, community_name, registered_count in results:
+    for row in results:
+        # Usamos desempaquetado flexible para evitar errores 500 si la longitud falla por cambios en repo
+        if len(row) == 4:
+            event, community_name, leader_name, registered_count = row
+        elif len(row) == 3:
+            event, community_name, registered_count = row
+            leader_name = None
+        else:
+            # Fallback seguro
+            event = row[0]
+            community_name = row[1] if len(row) > 1 else None
+            leader_name = row[2] if len(row) > 2 else None
+            registered_count = row[3] if len(row) > 3 else 0
+
         event.community_name = community_name
+        event.leader_name = leader_name
         event.registered_count = registered_count
         if registered_ids is not None:
             event.is_registered = event.id in registered_ids
