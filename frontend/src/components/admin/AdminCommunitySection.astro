@@ -877,7 +877,7 @@
     async function loadLeaders(isEdit = false) {
         try {
             console.debug('Loading leaders (Auth Bypassed)...');
-            const leaders = await AuthManager.fetch('/users/leaders');
+            const leaders = await AuthManager.fetch('/users/leaders?available=true');
             
             if (leaders === null) {
                 console.warn('Network error or endpoint unreachable');
