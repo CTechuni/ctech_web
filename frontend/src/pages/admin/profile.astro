@@ -24,10 +24,6 @@ const subtitle = 'Mi cuenta administrativa';
             <span class="stat-label">Comunidades</span>
           </div>
           <div class="stat">
-            <span class="stat-value" id="profileCourses">0</span>
-            <span class="stat-label">Cursos</span>
-          </div>
-          <div class="stat">
             <span class="stat-value" id="profileEvents">0</span>
             <span class="stat-label">Eventos</span>
           </div>
@@ -377,7 +373,6 @@ const subtitle = 'Mi cuenta administrativa';
           setText('profileEvents', data.active_events);
           setText('profileCommunities', data.total_communities);
           setText('profileUsers', data.total_users);
-          setText('profileCourses', data.total_courses);
         }
       } catch (e) { console.error('Error loading profile stats:', e); }
     }
