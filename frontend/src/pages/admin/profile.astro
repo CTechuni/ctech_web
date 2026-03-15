@@ -38,22 +38,22 @@ const subtitle = 'Mi cuenta administrativa';
     <div class="profile-sections-grid">
       <section class="settings-card glass-morphism">
         <h3>Información Personal</h3>
-        <form class="profile-form">
+        <form class="profile-form" id="personalInfoForm">
           <div class="form-row">
             <div class="form-group">
               <label>Nombre Completo</label>
-              <input type="text" id="profileInputName" value="Cargando..." readonly />
+              <input type="text" id="profileInputName" name="name_user" value="Cargando..." placeholder="Tu nombre artístico" />
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" id="profileInputEmail" value="Cargando..." readonly />
+              <input type="email" id="profileInputEmail" name="email" value="Cargando..." placeholder="correo@ejemplo.com" />
             </div>
           </div>
           <div class="form-group">
             <label>Cargo</label>
-            <input type="text" id="profileInputRole" value="Administrador Global" readonly />
+            <input type="text" id="profileInputRole" value="Administrador Global" readonly style="opacity: 0.7; cursor: not-allowed;" />
           </div>
-          <button type="button" class="btn-secondary">Editar Perfil</button>
+          <button type="submit" class="btn-primary-profile" id="btnSaveProfile">Actualizar Información</button>
         </form>
       </section>
 
@@ -63,12 +63,40 @@ const subtitle = 'Mi cuenta administrativa';
           <div class="option-item">
             <div class="option-info">
               <h4>Contraseña</h4>
-              <p>Última actualización: hace 3 meses</p>
+              <p>Protege tu acceso administrativo</p>
             </div>
-            <button class="btn-outline">Cambiar</button>
+            <button class="btn-outline" id="btnOpenPassModal">Cambiar Contraseña</button>
           </div>
         </div>
       </section>
+    </div>
+  </div>
+
+  <!-- ══ Modal Cambio de Contraseña ══ -->
+  <div class="profile-modal-overlay" id="passwordModal">
+    <div class="profile-modal">
+        <div class="modal-header">
+            <h3>Cambiar Seguridad</h3>
+            <button class="modal-close" id="closePassModal">&times;</button>
+        </div>
+        <form id="changePasswordForm" class="modal-form">
+            <div class="form-group">
+                <label>Contraseña Actual</label>
+                <input type="password" name="current_password" required placeholder="••••••••" />
+            </div>
+            <div class="form-group">
+                <label>Nueva Contraseña</label>
+                <input type="password" name="new_password" required minlength="6" placeholder="Mínimo 6 caracteres" />
+            </div>
+            <div class="form-group">
+                <label>Confirmar Nueva Contraseña</label>
+                <input type="password" id="confirmPassword" required placeholder="Repite la nueva contraseña" />
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="btnCancelPass">Cancelar</button>
+                <button type="submit" class="btn-save-pass" id="btnSubmitPass">Guardar Nueva Contraseña</button>
+            </div>
+        </form>
     </div>
   </div>
 
@@ -209,6 +237,22 @@ const subtitle = 'Mi cuenta administrativa';
       margin-top: 1rem;
     }
 
+    .btn-primary-profile {
+      background: var(--color-azure-radiant, #0073ff);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      width: fit-content;
+      margin-top: 1rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 115, 255, 0.2);
+    }
+    .btn-primary-profile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 115, 255, 0.3); }
+    .btn-primary-profile:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
     .security-options {
       display: flex;
       flex-direction: column;
@@ -265,6 +309,51 @@ const subtitle = 'Mi cuenta administrativa';
       .profile-avatar-large { width: 100px; height: 100px; font-size: 2.5rem; }
       .profile-main-info h2 { font-size: 1.8rem; }
     }
+
+    /* ══ ESTILOS MODAL PERFIL ══ */
+    .profile-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        display: none; /* Controlado por JS */
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 20px;
+    }
+    .profile-modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
+
+    .profile-modal {
+        background: white;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+    }
+
+    .modal-header {
+        padding: 24px 32px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 800; color: #0f172a; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; }
+
+    .modal-form { padding: 32px; display: flex; flex-direction: column; gap: 20px; }
+    
+    .modal-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+    }
+    .btn-cancel { flex: 1; background: #f1f5f9; color: #475569; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+    .btn-save-pass { flex: 2; background: #0f172a; color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 
   <script>
@@ -274,29 +363,7 @@ const subtitle = 'Mi cuenta administrativa';
       try {
         const user = (auth && auth.getUser) ? auth.getUser() : null;
         if (user) {
-          const fullNameEl = document.getElementById('profileFullName');
-          if (fullNameEl) fullNameEl.textContent = user.name_user || 'Admin';
-
-          const profileInitial = document.getElementById('profileLargeInitial');
-          if (profileInitial) {
-            const fullName = user.name_user || 'Admin';
-            const initials = fullName
-              .split(' ')
-              .map(word => (word && word[0]) ? word[0] : '')
-              .join('')
-              .substring(0, 2)
-              .toUpperCase();
-            profileInitial.textContent = initials;
-          }
-
-          // Update form inputs safely
-          const nameInput = document.getElementById('profileInputName');
-          const emailInput = document.getElementById('profileInputEmail');
-          const roleInput = document.getElementById('profileInputRole');
-
-          if (nameInput) nameInput.value = user.name_user || 'Admin';
-          if (emailInput) emailInput.value = user.email || '';
-          if (roleInput) roleInput.value = (user.role && user.role.name_rol) ? user.role.name_rol : 'Administrador Global';
+          updateUI(user);
         }
       } catch (e) {
         console.warn('Profile init error:', e);
@@ -314,6 +381,134 @@ const subtitle = 'Mi cuenta administrativa';
         }
       } catch (e) { console.error('Error loading profile stats:', e); }
     }
+
+    function updateUI(user) {
+        const fullNameEl = document.getElementById('profileFullName');
+        if (fullNameEl) fullNameEl.textContent = user.name_user || 'Admin';
+
+        const profileInitial = document.getElementById('profileLargeInitial');
+        if (profileInitial) {
+            const fullName = user.name_user || 'Admin';
+            const initials = fullName
+                .split(' ')
+                .filter(Boolean)
+                .map(word => word[0])
+                .join('')
+                .substring(0, 2)
+                .toUpperCase();
+            profileInitial.textContent = initials || 'AD';
+        }
+
+        const nameInput = document.getElementById('profileInputName') as HTMLInputElement;
+        const emailInput = document.getElementById('profileInputEmail') as HTMLInputElement;
+        const roleInput = document.getElementById('profileInputRole') as HTMLInputElement;
+
+        if (nameInput) nameInput.value = user.name_user || 'Admin';
+        if (emailInput) emailInput.value = user.email || '';
+        if (roleInput) roleInput.value = (user.role && user.role.name_rol) ? user.role.name_rol : 'Administrador Global';
+    }
+
+    // Modal Control
+    const passModal = document.getElementById('passwordModal');
+    const openPassBtn = document.getElementById('btnOpenPassModal');
+    const closePassX = document.getElementById('closePassModal');
+    const cancelPassBtn = document.getElementById('btnCancelPass');
+
+    const togglePassModal = (show: boolean) => {
+        if (show) passModal?.classList.add('open');
+        else {
+            passModal?.classList.remove('open');
+            (document.getElementById('changePasswordForm') as HTMLFormElement)?.reset();
+        }
+    };
+
+    openPassBtn?.addEventListener('click', () => togglePassModal(true));
+    closePassX?.addEventListener('click', () => togglePassModal(false));
+    cancelPassBtn?.addEventListener('click', () => togglePassModal(false));
+    passModal?.addEventListener('click', (e) => { if (e.target === passModal) togglePassModal(false); });
+
+    // Handle Personal Info Update
+    const infoForm = document.getElementById('personalInfoForm') as HTMLFormElement;
+    infoForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnSaveProfile') as HTMLButtonElement;
+        const formData = new FormData(infoForm);
+        const data = Object.fromEntries(formData.entries());
+
+        btn.disabled = true;
+        btn.textContent = 'Guardando...';
+
+        try {
+            const updatedUser = await AuthManager.fetch('/users/me', {
+                method: 'PATCH',
+                body: JSON.stringify(data)
+            });
+
+            // Update local storage
+            const currentToken = auth.getToken();
+            auth.setAuthData(currentToken, updatedUser);
+            
+            updateUI(updatedUser);
+
+            (window as any).Swal?.fire({
+                title: '¡Perfil Actualizado!',
+                text: 'Tus cambios han sido guardados con éxito.',
+                icon: 'success',
+                confirmButtonColor: '#0073ff'
+            });
+            
+            // Dispatch event for sidebar synchronization
+            window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
+        } catch (err) {
+            console.error('Error updating profile:', err);
+            (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Actualizar Información';
+        }
+    });
+
+    // Handle Password Change
+    const passForm = document.getElementById('changePasswordForm') as HTMLFormElement;
+    passForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(passForm);
+        const data = Object.fromEntries(formData.entries());
+        const confirm = (document.getElementById('confirmPassword') as HTMLInputElement).value;
+
+        if (data.new_password !== confirm) {
+            (window as any).Swal?.fire('Error', 'Las contraseñas nuevas no coinciden.', 'warning');
+            return;
+        }
+
+        const btn = document.getElementById('btnSubmitPass') as HTMLButtonElement;
+        btn.disabled = true;
+        btn.textContent = 'Cambiando...';
+
+        try {
+            await AuthManager.fetch('/users/me/password', {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    current_password: data.current_password,
+                    new_password: data.new_password
+                })
+            });
+
+            togglePassModal(false);
+            (window as any).Swal?.fire({
+                title: '¡Contraseña Cambiada!',
+                text: 'Tu seguridad ha sido actualizada correctamente.',
+                icon: 'success',
+                confirmButtonColor: '#000000'
+            });
+        } catch (err) {
+            console.error('Error changing password:', err);
+            (window as any).Swal?.fire('Error', err.message || 'No se pudo cambiar la contraseña. Verifica tu clave actual.', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Guardar Nueva Contraseña';
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', initProfile);
   </script>
