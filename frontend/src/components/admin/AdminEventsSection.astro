@@ -675,11 +675,11 @@
      */
     function optimizeImageUrl(url, width = 600) {
         if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) {
-            return url || '';
+            // Placeholder si no hay imagen (Unsplash event image)
+            return url || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=600&auto=format&fit=crop';
         }
         const parts = url.split('/upload/');
         if (parts.length !== 2) return url;
-        // q_auto: calidad auto, f_auto: formato auto, w_X: ancho, c_fill: recortar
         return `${parts[0]}/upload/f_auto,q_auto,w_${width},c_fill/${parts[1]}`;
     }
 
@@ -705,8 +705,12 @@
             allEvents = Array.isArray(eventsRes) ? eventsRes : [];
             pendingEvents = Array.isArray(pendingRes) ? pendingRes : [];
             
-            // Log para debug
-            console.log('Admin Events Data:', { allApproved: allEvents.length, pending: pendingEvents.length });
+            // Log para debug detallado
+            console.log('Admin Events Data:', { 
+                allApproved: allEvents.length, 
+                pending: pendingEvents.length,
+                pendingDetails: pendingEvents.map(e => ({ id: e.id, status: e.status, title: e.title }))
+            });
             
             updatePendingBadge();
             applyFilters();
@@ -1256,14 +1260,25 @@
             const formData = new FormData(eventForm);
             const jsonData: any = Object.fromEntries(formData.entries());
 
+            // Asegurar que image_url se tome del campo oculto si no se acaba de subir una nueva
+            const fImageUrlInput = document.getElementById('fImageUrl') as HTMLInputElement;
+            if (fImageUrlInput.value) {
+                jsonData.image_url = fImageUrlInput.value;
+            } else {
+                jsonData.image_url = null; // Enviar null si no hay imagen
+            }
+
             // 3. Conversión de tipos críticos
             if (jsonData.capacity) jsonData.capacity = Number(jsonData.capacity);
             if (jsonData.community_id) jsonData.community_id = Number(jsonData.community_id);
+            if (jsonData.id) delete jsonData.id; // No enviar ID en el body
 
             // 4. Enviar a API
             const id = (document.getElementById('fId') as HTMLInputElement).value;
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/events/${id}` : '/events/';
+
+            console.log('Sending data:', jsonData);
 
             await AuthManager.fetch(url, {
                 method: method,

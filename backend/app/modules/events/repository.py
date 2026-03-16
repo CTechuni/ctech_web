@@ -167,6 +167,19 @@ def delete(db: Session, event_id: int):
         return True
     return False
 
+def update(db: Session, event_id: int, data: dict):
+    event = get_by_id(db, event_id)
+    if not event:
+        return None
+    
+    for key, value in data.items():
+        if hasattr(event, key):
+            setattr(event, key, value)
+    
+    db.commit()
+    db.refresh(event)
+    return event
+
 # ── Registros de asistencia ───────────────────────────────────────────────────
 
 def get_registration(db: Session, event_id: int, user_id: int):
