@@ -306,7 +306,7 @@
 
     .modal-image-area { 
         width: 100%; 
-        height: 220px; 
+        height: 280px; 
         background: #f8fafc;
         display: flex;
         align-items: center;
@@ -320,6 +320,8 @@
         max-height: 100%; 
         object-fit: contain;
         border-radius: 12px;
+        display: block;
+        margin: auto;
     }
 
     .modal-content-area { padding: 32px; }
@@ -408,6 +410,22 @@
     let displayDate = new Date();
     let currentFilter = 'all';
     let allEvents = [];
+
+    // ── UTILS ──
+    const escHtml = (str) => {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[m]));
+    };
+
+    const linkify = (text) => {
+        if (!text) return '';
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => {
+            return `<a href="${url}" target="_blank" class="text-azure-radiant hover:underline" style="color: #0073ff; text-decoration: none;">${url}</a>`;
+        });
+    };
 
     // ── INITIALIZATION ──
     async function initCalendar() {
@@ -516,17 +534,32 @@
         
         if (event.image_url) {
             img.src = event.image_url;
-            imgContainer.style.display = 'block';
+            imgContainer.style.display = 'flex'; // Cambiado de block a flex para mantener el centrado
         } else {
             imgContainer.style.display = 'none';
         }
 
         // Info mapping
-        document.getElementById('modalEventTitle').textContent = event.title;
-        document.getElementById('modalEventDesc').textContent = event.description || 'Sin descripción disponible.';
+        const titleEl = document.getElementById('modalEventTitle');
+        const descEl = document.getElementById('modalEventDesc');
+        const locationEl = document.getElementById('modalEventLocation');
+
+        titleEl.textContent = event.title;
+        
+        // Manejar descripción con links si existen
+        const desc = event.description || 'Sin descripción disponible.';
+        descEl.innerHTML = linkify(escHtml(desc)).replace(/\n/g, '<br>');
+
         document.getElementById('modalEventDate').textContent = new Date(event.event_date + 'T12:00:00').toLocaleDateString('es-ES', { dateStyle: 'long' });
         document.getElementById('modalEventTime').textContent = (event.event_time || '18:00') + ' hr';
-        document.getElementById('modalEventLocation').textContent = event.location || 'Consultar con organizador';
+        
+        // Manejar ubicación como link si es URL
+        const locationText = event.location || 'Consultar con organizador';
+        if (locationText.startsWith('http')) {
+            locationEl.innerHTML = `<a href="${locationText}" target="_blank" style="color: #0073ff; text-decoration: underline;">${locationText}</a>`;
+        } else {
+            locationEl.textContent = locationText;
+        }
 
         const badge = document.getElementById('modalEventBadge');
         const type = event.event_type === 'presencial' ? 'presencial' : 'virtual';
