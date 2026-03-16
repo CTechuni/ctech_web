@@ -34,10 +34,33 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 </td></tr>
             </tbody>
         </table>
-    </div>
-</div>
+    </div> <!-- close table-card -->
 
-</div>
+    <!-- Promote Modal -->
+    <div class="m-overlay" id="promoteModal">
+        <div class="promote-card">
+            <div class="promote-icon"><i class="fa-solid fa-user-graduate"></i></div>
+            <h4 id="promoteTitle">Promover a usuario</h4>
+            <p>Selecciona la especialidad del nuevo mentor</p>
+            
+            <input type="hidden" id="promoteUserId" />
+            
+            <div class="fg">
+                <label>Especialidad</label>
+                <select id="promoteSpecialty" class="promote-select">
+                    <option value="" disabled selected>Selecciona una especialidad</option>
+                </select>
+            </div>
+
+            <div class="promote-actions">
+                <button class="btn-ghost" id="btnCancelPromote">Cancelar</button>
+                <button class="btn-confirm" id="btnConfirmPromote" disabled>
+                    <i class="fa-solid fa-check"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div> <!-- close page-wrap -->
 </LeaderLayout>
 
 <style>
@@ -109,7 +132,7 @@ async function init() {
 
     const [members, specs] = await Promise.all([
         AuthManager.fetch(`/users/community/${communityId}`),
-        fetch('http://localhost:8000/api/v1/specialties/').then(r => r.json()).catch(() => []),
+        AuthManager.fetch('/specialties/').catch(() => []),
     ]);
 
     users = (Array.isArray(members) ? members : []).filter(m => m.rol_id === 4);
