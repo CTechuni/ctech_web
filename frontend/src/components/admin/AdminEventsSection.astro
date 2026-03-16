@@ -130,8 +130,9 @@
             </div>
 
             <div class="fg">
-                <label>Capacidad</label>
-                <input type="number" id="fCapacity" name="capacity" class="fi" placeholder="Ej: 100" />
+                <label>Capacidad <span class="req">*</span></label>
+                <input type="number" id="fCapacity" name="capacity" class="fi" placeholder="Ej: 100" min="1" required />
+                <span class="field-hint">Debe ser un valor mayor a 0.</span>
             </div>
 
             <div class="fg" id="locationGroup">
@@ -749,6 +750,10 @@
             const optimizedImg = optimizeImageUrl(e.image_url, 600);
             const imgHtml = e.image_url ? `<img src="${optimizedImg}" class="event-card-img" alt="${e.title}" loading="lazy" />` : '';
 
+            const currentUser = authManager.getUser() || {};
+            const isCreator = Number(e.creator_id) === Number(currentUser.id);
+            const isAdmin = currentUser.rol_id === 1;
+
             return `
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="event-card-modern" data-id="${e.id}" data-status="pending">
@@ -789,18 +794,22 @@
                             </div>
                         </div>
                         <div class="modal-footer" style="padding-top: 1rem; border-top: 1px dashed #f1f5f9; display: flex; gap: 12px;">
-                            <button class="btn-approve-adm" data-id="${e.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width: 14px; height: 14px;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                </svg>
-                                Aprobar
-                            </button>
-                            <button class="btn-reject-adm" data-id="${e.id}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 14px; height: 14px;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                </svg>
-                                Rechazar
-                            </button>
+                            ${(isCreator || isAdmin) ? `
+                                <button class="btn-approve-adm" data-id="${e.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" style="width: 14px; height: 14px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    </svg>
+                                    Aprobar
+                                </button>
+                                <button class="btn-reject-adm" data-id="${e.id}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 14px; height: 14px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                    Rechazar
+                                </button>
+                            ` : `
+                                <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">Esperando aprobación del Admin</span>
+                            `}
                         </div>
                     </div>
                 </div>
@@ -925,15 +934,21 @@
             const optimizedImg = optimizeImageUrl(e.image_url, 600);
             const imgHtml = e.image_url ? `<img src="${optimizedImg}" class="event-card-img" alt="${e.title}" loading="lazy" />` : '';
 
+            const currentUser = authManager.getUser() || {};
+            const isCreator = Number(e.creator_id) === Number(currentUser.id);
+            const isAdmin = currentUser.rol_id === 1;
+
             return `
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="event-card-modern" data-id="${e.id}" data-status="approved" style="position: relative;">
                         ${imgHtml}
-                        <button class="leader-action-btn delete-btn btn-delete-event" data-id="${e.id}" title="Eliminar evento">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 17px; height: 17px;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                            </svg>
-                        </button>
+                        ${(isCreator || isAdmin) ? `
+                            <button class="leader-action-btn delete-btn btn-delete-event" data-id="${e.id}" title="Eliminar evento">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" style="width: 17px; height: 17px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                </svg>
+                            </button>
+                        ` : ''}
                         <div class="card-header-flex">
                             <span class="modal-badge ${badgeClass}">${typeLabel}</span>
                             <div class="date-badge">
@@ -1101,6 +1116,12 @@
             
             eventForm.reset();
             clearImageFn();
+
+            // Restringir fechas pasadas
+            const dateInput = document.getElementById('fDate') as HTMLInputElement;
+            if (dateInput) {
+                dateInput.min = new Date().toISOString().split('T')[0];
+            }
             
             // Default toggles
             const typeBtnVirtual = document.querySelector('.type-btn[data-val="virtual"]');
@@ -1143,14 +1164,10 @@
         form.append('file', pendingImageFile);
 
         try {
-            const token = AuthManager.getToken();
-            const res = await fetch(`${AuthManager.API_BASE_URL}/events/upload-image`, {
+            const data = await AuthManager.fetch('/events/upload-image', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
                 body: form,
             });
-            if (!res.ok) throw new Error('Error al subir imagen');
-            const data = await res.json();
             progressBar.style.width = '100%';
             statusTxt.textContent = '¡Imagen lista!';
             return data.url;
@@ -1176,9 +1193,13 @@
 
             // 2. Recopilar datos
             const formData = new FormData(eventForm);
-            const jsonData = Object.fromEntries(formData.entries());
+            const jsonData: any = Object.fromEntries(formData.entries());
 
-            // 3. Enviar a API
+            // 3. Conversión de tipos críticos
+            if (jsonData.capacity) jsonData.capacity = Number(jsonData.capacity);
+            if (jsonData.community_id) jsonData.community_id = Number(jsonData.community_id);
+
+            // 4. Enviar a API
             await AuthManager.fetch('/events/', {
                 method: 'POST',
                 body: JSON.stringify(jsonData)
