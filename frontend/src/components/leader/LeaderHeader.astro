@@ -21,30 +21,41 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     </div>
 
     <div class="header-actions">
-        <!-- Notification Bell -->
-        <div class="notif-wrapper" id="notifWrapper">
-            <button class="notif-btn" id="notifBtn" aria-label="Notificaciones">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                </svg>
-                <span class="notif-badge" id="notifBadge" style="display:none">0</span>
-            </button>
+            <!-- Notification Bell -->
+            <div class="notif-wrapper" id="notifWrapper">
+                <button class="notif-btn" id="notifBtn" aria-label="Notificaciones">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+                </button>
 
-            <div class="notif-dropdown" id="notifDropdown">
-                <div class="notif-header">
-                    <span class="notif-title">Notificaciones</span>
-                    <button class="notif-mark-all" id="notifMarkAll">Marcar todo leído</button>
-                </div>
-                <div class="notif-list" id="notifList">
-                    <div class="notif-empty">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.539 3 3 0 0 0-5.667-1.539zm0 0a23.998 23.998 0 0 0-3.519-.75M6.344 15.72a23.976 23.976 0 0 1-1.395-6.51m1.395 6.51a23.79 23.79 0 0 0 3.524.709" />
-                        </svg>
-                        <p>Sin notificaciones nuevas</p>
+                <!-- Notifications Dropdown -->
+                <div class="notif-dropdown" id="notifDropdown">
+                    <div class="notif-header">
+                        <div class="notif-header-title">
+                            <h3>Notificaciones</h3>
+                            <span class="notif-count-badge" id="notifCountTotal">0</span>
+                        </div>
+                        <button class="mark-read-btn" id="notifMarkAll">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            Marcar todo leído
+                        </button>
+                    </div>
+                    <div class="notif-list" id="notifList">
+                        <div class="notif-empty">
+                            <div class="empty-icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                                </svg>
+                            </div>
+                            <p>No hay notificaciones nuevas</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
         <!-- User chip -->
         <div class="user-chip">
@@ -96,65 +107,128 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
     /* ── Dropdown ── */
     .notif-dropdown {
-        position: absolute; top: calc(100% + 10px); right: 0;
-        width: 340px; background: #fff;
-        border: 1px solid #e2e8f0; border-radius: 16px;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.12);
-        overflow: hidden; z-index: 200;
-        opacity: 0; transform: translateY(-8px) scale(0.97);
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        width: 360px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        overflow: hidden;
+        z-index: 200;
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
         pointer-events: none;
-        transition: opacity 0.18s ease, transform 0.18s ease;
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-origin: top right;
+        display: flex;
+        flex-direction: column;
     }
     .notif-dropdown.open {
-        opacity: 1; transform: translateY(0) scale(1); pointer-events: auto;
+        opacity: 1; transform: scale(1) translateY(0); pointer-events: auto;
     }
     .notif-header {
         display: flex; justify-content: space-between; align-items: center;
-        padding: 14px 16px 12px; border-bottom: 1px solid #f1f5f9;
+        padding: 20px; border-bottom: 1px solid #f1f5f9;
+        background: transparent;
     }
-    .notif-title { font-size: 0.88rem; font-weight: 700; color: #0f172a; }
-    .notif-mark-all {
-        font-size: 0.75rem; font-weight: 600; color: #3b82f6;
-        background: none; border: none; cursor: pointer; padding: 0;
+    .notif-header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    .notif-mark-all:hover { color: #2563eb; text-decoration: underline; }
+    .notif-header h3 { 
+        margin: 0; 
+        font-size: 0.95rem; 
+        font-weight: 800; 
+        color: #0f172a; 
+        letter-spacing: -0.01em;
+    }
+    .notif-count-badge {
+        background: #eff6ff;
+        color: #3b82f6;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+    .mark-read-btn { 
+        background: none; 
+        border: none; 
+        color: #64748b; 
+        font-size: 0.75rem; 
+        font-weight: 600; 
+        cursor: pointer; 
+        padding: 6px 10px; 
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s;
+    }
+    .mark-read-btn:hover { background: #f1f5f9; color: #0f172a; }
+    .mark-read-btn svg { width: 14px; height: 14px; }
 
-    .notif-list { max-height: 320px; overflow-y: auto; }
+    .notif-list { max-height: 420px; overflow-y: auto; }
     .notif-list::-webkit-scrollbar { width: 4px; }
-    .notif-list::-webkit-scrollbar-track { background: #f8fafc; }
-    .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+    .notif-list::-webkit-scrollbar-track { background: transparent; }
+    .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
     .notif-empty {
-        display: flex; flex-direction: column; align-items: center; gap: 8px;
-        padding: 32px 20px; color: #94a3b8;
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        padding: 48px 32px; text-align: center;
     }
-    .notif-empty svg { width: 32px; height: 32px; opacity: 0.5; }
-    .notif-empty p { margin: 0; font-size: 0.82rem; font-weight: 500; }
+    .empty-icon-box {
+        width: 54px;
+        height: 54px;
+        background: #f8fafc;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #cbd5e1;
+        margin-bottom: 4px;
+    }
+    .empty-icon-box svg { width: 28px; height: 28px; }
+    .notif-empty p { margin: 0; font-size: 0.88rem; font-weight: 600; color: #94a3b8; }
 
     .notif-item {
-        display: flex; align-items: flex-start; gap: 12px;
-        padding: 12px 16px; border-bottom: 1px solid #f8fafc;
-        transition: background 0.15s; cursor: default;
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 16px 20px; border-bottom: 1px solid #f8fafc;
+        transition: all 0.2s; cursor: pointer;
+        position: relative;
     }
     .notif-item:last-child { border-bottom: none; }
     .notif-item:hover { background: #f8fafc; }
-    .notif-item.unread { background: #eff6ff; }
-    .notif-item.unread:hover { background: #dbeafe; }
+    .notif-item.unread { background: rgba(59, 130, 246, 0.03); }
 
-    .notif-icon {
-        width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
+    .notif-item-icon {
+        width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.9rem;
+        font-size: 1.1rem;
     }
-    .notif-icon.event   { background: #fef3c7; color: #d97706; }
-    .notif-icon.course  { background: #ede9fe; color: #7c3aed; }
-    .notif-icon.member  { background: #dcfce7; color: #16a34a; }
+    .notif-item-icon.event   { background: #fef3c7; color: #d97706; }
+    .notif-item-icon.course  { background: #ede9fe; color: #7c3aed; }
+    .notif-item-icon.member  { background: #dcfce7; color: #16a34a; }
+    .notif-item-icon.info { background: #eff6ff; color: #3b82f6; }
 
-    .notif-body { flex: 1; min-width: 0; }
-    .notif-body strong { display: block; font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; }
-    .notif-body p { margin: 0; font-size: 0.76rem; color: #64748b; line-height: 1.4;
+    .notif-item-content { flex: 1; min-width: 0; }
+    .notif-item-title { display: block; font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 2px; line-height: 1.3; }
+    .notif-item-msg { margin: 0; font-size: 0.8rem; color: #64748b; line-height: 1.5;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .notif-time { font-size: 0.68rem; color: #94a3b8; font-weight: 500; margin-top: 4px; display: block; }
+    .notif-item-time { font-size: 0.72rem; color: #94a3b8; font-weight: 500; margin-top: 6px; display: block; }
+
+    .unread-dot {
+        width: 8px;
+        height: 8px;
+        background: #3b82f6;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 2px white, 0 0 8px rgba(59, 130, 246, 0.4);
+    }
 
     /* ── User chip ── */
     .user-chip {
@@ -268,6 +342,7 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
     function renderNotifications(unread) {
         const badge   = document.getElementById('notifBadge');
+        const countTotal = document.getElementById('notifCountTotal');
         const list    = document.getElementById('notifList');
         if (!badge || !list) return;
 
@@ -275,16 +350,23 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
         if (count > 0) {
             badge.textContent    = count > 9 ? '9+' : String(count);
             badge.style.display  = 'flex';
+            if (countTotal) {
+                countTotal.textContent = String(count);
+                countTotal.style.display = 'inline-block';
+            }
         } else {
             badge.style.display  = 'none';
+            if (countTotal) countTotal.style.display = 'none';
         }
 
         if (!count) {
             list.innerHTML = `
             <div class="notif-empty">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.143 17.082a24.248 24.248 0 0 0 3.844.148m-3.844-.148a23.856 23.856 0 0 1-5.455-1.31 8.964 8.964 0 0 0 2.3-5.542m3.155 6.852a3 3 0 0 0 5.667 1.539 3 3 0 0 0-5.667-1.539zm0 0a23.998 23.998 0 0 0-3.519-.75M6.344 15.72a23.976 23.976 0 0 1-1.395-6.51m1.395 6.51a23.79 23.79 0 0 0 3.524.709" />
-                </svg>
+                <div class="empty-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                </div>
                 <p>Sin notificaciones nuevas</p>
             </div>`;
             return;
@@ -292,12 +374,13 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
         list.innerHTML = unread.map(n => `
         <div class="notif-item unread">
-            <div class="notif-icon ${n.type}">${n.icon}</div>
-            <div class="notif-body">
-                <strong>${n.title}</strong>
-                <p title="${n.body}">${n.body}</p>
-                <span class="notif-time">${n.time}</span>
+            <div class="notif-item-icon ${n.type}">${n.icon}</div>
+            <div class="notif-item-content">
+                <span class="notif-item-title">${n.title}</span>
+                <p class="notif-item-msg" title="${n.body}">${n.body}</p>
+                <span class="notif-item-time">${n.time}</span>
             </div>
+            <div class="unread-dot"></div>
         </div>`).join('');
     }
 
