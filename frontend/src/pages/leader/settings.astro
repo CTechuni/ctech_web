@@ -5,6 +5,37 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 <LeaderLayout title="Ajustes" subtitle="Seguridad y cuenta">
 <div class="settings-page">
 
+    <!-- Información Personal -->
+    <div class="settings-card">
+        <div class="card-header">
+            <div class="header-icon icon-blue" style="background: rgba(0, 115, 255, 0.1); color: #0073ff;"><i class="fa-solid fa-user"></i></div>
+            <div>
+                <h3>Información Personal</h3>
+                <p>Gestiona tu nombre y correo electrónico</p>
+            </div>
+        </div>
+
+        <form id="personalInfoForm" class="settings-form">
+            <div class="fg">
+                <label>Nombre Completo</label>
+                <input type="text" id="profileInputName" name="name_user" class="fi" placeholder="Tu nombre" />
+            </div>
+            <div class="fg">
+                <label>Email de Acceso</label>
+                <input type="email" id="profileInputEmail" name="email" class="fi" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="fg">
+                <label>Comunidad</label>
+                <input type="text" id="profileInputCommunity" class="fi" readonly style="opacity: 0.7; cursor: not-allowed;" />
+            </div>
+            <div class="form-footer" style="padding-top: 0.5rem;">
+                <button type="submit" class="btn-save" id="btnSaveProfile">
+                    <i class="fa-solid fa-check"></i> Actualizar Información
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Cambiar contraseña -->
     <div class="settings-card">
         <div class="card-header">
@@ -41,10 +72,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <button type="button" class="eye-btn" data-target="confirmPwd"><i class="fa-solid fa-eye"></i></button>
                 </div>
             </div>
-            <div id="pwdAlert" class="alert-msg" style="display:none"></div>
-            <button type="submit" class="btn-save" id="btnSavePwd">
-                <i class="fa-solid fa-check"></i> Actualizar contraseña
-            </button>
+            <div class="form-footer" style="padding-top: 0.5rem;">
+                <button type="submit" class="btn-save" id="btnSavePwd">
+                    <i class="fa-solid fa-check"></i> Actualizar contraseña
+                </button>
+            </div>
         </form>
     </div>
 </div>
@@ -98,7 +130,21 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 </style>
 
 <script>
-import { AuthManager } from '../../utils/auth.js';
+import { authManager as auth, AuthManager } from '../../utils/auth.js';
+
+// Load initial data
+function loadData() {
+    const user = auth.getUser();
+    if (user) {
+        const nameInput = document.getElementById('profileInputName') as HTMLInputElement;
+        const emailInput = document.getElementById('profileInputEmail') as HTMLInputElement;
+        const communityInput = document.getElementById('profileInputCommunity') as HTMLInputElement;
+
+        if (nameInput) nameInput.value = user.name_user || '';
+        if (emailInput) emailInput.value = user.email || '';
+        if (communityInput) communityInput.value = user.community_name || 'Sin Comunidad';
+    }
+}
 
 // Eye toggles
 document.querySelectorAll('.eye-btn').forEach(btn => {
@@ -129,25 +175,59 @@ document.getElementById('newPwd').addEventListener('input', function() {
     label.style.color = colors[score - 1] || '#94a3b8';
 });
 
-// Form submit
+// Handle Personal Info Update
+const infoForm = document.getElementById('personalInfoForm') as HTMLFormElement;
+infoForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSaveProfile') as HTMLButtonElement;
+    const formData = new FormData(infoForm);
+    const data = Object.fromEntries(formData.entries());
+
+    btn.disabled = true;
+    btn.textContent = 'Guardando...';
+
+    try {
+        const updatedUser = await AuthManager.fetch('/users/me', {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+
+        // Update local storage
+        const currentToken = auth.getToken();
+        auth.setAuthData(currentToken, updatedUser);
+        
+        (window as any).Swal?.fire({
+            title: '¡Perfil Actualizado!',
+            text: 'Tus cambios han sido guardados con éxito.',
+            icon: 'success',
+            confirmButtonColor: '#0073ff'
+        });
+        
+        // Dispatch event for sidebar synchronization
+        window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Actualizar Información';
+    }
+});
+
+// Password Form submit
 document.getElementById('pwdForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = document.getElementById('btnSavePwd');
-    const alert = document.getElementById('pwdAlert');
+    const btn = document.getElementById('btnSavePwd') as HTMLButtonElement;
     const current = (document.getElementById('currentPwd') as HTMLInputElement).value;
     const newPwd  = (document.getElementById('newPwd')     as HTMLInputElement).value;
     const confirm = (document.getElementById('confirmPwd') as HTMLInputElement).value;
 
     if (newPwd !== confirm) {
-        alert.textContent = 'Las contraseñas nuevas no coinciden.';
-        alert.className = 'alert-msg error';
-        alert.style.display = 'block';
+        (window as any).Swal?.fire('Error', 'Las contraseñas nuevas no coinciden.', 'warning');
         return;
     }
     if (newPwd.length < 8) {
-        alert.textContent = 'La contraseña debe tener al menos 8 caracteres.';
-        alert.className = 'alert-msg error';
-        alert.style.display = 'block';
+        (window as any).Swal?.fire('Aviso', 'La contraseña debe tener al menos 8 caracteres.', 'info');
         return;
     }
 
@@ -157,19 +237,25 @@ document.getElementById('pwdForm').addEventListener('submit', async e => {
             method: 'PATCH',
             body: JSON.stringify({ current_password: current, new_password: newPwd }),
         });
-        alert.textContent = '✓ Contraseña actualizada correctamente.';
-        alert.className = 'alert-msg success';
-        alert.style.display = 'block';
+        
+        (window as any).Swal?.fire({
+            title: '¡Contraseña Actualizada!',
+            text: 'Tu acceso ha sido actualizado correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#3b82f6'
+        });
+
         document.getElementById('pwdForm').reset();
         document.getElementById('strengthFill').style.width = '0';
         document.getElementById('strengthLabel').textContent = '';
-        setTimeout(() => { alert.style.display = 'none'; }, 4000);
     } catch(err) {
-        alert.textContent = err.message || 'Error al actualizar la contraseña.';
-        alert.className = 'alert-msg error';
-        alert.style.display = 'block';
+        console.error('Error updating password:', err);
+        (window as any).Swal?.fire('Error', err.message || 'Error al actualizar la contraseña.', 'error');
     } finally {
         btn.disabled = false;
     }
 });
+
+document.addEventListener('DOMContentLoaded', loadData);
+loadData();
 </script>

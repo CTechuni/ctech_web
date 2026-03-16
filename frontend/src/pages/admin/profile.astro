@@ -423,11 +423,11 @@ const subtitle = 'Mi cuenta administrativa';
     passModal?.addEventListener('click', (e) => { if (e.target === passModal) togglePassModal(false); });
 
     // Handle Personal Info Update
-    const infoForm = document.getElementById('personalInfoForm') as HTMLFormElement;
+    const infoForm = document.getElementById('personalInfoForm');
     infoForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btnSaveProfile') as HTMLButtonElement;
-        const formData = new FormData(infoForm);
+        const formData = new FormData(e.target as HTMLFormElement);
         const data = Object.fromEntries(formData.entries());
 
         btn.disabled = true;
@@ -445,18 +445,28 @@ const subtitle = 'Mi cuenta administrativa';
             
             updateUI(updatedUser);
 
-            (window as any).Swal?.fire({
-                title: '¡Perfil Actualizado!',
-                text: 'Tus cambios han sido guardados con éxito.',
-                icon: 'success',
-                confirmButtonColor: '#0073ff'
-            });
+            const swal = (window as any).Swal;
+            if (swal) {
+                await swal.fire({
+                    title: '¡Perfil Actualizado!',
+                    text: 'Tus cambios han sido guardados con éxito.',
+                    icon: 'success',
+                    confirmButtonColor: '#0073ff'
+                });
+            } else {
+                alert('Tus cambios han sido guardados con éxito.');
+            }
             
             // Dispatch event for sidebar synchronization
             window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
         } catch (err) {
             console.error('Error updating profile:', err);
-            (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+            const swal = (window as any).Swal;
+            if (swal) {
+                swal.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+            } else {
+                alert('Error al guardar cambios: ' + err.message);
+            }
         } finally {
             btn.disabled = false;
             btn.textContent = 'Actualizar Información';
@@ -490,15 +500,25 @@ const subtitle = 'Mi cuenta administrativa';
             });
 
             togglePassModal(false);
-            (window as any).Swal?.fire({
-                title: '¡Contraseña Cambiada!',
-                text: 'Tu seguridad ha sido actualizada correctamente.',
-                icon: 'success',
-                confirmButtonColor: '#000000'
-            });
+            const swal = (window as any).Swal;
+            if (swal) {
+                await swal.fire({
+                    title: '¡Contraseña Cambiada!',
+                    text: 'Tu seguridad ha sido actualizada correctamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#0073ff'
+                });
+            } else {
+                alert('¡Contraseña Cambiada exitosamente!');
+            }
         } catch (err) {
             console.error('Error changing password:', err);
-            (window as any).Swal?.fire('Error', err.message || 'No se pudo cambiar la contraseña. Verifica tu clave actual.', 'error');
+            const swal = (window as any).Swal;
+            if (swal) {
+                swal.fire('Error', err.message || 'No se pudo cambiar la contraseña. Verifica tu clave actual.', 'error');
+            } else {
+                alert('Error al cambiar contraseña: ' + err.message);
+            }
         } finally {
             btn.disabled = false;
             btn.textContent = 'Guardar Nueva Contraseña';

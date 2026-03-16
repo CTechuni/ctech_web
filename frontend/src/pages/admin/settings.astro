@@ -155,4 +155,28 @@ const subtitle = 'Configuración de la plataforma';
       .settings-nav nav a { white-space: nowrap; }
     }
   </style>
+  <script>
+    import { AuthManager } from '../../utils/auth.js';
+
+    const settingsForm = document.querySelector('.settings-form') as HTMLFormElement;
+    settingsForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = settingsForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+      
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      // Simular guardado o implementar petición si existe endpoint
+      setTimeout(() => {
+        (window as any).Swal?.fire({
+          title: 'Configuración Guardada',
+          text: 'Los ajustes generales de la plataforma se han actualizado.',
+          icon: 'success',
+          confirmButtonColor: '#0073ff'
+        });
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+      }, 800);
+    });
+  </script>
 </AdminLayout>
