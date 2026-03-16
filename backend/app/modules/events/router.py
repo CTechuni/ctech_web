@@ -194,6 +194,10 @@ def update_event(event_id: int, data: schemas.EventUpdate, db: Session = Depends
         # Líder: solo eventos de su comunidad
         if event.community_id != current.community_id:
             raise HTTPException(status_code=403, detail="Solo puedes editar eventos de tu comunidad")
+    
+    # Restricción estricta de autoría: solo el creador o el Admin pueden editar
+    if current.rol_id != 1 and event.creator_id != current.id:
+        raise HTTPException(status_code=403, detail="Solo el creador del evento puede editarlo")
 
     return repository.update(db, event_id, data.model_dump(exclude_unset=True))
 
@@ -244,6 +248,10 @@ def cancel_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
     if current.rol_id == 3 and event.community_id != current.community_id:
         raise HTTPException(status_code=403, detail="Solo puedes cancelar eventos de tu comunidad")
 
+    # Restricción de autoría
+    if current.rol_id != 1 and event.creator_id != current.id:
+        raise HTTPException(status_code=403, detail="Solo el creador del evento puede cancelarlo")
+
     return service.cancel_event(db, event_id)
 
 # ── PATCH aplazar evento ───────────────────────────────────────────────────────
@@ -258,6 +266,10 @@ def postpone_event(event_id: int, db: Session = Depends(get_db), current=Depends
 
     if current.rol_id == 3 and event.community_id != current.community_id:
         raise HTTPException(status_code=403, detail="Solo puedes aplazar eventos de tu comunidad")
+
+    # Restricción de autoría
+    if current.rol_id != 1 and event.creator_id != current.id:
+        raise HTTPException(status_code=403, detail="Solo el creador del evento puede aplazarlo")
 
     return service.postpone_event(db, event_id)
 
@@ -342,6 +354,10 @@ def delete_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
     if current.rol_id == 3:
         if event.community_id != current.community_id:
             raise HTTPException(status_code=403, detail="Solo puedes eliminar eventos de tu comunidad")
+
+    # Restricción de autoría
+    if current.rol_id != 1 and event.creator_id != current.id:
+        raise HTTPException(status_code=403, detail="Solo el creador del evento puede eliminarlo")
 
     service.delete_event(db, event_id)
     return {"message": "Evento eliminado correctamente"}
