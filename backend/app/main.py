@@ -11,8 +11,9 @@ from app.modules.communities.router import router as communities_router
 from app.modules.events.router import router as events_router
 from app.modules.metrics.router import router as metrics_router
 from app.modules.admin.router import router as admin_router
+# from app.modules.notifications.router import router as notifications_router
+# from app.modules.specialties.router import router as specialties_router
 from app.modules.notifications.router import router as notifications_router
-from app.modules.specialties.router import router as specialties_router
 
 # 1. Crear las tablas en PostgreSQL (basado en base_api.py)
 Base.metadata.create_all(bind=engine)
@@ -50,7 +51,7 @@ app.include_router(events_router, prefix=api_prefix)
 app.include_router(metrics_router, prefix=api_prefix)
 app.include_router(admin_router, prefix=api_prefix)
 app.include_router(notifications_router, prefix=api_prefix)
-app.include_router(specialties_router, prefix=api_prefix)
+# app.include_router(specialties_router, prefix=api_prefix)
 
 @app.get("/", tags=["Root"])
 def read_root():
