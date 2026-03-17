@@ -397,11 +397,18 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         list.querySelectorAll('.notif-item').forEach(item => {
             item.addEventListener('click', async () => {
                 const id = item.getAttribute('data-id');
+                
+                // Optimistic update
+                notifications = notifications.map(n => n.id === id ? { ...n, is_read: true } : n);
+                renderBadge(notifications.filter(n => !n.is_read).length);
+                renderList(notifications);
+
                 try {
                     await AuthManager.fetch(`/notifications/${id}/read`, { method: 'PATCH' });
                     await loadNotifications();
                 } catch (e) {
                     console.error('Error al marcar notificación:', e);
+                    await loadNotifications();
                 }
             });
         });
@@ -446,11 +453,17 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
 
     // ── Marcar todo como leído ────────────────────────────────────────────────
     document.getElementById('notifMarkAll')?.addEventListener('click', async () => {
+        // Optimistic update
+        notifications = notifications.map(n => ({ ...n, is_read: true }));
+        renderBadge(0);
+        renderList(notifications);
+
         try {
             await AuthManager.fetch('/notifications/read-all', { method: 'POST' });
             await loadNotifications();
         } catch (e) {
             console.error('Error al marcar todas como leídas:', e);
+            await loadNotifications();
         }
     });
 

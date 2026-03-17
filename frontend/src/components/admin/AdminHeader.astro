@@ -494,20 +494,31 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
     }
 
     async function markAsRead(id) {
+        // Optimistic update
+        notifications = notifications.map(n => n.id === id ? { ...n, is_read: true } : n);
+        updateNotifUI();
+
         try {
             await AuthManager.fetch(`/notifications/${id}/read`, { method: 'PATCH' });
+            // Re-fetch to be safe and sync with server
             await fetchNotifications();
         } catch (error) {
             console.error('Error marking as read:', error);
+            await fetchNotifications();
         }
     }
 
     async function markAllRead() {
+        // Optimistic update
+        notifications = notifications.map(n => ({ ...n, is_read: true }));
+        updateNotifUI();
+
         try {
             await AuthManager.fetch('/notifications/read-all', { method: 'POST' });
             await fetchNotifications();
         } catch (error) {
             console.error('Error marking all as read:', error);
+            await fetchNotifications();
         }
     }
 
