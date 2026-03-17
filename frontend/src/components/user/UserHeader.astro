@@ -17,7 +17,7 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
             </svg>
         </button>
         <div class="header-title-block">
-            <h1 class="header-title">{title}</h1>
+            <h1 class="header-title" id="headerTitle">{title}</h1>
             <span class="header-subtitle" id="headerCommunity">{subtitle}</span>
         </div>
     </div>
@@ -312,9 +312,16 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         const avatar = document.getElementById('headerAvatar');
         const name   = document.getElementById('headerName');
         const comm   = document.getElementById('headerCommunity');
+        const titleEl = document.getElementById('headerTitle');
+
         if (avatar) avatar.textContent = (user.name_user || '--').substring(0, 2).toUpperCase();
         if (name)   name.textContent   = (user.name_user || 'Usuario').split(' ')[0];
         if (comm && user.community_name) comm.textContent = user.community_name;
+        
+        if (titleEl && user.name_user) {
+            const firstName = user.name_user.split(' ')[0];
+            titleEl.textContent = `Hola, ${firstName}`;
+        }
     }
 
     async function loadHeaderProfile() {
