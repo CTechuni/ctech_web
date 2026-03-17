@@ -369,7 +369,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         border-top: 1px dashed #f1f5f9;
     }
 
-    .btn-action-ic {
+    :global(.btn-action-ic) {
         flex: 1;
         display: flex;
         align-items: center;
@@ -387,11 +387,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     /* Edit Button - Azure Theme */
-    .btn-action-ic.edit-action {
+    :global(.btn-action-ic.edit-action) {
         color: var(--color-azure-radiant);
         border-color: rgba(0, 115, 255, 0.1);
     }
-    .btn-action-ic.edit-action:hover {
+    :global(.btn-action-ic.edit-action:hover) {
         background: var(--color-azure-radiant);
         border-color: var(--color-azure-radiant);
         color: white;
@@ -400,11 +400,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     /* Postpone Button - Amber Theme */
-    .btn-action-ic.postpone-action {
+    :global(.btn-action-ic.postpone-action) {
         color: #d97706;
         border-color: rgba(217, 119, 6, 0.1);
     }
-    .btn-action-ic.postpone-action:hover {
+    :global(.btn-action-ic.postpone-action:hover) {
         background: #f59e0b;
         border-color: #f59e0b;
         color: white;
@@ -413,11 +413,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     /* Cancel Button - Red Theme */
-    .btn-action-ic.delete-action {
+    :global(.btn-action-ic.delete-action) {
         color: #ef4444;
         border-color: rgba(239, 68, 68, 0.1);
     }
-    .btn-action-ic.delete-action:hover {
+    :global(.btn-action-ic.delete-action:hover) {
         background: #ef4444;
         border-color: #ef4444;
         color: white;
