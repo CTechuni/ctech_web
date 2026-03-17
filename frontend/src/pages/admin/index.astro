@@ -48,8 +48,8 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                     <h4>Crecimiento Global de Usuarios</h4>
                     <span class="subtitle">Últimos 7 meses</span>
                 </div>
-                <div class="ch-trend positive">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" /></svg> +8.2%
+                <div class="ch-trend positive" id="growthTrend">
+                    <span id="growthTrendText">--</span>
                 </div>
             </div>
             <div class="relative-chart-container">
@@ -181,9 +181,11 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
     .ch-text h4 { margin: 0; font-size: 1rem; font-weight: 700; color: #0F172A; }
     .ch-text .subtitle { font-size: 0.8rem; color: #94A3B8; }
     
-    .ch-trend.positive {
-        background: #dcfce7;
-        color: #15803d;
+    .ch-trend.positive { background: #dcfce7; color: #15803d; }
+    .ch-trend.negative { background: #fee2e2; color: #b91c1c; }
+    .ch-trend.neutral  { background: #f1f5f9; color: #64748b; }
+    
+    .ch-trend {
         padding: 4px 12px;
         border-radius: 9999px;
         font-size: 0.85rem;
@@ -440,6 +442,27 @@ import AdminLayout from '../../layouts/AdminLayout.astro';
                 }
             }
         });
+
+        // 4. Badge de tendencia dinámico
+        const trendEl = document.getElementById('growthTrend');
+        const trendTx = document.getElementById('growthTrendText');
+        if (trendEl && trendTx) {
+            const last = growthData[growthData.length - 1] ?? 0;
+            const prev = growthData[growthData.length - 2] ?? 0;
+            const diff = last - prev;
+
+            if (last === 0 && prev === 0) {
+                trendEl.className = 'ch-trend neutral';
+                trendTx.textContent = 'Sin datos';
+            } else if (prev === 0) {
+                trendEl.className = 'ch-trend positive';
+                trendTx.textContent = `+${last} este mes`;
+            } else {
+                const pct = ((diff / prev) * 100).toFixed(1);
+                trendEl.className = diff >= 0 ? 'ch-trend positive' : 'ch-trend negative';
+                trendTx.textContent = diff >= 0 ? `▲ +${pct}%` : `▼ ${pct}%`;
+            }
+        }
 
         // 2. Doughnut Chart: Roles
         const roleCtx = document.getElementById('roleDistChart');
