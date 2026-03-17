@@ -446,6 +446,17 @@
         }
     }
 
+    function optimizeImageUrl(url, width = 600) {
+        if (!url || typeof url !== 'string') return '';
+        if (url.includes('cloudinary.com')) {
+            const parts = url.split('/upload/');
+            if (parts.length === 2) {
+                return `${parts[0]}/upload/f_auto,q_auto,w_${width},c_fill/${parts[1]}`;
+            }
+        }
+        return url;
+    }
+
     function renderGrid() {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -533,9 +544,10 @@
         const imgContainer = document.getElementById('modalImageContainer');
         const img = document.getElementById('modalEventImage') as HTMLImageElement;
         
-        if (event.image_url) {
-            img.src = event.image_url;
-            imgContainer.style.display = 'flex'; // Cambiado de block a flex para mantener el centrado
+        const optimizedImg = optimizeImageUrl(event.image_url, 800);
+        if (optimizedImg) {
+            img.src = optimizedImg;
+            imgContainer.style.display = 'flex';
         } else {
             imgContainer.style.display = 'none';
         }

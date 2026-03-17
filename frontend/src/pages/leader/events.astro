@@ -312,6 +312,14 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         border-radius: 12px; margin-bottom: 0.5rem;
     }
 
+    :global(.event-card-img-placeholder) {
+        width: 100%; height: 160px; background: #f8fafc;
+        border-radius: 12px; margin-bottom: 0.5rem;
+        display: flex; align-items: center; justify-content: center;
+        color: #cbd5e1; border: 1px solid #f1f5f9;
+    }
+    :global(.event-card-img-placeholder svg) { width: 48px; height: 48px; opacity: 0.5; }
+
     :global(.card-header-flex) { 
         display: flex; 
         flex-direction: column; 
@@ -445,10 +453,14 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
      * Optimiza URLs de Cloudinary inyectando parámetros de transformación.
      */
     function optimizeImageUrl(url, width = 600) {
-        if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) return url || '';
-        const parts = url.split('/upload/');
-        if (parts.length !== 2) return url;
-        return `${parts[0]}/upload/f_auto,q_auto,w_${width},c_fill/${parts[1]}`;
+        if (!url || typeof url !== 'string') return '';
+        if (url.includes('cloudinary.com')) {
+            const parts = url.split('/upload/');
+            if (parts.length === 2) {
+                return `${parts[0]}/upload/f_auto,q_auto,w_${width},c_fill/${parts[1]}`;
+            }
+        }
+        return url;
     }
 
     let allEvents = [];
@@ -559,13 +571,27 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             }
 
             const optimizedImg = optimizeImageUrl(e.image_url, 600);
-            const imgHtml = e.image_url ? `<img src="${optimizedImg}" class="event-card-img" alt="${e.title}" />` : '';
+            const imgHtml = optimizedImg 
+                ? `<img src="${optimizedImg}" class="event-card-img" alt="${e.title}" onerror="this.src='';this.nextElementSibling.style.display='flex';this.style.display='none';" />` 
+                : '';
+            const placeholderHtml = !optimizedImg 
+                ? `<div class="event-card-img-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                   </div>` 
+                : `<div class="event-card-img-placeholder" style="display:none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                    </svg>
+                   </div>`;
 
             const isArchived = e.status === 'cancelled' || e.status === 'rejected';
 
             return `
                 <div class="event-card-modern ${isArchived ? 'archived' : ''}" data-id="${e.id}">
                     ${imgHtml}
+                    ${placeholderHtml}
                     <div class="card-header-flex">
                         <span class="modal-badge ${statusBadgeClass}">${statusLabel}</span>
                         <div class="date-badge">
