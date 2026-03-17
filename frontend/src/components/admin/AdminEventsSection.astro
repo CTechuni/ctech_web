@@ -45,7 +45,7 @@
 <div class="m-overlay" id="eventModal">
     <div class="m-card">
         <div class="m-header">
-            <h4 id="mTitle">Nuevo Evento Global</h4>
+            <h4 id="mTitle">Nuevo Evento</h4>
             <button class="m-close" id="btnCloseModal">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -935,7 +935,7 @@
         if (!grid) return;
 
         if (list.length === 0) {
-            grid.innerHTML = '<div class="loading-state"><span>No se encontraron eventos globales</span></div>';
+            grid.innerHTML = '<div class="loading-state"><span>No se encontraron eventos</span></div>';
             return;
         }
 
@@ -989,7 +989,7 @@
                         </div>
                         <div class="card-content">
                             <h3>${e.title}</h3>
-                            <p class="card-desc">${e.description || 'Evento global organizado por CTech.'}</p>
+                            <p class="card-desc">${e.description || 'Evento organizado por CTech.'}</p>
                             <div style="margin-top: 0.5rem;">
                                 <span class="modal-badge" style="background: rgba(0, 115, 255, 0.05); color: var(--color-azure-radiant); display: inline-block;">${e.leader_name || e.community_name || 'Sin asignar'}</span>
                             </div>
@@ -1191,7 +1191,7 @@
                 });
 
             } else {
-                if (mTitle) mTitle.textContent = 'Nuevo Evento Global';
+                if (mTitle) mTitle.textContent = 'Nuevo Evento';
                 if (btnSubmit) btnSubmit.textContent = 'Crear Evento';
                 if (fId) fId.value = '';
                 
@@ -1297,7 +1297,7 @@
 
             (window as any).Swal?.fire({
                 title: id ? '¡Evento Actualizado!' : '¡Evento Creado!',
-                text: id ? 'Los cambios han sido guardados.' : 'La actividad global ha sido publicada con éxito.',
+                text: id ? 'Los cambios han sido guardados.' : 'La actividad ha sido publicada con éxito.',
                 icon: 'success',
                 confirmButtonColor: '#0073ff'
             }) || alert(id ? 'Evento actualizado.' : 'Evento creado.');
@@ -1375,7 +1375,7 @@
         if (dateEl) dateEl.textContent = `${dateObj.getDate()} de ${monthNames[dateObj.getMonth()]} de ${dateObj.getFullYear()}`;
         
         if (timeEl) timeEl.textContent = eventObj.event_time || '--:--';
-        if (organizerEl) organizerEl.textContent = eventObj.leader_name || eventObj.community_name || 'Admin CTech';
+        if (organizerEl) organizerEl.textContent = eventObj.leader_name || eventObj.community_name || 'Sin asignar';
 
         // Ubicación / Link
         if (locationLabel) locationLabel.textContent = isVirtual ? 'Link de la reunión' : 'Ubicación / Punto de encuentro';
