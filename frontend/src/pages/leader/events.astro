@@ -373,7 +373,9 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     .btn-action-ic:hover { background: #e2e8f0; color: #1e293b; }
     .btn-action-ic.edit:hover { background: #e0f2fe; color: #3b82f6; }
     .btn-action-ic.postpone:hover { background: #fef3c7; color: #d97706; }
-    .btn-action-ic.delete:hover { background: #fef2f    /* Modal Styles */
+    .btn-action-ic.delete:hover { background: #fef2f2; color: #ef4444; }
+
+    /* Modal Styles */
     .m-overlay {
         position: fixed; inset: 0;
         background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
@@ -467,7 +469,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
     .btn-save:hover { background: #2563eb; transform: translateY(-1px); }
     .btn-save:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
-em; cursor: pointer; }
 
     .spinner { width: 32px; height: 32px; border: 4px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
