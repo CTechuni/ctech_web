@@ -17,8 +17,8 @@ def add_notification(db: Session, title: str, message: str, type: str, recipient
 def list_notifications(db: Session, user_id: int = None, is_admin: bool = False, limit: int = 20):
     return repository.get_all(db, user_id=user_id, is_admin=is_admin, limit=limit)
 
-def mark_as_read(db: Session, notification_id: int, user_id: int):
-    return repository.mark_as_read(db, notification_id, user_id)
+def mark_as_read(db: Session, notification_id: int, user_id: int, is_admin: bool = False):
+    return repository.mark_as_read(db, notification_id, user_id, is_admin=is_admin)
 
-def mark_all_as_read(db: Session, user_id: int):
-    return repository.mark_all_as_read(db, user_id)
+def mark_all_as_read(db: Session, user_id: int, is_admin: bool = False):
+    return repository.mark_all_as_read(db, user_id, is_admin=is_admin)
