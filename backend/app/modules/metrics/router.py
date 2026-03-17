@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.modules.auth.router import get_current_user
 from app.modules.communities.models import Community
+from app.modules.events.repository import count_user_registrations, count_community_events_this_month
 from . import service
 
 router = APIRouter(prefix="/metrics", tags=["Metrics"])
@@ -34,14 +35,22 @@ def get_community_metrics(community_id: int, db: Session = Depends(get_db), curr
     # Otros roles no tienen acceso
     raise HTTPException(status_code=403, detail="No tienes permisos para ver métricas de comunidad")
 
+from app.modules.events.repository import count_user_registrations, count_community_events_this_month
+from . import service
+
 @router.get("/me")
 def get_my_metrics(db: Session = Depends(get_db), current=Depends(get_current_user)):
-    from app.modules.events.repository import count_user_registrations
     events_count = count_user_registrations(db, current.id)
+    
+    # Contar eventos de su comunidad este mes
+    community_events_month = 0
+    if current.community_id:
+        community_events_month = count_community_events_this_month(db, current.community_id)
     
     # Por ahora, cursos y completados son 0 ya que el módulo de cursos no está implementado
     return {
         "inscribed_courses": 0,
         "completed_courses": 0,
-        "events_count": events_count
+        "events_count": events_count,
+        "community_events_month": community_events_month
     }

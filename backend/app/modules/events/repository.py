@@ -1,6 +1,6 @@
 from datetime import date as date_type
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, extract
 from . import models, schemas
 from app.modules.communities.models import Community
 from app.modules.users.models import User
@@ -220,3 +220,19 @@ def get_registered_event_ids(db: Session, user_id: int):
         models.EventRegistration.user_id == user_id
     ).all()
     return {r[0] for r in rows}
+
+def count_user_registrations(db: Session, user_id: int):
+    """Cuenta cuántos eventos tiene registrados un usuario específico."""
+    return db.query(func.count(models.EventRegistration.id)).filter(
+        models.EventRegistration.user_id == user_id
+    ).scalar() or 0
+
+def count_community_events_this_month(db: Session, community_id: int):
+    """Cuenta eventos aprobados de una comunidad en el mes actual."""
+    today = date_type.today()
+    return db.query(func.count(models.Event.id)).filter(
+        models.Event.community_id == community_id,
+        models.Event.status == "approved",
+        extract('month', models.Event.event_date) == today.month,
+        extract('year', models.Event.event_date) == today.year
+    ).scalar() or 0

@@ -3,384 +3,279 @@ import UserLayout from "../../layouts/UserLayout.astro";
 const title = "Mi Perfil";
 ---
 
-<UserLayout title={title} subtitle="Gestiona tu información personal y revisa tus logros.">
+<UserLayout title={title} subtitle="Mi cuenta registrada">
     <div class="profile-page-container">
-        <!-- 1. Header Card (Admin Style) -->
-        <div class="profile-header-card glass-morphism">
-            <div class="profile-avatar-large">
-                <span id="profileLargeInitial">--</span>
-            </div>
-            <div class="profile-main-info">
-                <h2 id="profileFullName">Cargando...</h2>
-                <p class="profile-role-tag">Estudiante CTech</p>
-                <div class="profile-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="statInscribed">0</span>
-                        <span class="stat-label">Cursos Inscritos</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="statCompleted">0</span>
-                        <span class="stat-label">Completados</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="statEvents">0</span>
-                        <span class="stat-label">Eventos</span>
-                    </div>
+        <div class="profile-card">
+            <!-- Avatar + Cabecera -->
+            <div class="profile-top">
+                <div class="avatar-circle" id="profileLargeInitial">--</div>
+                <div>
+                    <h2 id="profileFullName">Cargando...</h2>
+                    <span class="role-badge">Usuario Registro</span>
                 </div>
+            </div>
+
+            <!-- Cuadrícula de Información -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <label><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg> Email</label>
+                    <span id="profileEmail">—</span>
+                </div>
+                <div class="info-item">
+                    <label><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a.75.75 0 00.921-.38l.639-1.279a2.321 2.321 0 00-.741-2.879l-1.203-.97a2.321 2.321 0 00-2.879.065l-1.644 1.332a.75.75 0 01-.932.027 12.936 12.936 0 01-5.009-5.007.75.75 0 01.028-.932l1.332-1.644a2.321 2.321 0 00.065-2.879l-.97-1.203a2.321 2.321 0 00-2.879-.741l-1.279.639a.75.75 0 00-.38.921c.515 1.283 1.245 2.458 2.146 3.493l.363.414a14.437 14.437 0 0012.285 12.285l.414.363c1.035.901 2.21 1.631 3.493 2.146z" /></svg> Comunidad</label>
+                    <span id="profileCommunity">—</span>
+                </div>
+                <div class="info-item">
+                    <label><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" /></svg> Miembro desde</label>
+                    <span id="profileDate">—</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="/user/settings" class="btn-settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.127c-.332.183-.582.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    Ajustes de cuenta
+                </a>
             </div>
         </div>
 
-        <!-- 2. Profile Sections -->
-        <div class="profile-sections-grid">
-            <section class="settings-card glass-morphism">
-                <div class="card-header">
-                    <h3>Información Personal</h3>
+        <!-- Estadísticas Locales -->
+        <div class="community-card">
+            <h3><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg> Mis Logros CTech</h3>
+            <div class="comm-stats">
+                <div class="cs-item">
+                    <span class="cs-num" id="statInscribed">0</span>
+                    <span class="cs-lbl">Cursos Inscritos</span>
                 </div>
-                <form class="profile-form" id="personalInfoForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Nombre Completo</label>
-                            <input type="text" id="profileInputName" name="name_user" placeholder="Tu nombre" />
-                        </div>
-                        <div class="form-group">
-                            <label>Email de Acceso</label>
-                            <input type="email" id="profileInputEmail" name="email" placeholder="correo@ejemplo.com" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Comunidad</label>
-                        <input type="text" id="profileInputCommunity" value="General" readonly style="opacity: 0.7; cursor: not-allowed;" />
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary-profile" id="btnSaveProfile">Actualizar Información</button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="settings-card glass-morphism">
-                <div class="card-header">
-                    <h3>Seguridad y Privacidad</h3>
+                <div class="cs-item">
+                    <span class="cs-num" id="statCompleted">0</span>
+                    <span class="cs-lbl">Completados</span>
                 </div>
-                <div class="security-options">
-                    <div class="option-item">
-                        <div class="option-info">
-                            <h4>Contraseña</h4>
-                            <p>Protege tu cuenta con una clave segura</p>
-                        </div>
-                        <button class="btn-outline-v2">Cambiar</button>
-                    </div>
-                    <div class="option-item">
-                        <div class="option-info">
-                            <h4>Visibilidad del Perfil</h4>
-                            <p>Permitir que otros vean tus logros</p>
-                        </div>
-                        <div class="status-badge-active">Público</div>
-                    </div>
+                <div class="cs-item">
+                    <span class="cs-num" id="statEvents">0</span>
+                    <span class="cs-lbl">Eventos</span>
                 </div>
-            </section>
+            </div>
         </div>
     </div>
 
     <style>
         .profile-page-container {
+            max-width: 860px;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 24px;
         }
 
-        .glass-morphism {
-            background: white;
-            border-radius: 24px;
+        .profile-card {
+            background: #fff;
+            border-radius: 20px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            padding: 2rem;
+            padding: 32px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
         }
 
-        /* ── Header Card ── */
-        .profile-header-card {
+        .profile-top {
             display: flex;
             align-items: center;
-            gap: 3rem;
-            padding: 3rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            gap: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
-        .profile-avatar-large {
-            width: 120px;
-            height: 120px;
-            background: #007bff;
-            border-radius: 40px;
+        .avatar-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #0073ff;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            font-weight: 800;
-            color: white;
-            box-shadow: 0 20px 40px rgba(0, 123, 255, 0.15);
+            flex-shrink: 0;
+            box-shadow: 0 10px 20px rgba(0, 115, 255, 0.2);
         }
 
-        .profile-main-info h2 {
-            font-size: 2.2rem;
+        .profile-top h2 {
+            margin: 0 0 6px;
+            font-size: 1.4rem;
             font-weight: 800;
-            margin: 0;
             color: #0f172a;
         }
 
-        .profile-role-tag {
-            display: inline-block;
-            margin: 0.5rem 0 1.5rem;
+        .role-badge {
             background: #eff6ff;
-            color: #007bff;
-            padding: 0.35rem 1rem;
-            border-radius: 50px;
+            color: #0073ff;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.78rem;
             font-weight: 700;
-            font-size: 0.9rem;
             text-transform: uppercase;
         }
 
-        .profile-stats {
-            display: flex;
-            gap: 3rem;
-        }
-
-        .stat {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        /* ── Sections Grid ── */
-        .profile-sections-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 2rem;
-        }
-
-        .settings-card h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin: 0;
-            color: #0f172a;
-        }
-
-        .card-header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .profile-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .form-row {
+        .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.25rem;
+            gap: 18px;
+            margin-bottom: 28px;
         }
 
-        .form-group {
+        .info-item {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 4px;
         }
 
-        .form-group label {
-            font-size: 0.85rem;
+        .info-item label {
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #475569;
-        }
-
-        .form-group input {
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            font-size: 0.95rem;
-            color: #1e293b;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .btn-primary-profile {
-            background: var(--color-azure-radiant, #0073ff);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            width: fit-content;
-            margin-top: 1rem;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0, 115, 255, 0.2);
-        }
-        .btn-primary-profile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 115, 255, 0.3); }
-        .btn-primary-profile:disabled { opacity: 0.6; cursor: wait; transform: none; }
-
-        .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 0.85rem; border-radius: 12px; font-weight: 700; cursor: pointer; width: fit-content; margin-top: 1rem; transition: all 0.2s; }
-        .btn-secondary:hover { background: #e2e8f0; color: #1e293b; }
-
-        .security-options {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .option-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .option-item:last-child { border: none; padding-bottom: 0; }
-
-        .option-info h4 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .option-info p {
-            margin: 0.2rem 0 0;
-            font-size: 0.85rem;
             color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-outline-v2 {
-            background: transparent;
-            border: 1px solid #e2e8f0;
-            color: #1e293b;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+        .info-item span {
+            font-size: 0.92rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
+            color: #1e293b;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-settings {
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 7px;
             transition: all 0.2s;
         }
-        .btn-outline-v2:hover { background: #f8fafc; border-color: #cbd5e1; }
 
-        .status-badge-active {
-            color: #10b981;
-            font-weight: 700;
-            font-size: 0.85rem;
+        .btn-settings:hover {
+            background: #e2e8f0;
+            color: #1e293b;
         }
 
+        .community-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
 
-        @media (max-width: 1024px) {
-            .profile-header-card { flex-direction: column; text-align: center; gap: 1.5rem; padding: 2rem; }
-            .profile-sections-grid { grid-template-columns: 1fr; }
-            .profile-stats { justify-content: center; }
+        .community-card h3 {
+            margin: 0 0 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comm-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .cs-item {
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px 10px;
+            transition: transform 0.2s;
+        }
+        .cs-item:hover { transform: translateY(-2px); }
+
+        .cs-num {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0073ff;
+        }
+
+        .cs-lbl {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 2px;
         }
 
         @media (max-width: 640px) {
-            .form-row { grid-template-columns: 1fr; }
-            .profile-stats { gap: 1.5rem; flex-wrap: wrap; }
-            .profile-avatar-large { width: 90px; height: 90px; font-size: 2.2rem; }
-            .profile-main-info h2 { font-size: 1.6rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .comm-stats { grid-template-columns: 1fr; }
+            .profile-top { flex-direction: column; text-align: center; }
+            .profile-actions { justify-content: center; }
         }
     </style>
 
     <script>
-        import { authManager } from "../../utils/auth.js";
+        import { authManager as auth, AuthManager } from "../../utils/auth.js";
 
-        async function loadUserProfile() {
-            const user = authManager.getUser();
-            if (user) {
-                updateUI(user);
+        async function initProfile() {
+            const user = auth.getUser();
+            if (!user) return;
 
-                // Fetch real stats
-                try {
-                    const stats = await AuthManager.fetch('/metrics/me');
-                    if (stats) {
-                        const statInscribed = document.getElementById('statInscribed');
-                        const statCompleted = document.getElementById('statCompleted');
-                        const statEvents = document.getElementById('statEvents');
+            // Carga inicial
+            const nameEl = document.getElementById('profileFullName');
+            const initialEl = document.getElementById('profileLargeInitial');
+            const emailEl = document.getElementById('profileEmail');
+            const communityEl = document.getElementById('profileCommunity');
 
-                        if (statInscribed) statInscribed.textContent = String(stats.inscribed_courses || 0);
-                        if (statCompleted) statCompleted.textContent = String(stats.completed_courses || 0);
-                        if (statEvents) statEvents.textContent = String(stats.events_count || 0);
-                    }
-                } catch (error) {
-                    console.error('Error fetching user stats:', error);
-                }
-            }
-        }
+            if (nameEl) nameEl.textContent = user.name_user || '—';
+            if (initialEl) initialEl.textContent = user.name_user ? user.name_user.substring(0, 1).toUpperCase() : 'U';
+            if (emailEl) emailEl.textContent = user.email || '—';
+            if (communityEl) communityEl.textContent = user.community_name || 'General';
 
-        function updateUI(user) {
-            const fullName = document.getElementById('profileFullName');
-            const initial = document.getElementById('profileLargeInitial');
-            
-            if (fullName) fullName.textContent = user.name_user || 'Estudiante';
-            if (initial) initial.textContent = user.name_user ? user.name_user.substring(0, 1).toUpperCase() : 'U';
-
-            const nameInput = document.getElementById('profileInputName') as HTMLInputElement;
-            const emailInput = document.getElementById('profileInputEmail') as HTMLInputElement;
-            const communityInput = document.getElementById('profileInputCommunity') as HTMLInputElement;
-
-            if (nameInput) nameInput.value = user.name_user || '';
-            if (emailInput) emailInput.value = user.email || '';
-            if (communityInput) communityInput.value = user.community_name || 'General';
-        }
-
-        // Handle Personal Info Update
-        const infoForm = document.getElementById('personalInfoForm') as HTMLFormElement;
-        infoForm?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnSaveProfile') as HTMLButtonElement;
-            const formData = new FormData(infoForm);
-            const data = Object.fromEntries(formData.entries());
-
-            btn.disabled = true;
-            btn.textContent = 'Guardando...';
-
+            // Datos frescos
             try {
-                const updatedUser = await AuthManager.fetch('/users/me', {
-                    method: 'PATCH',
-                    body: JSON.stringify(data)
-                });
+                const me = await AuthManager.fetch('/users/me');
+                if (me) {
+                    if (nameEl) nameEl.textContent = me.name_user || '—';
+                    if (emailEl) emailEl.textContent = me.email || '—';
+                    if (communityEl) communityEl.textContent = me.community_name || 'General';
+                    
+                    if (me.created_at) {
+                        const dateEl = document.getElementById('profileDate');
+                        if (dateEl) {
+                            dateEl.textContent = new Date(me.created_at).toLocaleDateString('es-ES', { 
+                                day: 'numeric', 
+                                month: 'long', 
+                                year: 'numeric' 
+                            });
+                        }
+                    }
+                }
+            } catch (e) { console.warn('Error fetching fresh profile:', e); }
 
-                // Update local storage
-                const currentToken = authManager.getToken();
-                authManager.setAuthData(currentToken, updatedUser);
-                
-                updateUI(updatedUser);
+            // Estadísticas
+            try {
+                const stats = await AuthManager.fetch('/metrics/me');
+                if (stats) {
+                    const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = String(val ?? '0'); };
+                    setText('statInscribed', stats.inscribed_courses);
+                    setText('statCompleted', stats.completed_courses);
+                    setText('statEvents', stats.events_count);
+                }
+            } catch (error) { console.error('Error fetching user stats:', error); }
+        }
 
-                (window as any).Swal?.fire({
-                    title: '¡Perfil Actualizado!',
-                    text: 'Tus cambios han sido guardados con éxito.',
-                    icon: 'success',
-                    confirmButtonColor: '#0073ff'
-                });
-                
-                // Dispatch event for sidebar synchronization
-                window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
-            } catch (err) {
-                console.error('Error updating profile:', err);
-                (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Actualizar Información';
-            }
-        });
-
-        loadUserProfile();
+        document.addEventListener('DOMContentLoaded', initProfile);
     </script>
 </UserLayout>
 
