@@ -116,7 +116,7 @@ def reject_event(db: Session, event_id: int):
             notification_service.add_notification(
                 db,
                 "Evento rechazado ❌",
-                f"Tu evento '{event.title}' fue rechazado por el líder de la comunidad.",
+                f"Tu evento '{event.title}' fue rechazado por el administrador.",
                 "event",
                 recipient_id=event.creator_id
             )

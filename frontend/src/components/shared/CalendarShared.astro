@@ -494,7 +494,8 @@
                     <div class="events-container">
                         ${dayEvents.map(ev => {
                             const type = ev.event_type === 'presencial' ? 'presencial' : 'virtual';
-                            return `<div class="event-micro-pill pill-${type}" data-event-id="${ev.id}">${ev.title}</div>`;
+                            const displayTitle = ev.title.length > 13 ? ev.title.substring(0, 13) + '...' : ev.title;
+                            return `<div class="event-micro-pill pill-${type}" data-event-id="${ev.id}" title="${escHtml(ev.title)}">${escHtml(displayTitle)}</div>`;
                         }).join('')}
                     </div>
                 </div>

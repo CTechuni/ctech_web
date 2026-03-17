@@ -21,6 +21,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <button class="seg-btn active" data-filter="all">Todos</button>
                     <button class="seg-btn" data-filter="virtual">Virtual</button>
                     <button class="seg-btn" data-filter="presencial">Presencial</button>
+                    <button class="seg-btn" data-filter="archived">Archivados</button>
                     <button class="seg-btn" data-filter="pending" id="pendingFilterBtn" style="display:none">
                         Pendientes
                         <span class="pending-badge-mini" id="pendingBadge">0</span>
@@ -322,6 +323,9 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     :global(.badge-virtual) { background: rgba(59, 130, 246, 0.05); color: #3b82f6; }
     :global(.badge-presencial) { background: #fff1f2; color: #db2777; }
     :global(.badge-pending) { background: #fef3c7; color: #d97706; }
+    :global(.badge-cancelled) { background: #fee2e2; color: #991b1b; }
+    :global(.badge-rejected) { background: #fecaca; color: #dc2626; border: 1px solid #f87171; }
+    :global(.event-card-modern.archived) { opacity: 0.75; filter: grayscale(0.2); }
 
     :global(.date-badge) { text-align: left; line-height: 1; }
     :global(.date-day) { font-size: 1.4rem; font-weight: 800; color: #3b82f6; display: block; }
@@ -467,7 +471,8 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             
             // Si /events/my-events falla o no existe, intentar /events/
             let eventsRes = Array.isArray(myEvents) ? myEvents : (await AuthManager.fetch('/events/'));
-            allEvents = (Array.isArray(eventsRes) ? eventsRes : []).filter(ev => ev.status === 'approved');
+            // Guardamos todos los eventos que no sean 'pending' (esos van en su propia pestaña)
+            allEvents = (Array.isArray(eventsRes) ? eventsRes : []).filter(ev => ev.status !== 'pending');
             
             // Cargar pendientes
             const pending = await AuthManager.fetch('/events/pending').catch(() => []);
@@ -501,10 +506,17 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         let listToFilter = currentFilter === 'pending' ? pendingEvents : allEvents;
         
         const filtered = listToFilter.filter(ev => {
-            const matchesSearch = ev.title.toLowerCase().includes(searchTerm) || 
+            const matchesSearch = (ev.title || '').toLowerCase().includes(searchTerm) || 
                                  (ev.location || '').toLowerCase().includes(searchTerm);
             
             if (currentFilter === 'pending') return matchesSearch;
+            if (currentFilter === 'archived') {
+                return matchesSearch && (ev.status === 'cancelled' || ev.status === 'rejected');
+            }
+
+            // Para 'all', 'virtual', 'presencial', solo mostrar aprobados o aplazados
+            const isValidStatus = ev.status === 'approved' || ev.status === 'postponed';
+            if (!isValidStatus) return false;
 
             let typeRaw = `${ev.event_type || ''} ${ev.location || ''}`.toLowerCase();
             let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
@@ -531,19 +543,31 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             
             let typeRaw = `${e.event_type || ''} ${e.location || ''}`.toLowerCase();
             const isVirtual = typeRaw.includes('virtual') || !typeRaw.includes('presencial');
-            const badgeClass = isVirtual ? 'badge-virtual' : 'badge-presencial';
-            const typeLabel = isVirtual ? 'Virtual' : 'Presencial';
+            
+            let statusBadgeClass = isVirtual ? 'badge-virtual' : 'badge-presencial';
+            let statusLabel = isVirtual ? 'Virtual' : 'Presencial';
+
+            if (currentFilter === 'pending' || e.status === 'pending') {
+                statusBadgeClass = 'badge-pending';
+                statusLabel = 'Pendiente';
+            } else if (e.status === 'cancelled') {
+                statusBadgeClass = 'badge-cancelled';
+                statusLabel = 'Cancelado';
+            } else if (e.status === 'rejected') {
+                statusBadgeClass = 'badge-rejected';
+                statusLabel = 'Rechazado';
+            }
 
             const optimizedImg = optimizeImageUrl(e.image_url, 600);
             const imgHtml = e.image_url ? `<img src="${optimizedImg}" class="event-card-img" alt="${e.title}" />` : '';
 
-            const isPending = currentFilter === 'pending' || e.status === 'pending';
+            const isArchived = e.status === 'cancelled' || e.status === 'rejected';
 
             return `
-                <div class="event-card-modern" data-id="${e.id}">
+                <div class="event-card-modern ${isArchived ? 'archived' : ''}" data-id="${e.id}">
                     ${imgHtml}
                     <div class="card-header-flex">
-                        <span class="modal-badge ${isPending ? 'badge-pending' : badgeClass}">${isPending ? 'Pendiente' : typeLabel}</span>
+                        <span class="modal-badge ${statusBadgeClass}">${statusLabel}</span>
                         <div class="date-badge">
                             <span class="date-day">${day}</span>
                             <span class="date-month">${month}</span>

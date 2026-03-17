@@ -278,75 +278,33 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     }
 
     // ── Notificaciones ──────────────────────────────────────────────────────────
-    const STORAGE_KEY_PREFIX = 'leader_notif_';
+    let notifications = [];
+    let notifInterval = null;
 
-    function getState(userId) {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY_PREFIX + userId);
-            return raw ? JSON.parse(raw) : { seen: { pendingEventIds: [] }, unread: [] };
-        } catch { return { seen: { pendingEventIds: [] }, unread: [] }; }
-    }
-
-    function saveState(userId, state) {
-        localStorage.setItem(STORAGE_KEY_PREFIX + userId, JSON.stringify(state));
-    }
-
-    function timeAgo(isoOrNow) {
-        return 'Ahora';
-    }
-
-    async function loadNotifications() {
-        const user = authManager.getUser();
-        if (!user) return;
-        const userId = user.id;
-        if (!userId) return;
-
-        const state = getState(userId);
+    async function fetchNotifications() {
+        if (!authManager.isAuthenticated()) {
+            if (notifInterval) clearInterval(notifInterval);
+            return;
+        }
 
         try {
-            const pendingEvents = await AuthManager.fetch('/events/pending').catch(() => []);
-
-            const newItems = [];
-
-            // Detectar nuevos eventos pendientes
-            const evIds = Array.isArray(pendingEvents) ? pendingEvents.map(e => e.id) : [];
-            evIds.forEach(id => {
-                if (!state.seen.pendingEventIds.includes(id)) {
-                    const ev = pendingEvents.find(e => e.id === id);
-                    newItems.push({
-                        id: `ev_${id}`,
-                        type: 'event',
-                        icon: '📅',
-                        title: 'Evento pendiente de aprobación',
-                        body: ev?.title || `Evento #${id}`,
-                        time: timeAgo('now'),
-                    });
-                }
-            });
-
-            // Actualizar seen
-            state.seen.pendingEventIds = evIds;
-
-            // Prepend nuevos al listado unread
-            if (newItems.length) {
-                state.unread = [...newItems, ...state.unread].slice(0, 20);
-            }
-
-            saveState(userId, state);
-            renderNotifications(state.unread);
-
-        } catch (e) {
-            console.warn('Error cargando notificaciones del líder:', e);
+            const data = await AuthManager.fetch('/notifications/');
+            notifications = data || [];
+            updateNotifUI();
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
         }
     }
 
-    function renderNotifications(unread) {
+    function updateNotifUI() {
         const badge   = document.getElementById('notifBadge');
         const countTotal = document.getElementById('notifCountTotal');
         const list    = document.getElementById('notifList');
         if (!badge || !list) return;
 
+        const unread = notifications.filter(n => !n.is_read);
         const count = unread.length;
+
         if (count > 0) {
             badge.textContent    = count > 9 ? '9+' : String(count);
             badge.style.display  = 'flex';
@@ -359,7 +317,7 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
             if (countTotal) countTotal.style.display = 'none';
         }
 
-        if (!count) {
+        if (notifications.length === 0) {
             list.innerHTML = `
             <div class="notif-empty">
                 <div class="empty-icon-box">
@@ -372,16 +330,64 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
             return;
         }
 
-        list.innerHTML = unread.map(n => `
-        <div class="notif-item unread">
-            <div class="notif-item-icon ${n.type}">${n.icon}</div>
-            <div class="notif-item-content">
-                <span class="notif-item-title">${n.title}</span>
-                <p class="notif-item-msg" title="${n.body}">${n.body}</p>
-                <span class="notif-item-time">${n.time}</span>
-            </div>
-            <div class="unread-dot"></div>
-        </div>`).join('');
+        list.innerHTML = notifications.map(n => {
+            const isUnread = !n.is_read;
+            const type = n.type || 'info';
+            // Mapeo de iconos según tipo
+            let icon = '🔔';
+            if (type === 'event') icon = '📅';
+            if (type === 'role')  icon = '👤';
+            if (type === 'info')  icon = 'ℹ️';
+
+            return `
+            <div class="notif-item ${isUnread ? 'unread' : ''}" data-id="${n.id}">
+                <div class="notif-item-icon ${type}">${icon}</div>
+                <div class="notif-item-content">
+                    <span class="notif-item-title">${n.title}</span>
+                    <p class="notif-item-msg" title="${n.message}">${n.message}</p>
+                    <span class="notif-item-time">${formatDate(n.created_at)}</span>
+                </div>
+                ${isUnread ? '<div class="unread-dot"></div>' : ''}
+            </div>`;
+        }).join('');
+
+        // Listeners para marcar como leída
+        document.querySelectorAll('.notif-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const id = (item as HTMLElement).dataset.id;
+                await markAsRead(id);
+            });
+        });
+    }
+
+    async function markAsRead(id) {
+        try {
+            await AuthManager.fetch(`/notifications/${id}/read`, { method: 'PATCH' });
+            await fetchNotifications();
+        } catch (error) {
+            console.error('Error marking as read:', error);
+        }
+    }
+
+    async function markAllRead() {
+        try {
+            await AuthManager.fetch('/notifications/read-all', { method: 'POST' });
+            await fetchNotifications();
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Reciente';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
+        
+        if (diff < 60000) return 'Ahora mismo';
+        if (diff < 3600000) return `${Math.floor(diff/60000)}m atrás`;
+        if (diff < 86400000) return `${Math.floor(diff/3600000)}h atrás`;
+        return date.toLocaleDateString();
     }
 
     // ── Toggle dropdown ─────────────────────────────────────────────────────────
@@ -394,21 +400,14 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
         notifDropdown?.classList.toggle('open');
     });
 
-    notifMarkAll?.addEventListener('click', () => {
-        const user = authManager.getUser();
-        if (!user?.id) return;
-        const state = getState(user.id);
-        state.unread = [];
-        saveState(user.id, state);
-        renderNotifications([]);
-        notifDropdown?.classList.remove('open');
-    });
+    notifMarkAll?.addEventListener('click', markAllRead);
 
     document.addEventListener('click', e => {
         if (!document.getElementById('notifWrapper')?.contains(e.target)) {
             notifDropdown?.classList.remove('open');
         }
     });
+
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') notifDropdown?.classList.remove('open');
     });
@@ -420,5 +419,8 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
     // ── Init ────────────────────────────────────────────────────────────────────
     loadHeaderProfile();
-    loadNotifications();
+    fetchNotifications();
+    if (!notifInterval) {
+        notifInterval = setInterval(fetchNotifications, 30000);
+    }
 </script>
