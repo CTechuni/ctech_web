@@ -496,12 +496,23 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 
         const imgPh = document.getElementById('modalImgPh');
         if (e.image_url) {
+            imgPh.style.display = 'block';
             imgPh.outerHTML = `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" style="width:100%;height:300px;object-fit:contain;background:#0e0f17" id="modalImgPh">`;
         } else {
-            imgPh.className = 'event-modal-img-ph';
-            imgPh.id = 'modalImgPh';
-            imgPh.style.height = '300px';
+            // Ocultar si no hay imagen (se resetea la estructura si alguien cerró el modal)
+            if(imgPh.tagName === 'IMG') {
+                imgPh.outerHTML = `<div class="event-modal-img-ph" id="modalImgPh" style="display:none;"></div>`;
+            } else {
+                imgPh.style.display = 'none';
+            }
         }
+
+        // Ajustar borde del modal visualmente si se ocultó la imagen (opcional para que no quede el botón flotando sobre el título)
+        const modalHeader = document.querySelector('.event-modal-header');
+        if (modalHeader) {
+            modalHeader.style.minHeight = e.image_url ? '300px' : '40px';
+        }
+
 
         document.getElementById('modalTitle').textContent = e.title || '';
 
@@ -570,11 +581,13 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
                 const badgeCls = type === 'presencial' ? 'badge-presencial' : 'badge-virtual';
                 const badgeTxt = type === 'presencial' ? 'Presencial' : 'Virtual';
                 
-                const imgUrl = e.image_url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop';
+                const imgHtml = e.image_url 
+                    ? `<img src="${escHtml(e.image_url)}" alt="${escHtml(e.title)}" class="event-card-img" loading="lazy">`
+                    : '';
 
                 return `
                 <div class="event-card" onclick="openEventModal(${idx})">
-                    <img src="${escHtml(imgUrl)}" alt="${escHtml(e.title)}" class="event-card-img" loading="lazy">
+                    ${imgHtml}
                     
                     <div class="event-card-header">
                         <span class="event-card-badge ${badgeCls}">${badgeTxt}</span>
