@@ -349,14 +349,21 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     :global(.card-content h3) { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0 0 0.4rem; line-height: 1.3; }
     :global(.card-desc) { font-size: 0.82rem; color: #64748b; line-height: 1.5; height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
-    :global(.card-footer-details) { display: flex; align-items: center; justify-content: space-between; padding-top: 0.85rem; border-top: 1px solid #f1f5f9; margin-top: auto; }
+    :global(.card-footer-details) { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding-top: 0.85rem; 
+        border-top: 1px solid #f1f5f9; 
+        margin-top: auto; 
+    }
     :global(.footer-detail-item) { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #64748b; font-weight: 600; }
     :global(.footer-detail-item svg) { width: 14px; height: 14px; color: #94a3b8; }
 
-    /* Card Actions */
+    /* Card Actions (Premium Unification) */
     :global(.card-actions-row) {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px dashed #f1f5f9;
@@ -368,21 +375,46 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         align-items: center;
         justify-content: center;
         gap: 6px;
-        padding: 8px;
+        padding: 8px 12px;
         border-radius: 10px;
-        font-size: 0.75rem;
+        font-size: 0.78rem;
         font-weight: 700;
-        border: none;
+        border: 1.5px solid #f1f5f9;
         cursor: pointer;
         transition: all 0.2s;
-        background: #f1f5f9;
+        background: white;
         color: #64748b;
     }
 
-    .btn-action-ic:hover { background: #e2e8f0; color: #1e293b; }
-    .btn-action-ic.edit:hover { background: #e0f2fe; color: #3b82f6; }
-    .btn-action-ic.postpone:hover { background: #fef3c7; color: #d97706; }
-    .btn-action-ic.delete:hover { background: #fef2f2; color: #ef4444; }
+    .btn-action-ic:hover { 
+        background: #f8fafc; 
+        border-color: #e2e8f0;
+        color: #1e293b; 
+        transform: translateY(-1px);
+    }
+    
+    .btn-action-ic.edit-action:hover { 
+        background: #f0f7ff; 
+        border-color: rgba(0, 115, 255, 0.2); 
+        color: var(--color-azure-radiant); 
+    }
+    
+    .btn-action-ic.delete-action {
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.1);
+    }
+    
+    .btn-action-ic.delete-action:hover { 
+        background: #fef2f2; 
+        border-color: rgba(239, 68, 68, 0.2);
+        color: #ef4444; 
+    }
+
+    .btn-action-ic.postpone-action:hover {
+        background: #fffbeb;
+        border-color: rgba(217, 119, 6, 0.2);
+        color: #d97706;
+    }
 
     /* Modal Styles */
     .m-overlay {
@@ -654,20 +686,20 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                         </div>
                         <div class="footer-detail-item">
                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
-                            <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.location || 'CTech'}</span>
+                            <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.location || 'Local'}</span>
                         </div>
                     </div>
                     <div class="card-actions-row">
-                        <button class="btn-action-ic edit-action" data-id="${e.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                        <button class="btn-action-ic edit-action" data-id="${e.id}" title="Editar evento">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                             Editar
                         </button>
-                        <button class="btn-action-ic postpone-action" data-id="${e.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                        <button class="btn-action-ic postpone-action" data-id="${e.id}" title="Cambiar fecha">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             Aplazar
                         </button>
-                        <button class="btn-action-ic delete-action" data-id="${e.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                        <button class="btn-action-ic delete-action" data-id="${e.id}" title="Eliminar evento">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                             Borrar
                         </button>
                     </div>
