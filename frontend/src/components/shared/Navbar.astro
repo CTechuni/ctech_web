@@ -2,6 +2,13 @@
 import Modal from './Modal.astro';
 import LoginForm from './LoginForm.astro';
 import SignupForm from './SignupForm.astro';
+
+interface Props {
+  showNav?: boolean;
+  showAuth?: boolean;
+}
+
+const { showNav = true, showAuth = true } = Astro.props;
 ---
 
 <nav class="navbar">
@@ -16,16 +23,20 @@ import SignupForm from './SignupForm.astro';
       </a>
     </div>
 
-    <ul class="menu-nav" role="navigation" aria-label="Navegación principal">
-      <li><a href="#hero-section">Nosotros</a></li>
-      <li><a href="#eventos">Eventos</a></li>
-      <li><a href="#comunidades">Comunidades</a></li>
-    </ul>
+    {showNav && (
+      <ul class="menu-nav" role="navigation" aria-label="Navegación principal">
+        <li><a href="/#hero-section">Nosotros</a></li>
+        <li><a href="/#eventos">Eventos</a></li>
+        <li><a href="/#comunidades">Comunidades</a></li>
+      </ul>
+    )}
 
-    <div class="auth-actions">
-      <button class="btn btn-ghost" type="button" onclick="openModal('loginModal')">Acceder</button>
-      <button class="btn btn-primary" type="button" onclick="openModal('signupModal')">Registrarse</button>
-    </div>
+    {showAuth && (
+      <div class="auth-actions">
+        <button class="btn btn-ghost" type="button" onclick="openModal('loginModal')">Acceder</button>
+        <button class="btn btn-primary" type="button" onclick="openModal('signupModal')">Registrarse</button>
+      </div>
+    )}
   </div>
 </nav>
 
