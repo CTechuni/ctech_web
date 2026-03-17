@@ -308,15 +308,27 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
     }
 
     :global(.notif-item) {
-        padding: 14px 20px;
-        border-bottom: 1px solid #f8fafc;
+        margin: 8px 12px;
+        padding: 14px 16px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
         display: flex;
         gap: 12px;
         cursor: pointer;
         transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
-    :global(.notif-item:hover) { background: #f8fafc; }
-    :global(.notif-item.unread) { background: rgba(59, 130, 246, 0.02); }
+    :global(.notif-item:hover) { 
+        background: #f8fafc; 
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    :global(.notif-item.unread) { 
+        background: rgba(59, 130, 246, 0.02);
+        border-color: rgba(59, 130, 246, 0.2);
+    }
 
     :global(.notif-empty) { 
         padding: 48px 32px; 

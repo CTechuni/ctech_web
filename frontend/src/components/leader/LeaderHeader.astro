@@ -196,12 +196,24 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
 
     :global(.notif-item) {
         display: flex; align-items: flex-start; gap: 12px;
-        padding: 14px 20px; border-bottom: 1px solid #f8fafc;
+        padding: 14px 16px; margin: 8px 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
         transition: all 0.2s; cursor: pointer;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
     }
-    :global(.notif-item:last-child) { border-bottom: none; }
-    :global(.notif-item:hover) { background: #f8fafc; }
-    :global(.notif-item.unread) { background: rgba(59, 130, 246, 0.02); }
+    :global(.notif-item:last-child) { border-bottom: 1px solid #e2e8f0; } /* Restaurar borde en último */
+    :global(.notif-item:hover) { 
+        background: #f8fafc; 
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    :global(.notif-item.unread) { 
+        background: rgba(59, 130, 246, 0.02); 
+        border-color: rgba(59, 130, 246, 0.2);
+    }
 
     :global(.notif-item-content) { flex: 1; min-width: 0; }
     :global(.notif-item-title) { 
