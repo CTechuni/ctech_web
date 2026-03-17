@@ -591,6 +591,18 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     async function handlePostpone(id) {
+        if (typeof (window as any).Swal === 'undefined') {
+            const newDate = prompt('Aplazar Evento. Ingrese nueva fecha (YYYY-MM-DD):');
+            if (newDate) {
+                try {
+                    await AuthManager.fetch(`/events/${id}/postpone`, { method: 'PATCH', body: JSON.stringify({ event_date: newDate }) });
+                    alert('La fecha ha sido actualizada.');
+                    fetchData();
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+            return;
+        }
+
         const { value: newDate } = await (window as any).Swal.fire({
             title: 'Aplazar Evento',
             input: 'date',
@@ -607,6 +619,17 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     async function handleDelete(id) {
+        if (typeof (window as any).Swal === 'undefined') {
+            if (confirm('¿Eliminar evento? Esta acción no se puede deshacer.')) {
+                try {
+                    await AuthManager.fetch(`/events/${id}`, { method: 'DELETE' });
+                    alert('El evento ha sido borrado.');
+                    fetchData();
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+            return;
+        }
+
         const confirm = await (window as any).Swal.fire({
             title: '¿Eliminar evento?',
             text: "Esta acción no se puede deshacer.",
@@ -715,12 +738,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             if (pendingImageFile) {
                 const formData = new FormData();
                 formData.append('file', pendingImageFile);
-                const uploadRes = await fetch(`${AuthManager.API_BASE_URL}/events/upload-image`, {
+                
+                const uploadData = await AuthManager.fetch('/events/upload-image', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${AuthManager.getToken()}` },
                     body: formData
                 });
-                const uploadData = await uploadRes.json();
                 imageUrl = uploadData.url;
             }
 
@@ -740,11 +762,19 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             const url = editingId ? `/events/${editingId}` : '/events/';
             
             await AuthManager.fetch(url, { method, body: JSON.stringify(payload) });
-            (window as any).Swal.fire('Éxito', 'Evento guardado correctamente.', 'success');
+            if ((window as any).Swal) {
+                (window as any).Swal.fire('Éxito', 'Evento guardado correctamente.', 'success');
+            } else {
+                alert('Evento guardado correctamente.');
+            }
             modal.classList.remove('open');
             fetchData();
         } catch (err) {
-            (window as any).Swal.fire('Error', err.message, 'error');
+            if ((window as any).Swal) {
+                (window as any).Swal.fire('Error', err.message, 'error');
+            } else {
+                alert('Error: ' + err.message);
+            }
         } finally { btn.disabled = false; }
     });
 

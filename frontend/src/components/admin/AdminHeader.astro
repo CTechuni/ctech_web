@@ -404,13 +404,25 @@ const { title, subtitle = 'Gestión Global' } = Astro.props;
     const markAllBtn = document.getElementById('markAllReadBtn');
 
     let notifications = [];
+    let notifInterval = null;
 
     async function fetchNotifications() {
+        if (!auth.isAuthenticated()) {
+            if (notifInterval) clearInterval(notifInterval);
+            return;
+        }
+
         try {
             const data = await AuthManager.fetch('/notifications/');
             notifications = data || [];
             updateNotifUI();
         } catch (error) {
+            if (error.message?.includes('401') || error.message?.includes('expirada')) {
+                if (notifInterval) clearInterval(notifInterval);
+                auth.clearAuthData();
+                window.location.href = '/login';
+                return;
+            }
             console.error('Error fetching notifications:', error);
         }
     }
@@ -529,6 +541,9 @@ const { title, subtitle = 'Gestión Global' } = Astro.props;
     async function initAdminHeader() {
         // 1. Render inmediato desde localStorage
         applyAdminUser(auth.getUser());
+        
+        if (!auth.isAuthenticated()) return;
+
         // 2. Refrescar desde el servidor
         try {
             const fresh = await AuthManager.fetch('/users/me');
@@ -537,15 +552,19 @@ const { title, subtitle = 'Gestión Global' } = Astro.props;
                 applyAdminUser(fresh);
                 if (fresh.rol_id === 1) {
                     fetchNotifications();
-                    setInterval(fetchNotifications, 30000);
+                    if (!notifInterval) {
+                        notifInterval = setInterval(fetchNotifications, 30000);
+                    }
                 }
             }
         } catch (e) {
             // Fallback: usar localStorage
             const cached = auth.getUser();
-            if (cached?.rol_id === 1) {
+            if (cached?.rol_id === 1 && auth.isAuthenticated()) {
                 fetchNotifications();
-                setInterval(fetchNotifications, 30000);
+                if (!notifInterval) {
+                    notifInterval = setInterval(fetchNotifications, 30000);
+                }
             }
         }
     }
