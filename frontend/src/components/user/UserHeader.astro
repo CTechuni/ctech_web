@@ -226,6 +226,15 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         display: flex; align-items: center; gap: 8px;
         font-size: 0.82rem; font-weight: 700; color: #1e293b;
         margin: 0 0 4px; line-height: 1.3;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .notif-item-title span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
     }
     
     .notif-dot {
@@ -366,7 +375,7 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
                 <div class="notif-body">
                     <p class="notif-item-title">
                         <span class="notif-dot ${isUnread ? 'active' : ''}"></span>
-                        ${n.title}
+                        <span>${n.title}</span>
                     </p>
                     <p class="notif-item-msg">${n.message}</p>
                     <span class="notif-item-time">${formatDate(n.created_at)}</span>

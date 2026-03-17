@@ -207,7 +207,16 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     .notif-item-title { 
         display: flex; align-items: center; gap: 8px;
         font-size: 0.82rem; font-weight: 700; color: #1e293b; 
-        margin-bottom: 4px; line-height: 1.3; 
+        margin-bottom: 4px; line-height: 1.3;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .notif-item-title span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
     }
     
     .notif-dot {
@@ -222,7 +231,10 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
     .notif-item-msg { 
         margin: 0; font-size: 0.78rem; color: #475569; line-height: 1.4;
         font-weight: 400;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     .notif-item-time { font-size: 0.7rem; color: #94a3b8; font-weight: 400; margin-top: 6px; display: block; }
 
@@ -334,7 +346,7 @@ const { title = 'Mi Comunidad', subtitle = 'DevFront Colombia' } = Astro.props;
                 <div class="notif-item-content">
                     <span class="notif-item-title">
                         <span class="notif-dot ${isUnread ? 'active' : ''}"></span>
-                        ${n.title}
+                        <span>${n.title}</span>
                     </span>
                     <p class="notif-item-msg" title="${n.message}">${n.message}</p>
                     <span class="notif-item-time">${formatDate(n.created_at)}</span>

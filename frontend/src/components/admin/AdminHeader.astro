@@ -253,11 +253,6 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
     .notif-list::-webkit-scrollbar { width: 4px; }
     .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
-    .notif-item-content {
-        flex: 1;
-        min-width: 0;
-    }
-
     .notif-item-title { 
         font-size: 0.82rem; 
         font-weight: 700; 
@@ -267,6 +262,15 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         display: flex;
         align-items: center;
         gap: 8px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .notif-item-title span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
     }
 
     .notif-dot {
@@ -460,7 +464,7 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
                     <div class="notif-item-content">
                         <p class="notif-item-title">
                             <span class="notif-dot ${isUnread ? 'active' : ''}"></span>
-                            ${n.title}
+                            <span>${n.title}</span>
                         </p>
                         <p class="notif-item-msg">${n.message}</p>
                         <span class="notif-item-time">${formatDate(n.created_at)}</span>
