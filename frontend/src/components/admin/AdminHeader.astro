@@ -245,15 +245,15 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
     .mark-read-btn:hover { background: #f1f5f9; color: #0f172a; }
     .mark-read-btn svg { width: 14px; height: 14px; }
 
-    .notif-list {
+    :global(.notif-list) {
         max-height: 420px;
         overflow-y: auto;
     }
 
-    .notif-list::-webkit-scrollbar { width: 4px; }
-    .notif-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    :global(.notif-list::-webkit-scrollbar) { width: 4px; }
+    :global(.notif-list::-webkit-scrollbar-thumb) { background: #e2e8f0; border-radius: 10px; }
 
-    .notif-item-title { 
+    :global(.notif-item-title) { 
         font-size: 0.82rem; 
         font-weight: 700; 
         color: #1e293b; 
@@ -266,14 +266,14 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         overflow: hidden;
     }
 
-    .notif-item-title span:last-child {
+    :global(.notif-item-title span:last-child) {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         flex: 1;
     }
 
-    .notif-dot {
+    :global(.notif-dot) {
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -282,12 +282,12 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         transition: all 0.2s;
     }
 
-    .notif-dot.active {
+    :global(.notif-dot.active) {
         background: #3b82f6; /* No leído - Azul */
         box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
     }
 
-    .notif-item-msg { 
+    :global(.notif-item-msg) { 
         font-size: 0.78rem; 
         color: #475569; 
         line-height: 1.4; 
@@ -299,7 +299,7 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         overflow: hidden;
     }
 
-    .notif-item-time { 
+    :global(.notif-item-time) { 
         font-size: 0.7rem; 
         color: #94a3b8; 
         margin-top: 6px; 
@@ -307,7 +307,7 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         font-weight: 400;
     }
 
-    .notif-item {
+    :global(.notif-item) {
         padding: 14px 20px;
         border-bottom: 1px solid #f8fafc;
         display: flex;
@@ -315,10 +315,10 @@ const { title, subtitle = 'Gestión Administrativa' } = Astro.props;
         cursor: pointer;
         transition: all 0.2s;
     }
-    .notif-item:hover { background: #f8fafc; }
-    .notif-item.unread { background: rgba(59, 130, 246, 0.02); }
+    :global(.notif-item:hover) { background: #f8fafc; }
+    :global(.notif-item.unread) { background: rgba(59, 130, 246, 0.02); }
 
-    .notif-empty { 
+    :global(.notif-empty) { 
         padding: 48px 32px; 
         text-align: center; 
         display: flex;
