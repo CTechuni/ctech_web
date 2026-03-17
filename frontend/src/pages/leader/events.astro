@@ -8,13 +8,22 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         <!-- Toolbar -->
         <div class="events-toolbar">
             <div class="toolbar-left">
-                <div class="search-input-group">
-                    <div class="search-icon-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
-                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
-                        </svg>
+                <div class="search-row">
+                    <div class="search-input-group">
+                        <div class="search-icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px;">
+                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input type="text" id="eventSearch" class="search-input" placeholder="Buscar por título, mes, líder o tipo..." />
                     </div>
-                    <input type="text" id="eventSearch" class="search-input" placeholder="Buscar por título, mes, líder o tipo..." />
+
+                    <button class="btn-create-event" id="btnNewEvent">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Crear Evento
+                    </button>
                 </div>
 
                 <div class="segmented-control" id="typeFilter">
@@ -29,13 +38,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     </button>
                 </div>
             </div>
-
-            <button class="btn-create-event" id="btnNewEvent">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                Crear Evento
-            </button>
         </div>
 
         <!-- Events Grid -->
@@ -220,6 +222,14 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         background: white;
         color: #3b82f6;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .search-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 620px;
     }
 
     .pending-badge-mini {
