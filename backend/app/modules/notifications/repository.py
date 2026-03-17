@@ -15,9 +15,10 @@ def get_all(db: Session, user_id: int = None, is_admin: bool = False, limit: int
         # Los usuarios normales (líderes) solo ven lo dirigido a ellos
         query = query.filter(models.Notification.recipient_id == user_id)
     else:
-        # Los admins ven todo o lo que no tiene destinatario específico (según preferencia)
-        # Vamos a dejar que el admin vea todo por ahora
-        pass
+        # Los admins ven lo dirigido a ellos O lo que es global (NULL)
+        query = query.filter(
+            (models.Notification.recipient_id == user_id) | (models.Notification.recipient_id == None)
+        )
         
     return query.order_by(models.Notification.created_at.desc()).limit(limit).all()
 
