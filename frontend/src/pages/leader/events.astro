@@ -60,27 +60,24 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
             </div>
 
             <form id="eventForm" class="m-body">
-                <input type="hidden" id="fImageUrl" name="fImageUrl" />
+                <input type="hidden" id="fId" name="id" />
+                <input type="hidden" id="fImageUrl" name="image_url" />
                 
                 <!-- Imagen -->
                 <div class="fg">
-                    <label>Imagen del evento</label>
+                    <label>Imagen informativa del evento</label>
                     <div class="img-upload-area" id="imgUploadArea">
                         <div class="img-placeholder" id="imgPlaceholder">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:32px;height:32px;margin-bottom:8px;opacity:.5;">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                             </svg>
-                            <span>Haz clic para subir imagen</span>
-                            <small>Soporta JPG, PNG, WebP</small>
+                            <span>Arrastra una imagen o haz clic para seleccionar</span>
+                            <small>JPG, PNG o WebP — máx. 5 MB</small>
                         </div>
-                        <img id="imgPreview" class="img-preview" src="" style="display:none" />
+                        <img id="imgPreview" class="img-preview" src="" alt="Vista previa" style="display:none" />
                         <div class="img-actions" id="imgActions" style="display:none">
                             <button type="button" class="btn-img-change" id="btnChangeImg">Cambiar</button>
-                            <button type="button" class="btn-img-remove" id="btnRemoveImg">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px;">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                            <button type="button" class="btn-img-remove" id="btnRemoveImg">Eliminar</button>
                         </div>
                         <input type="file" id="fImage" accept="image/*" style="display:none" />
                     </div>
@@ -93,7 +90,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
                 <div class="fg">
                     <label>Descripción</label>
-                    <textarea id="fDesc" name="description" class="fi" rows="3" placeholder="De qué trata el evento..."></textarea>
+                    <textarea id="fDesc" name="description" class="fi" rows="3" placeholder="Breve detalle del evento..."></textarea>
                 </div>
 
                 <div class="row2">
@@ -128,38 +125,41 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 </div>
 
                 <div class="fg">
-                    <label id="locationLabel">Link de la reunión <span class="req">*</span></label>
-                    <div class="fi-icon-wrap">
-                        <svg id="locationIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="fi-icon" style="width:16px;height:16px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                        </svg>
-                        <input type="text" id="fLocation" name="location" class="fi fi-with-icon" placeholder="https://meet.google.com/..." required />
-                    </div>
+                    <label>Capacidad (opcional)</label>
+                    <input type="number" id="fCapacity" name="capacity" class="fi" placeholder="Ej: 50" min="1" />
+                    <span class="field-hint">Debe ser un valor mayor a 0.</span>
                 </div>
 
-                <div class="row2">
-                    <div class="fg">
-                        <label>Capacidad (opcional)</label>
-                        <input type="number" id="fCapacity" name="capacity" class="fi" placeholder="Ej: 50" min="1" />
-                    </div>
-                    <div class="fg">
-                        <label>Visibilidad</label>
-                        <div class="vis-toggle">
-                            <label class="vis-opt">
-                                <input type="radio" name="visibility" value="publico" checked />
-                                <div class="vis-card">
-                                    <strong>Público</strong>
-                                    <small>Visible para todos</small>
-                                </div>
-                            </label>
-                            <label class="vis-opt">
-                                <input type="radio" name="visibility" value="privado" />
-                                <div class="vis-card">
-                                    <strong>Privado</strong>
-                                    <small>Solo comunidad</small>
-                                </div>
-                            </label>
+                <div class="fg">
+                    <label id="locationLabel">Link de la reunión <span class="req">*</span></label>
+                    <div class="fi-icon-wrap">
+                        <div id="locationIcon">
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="fi-icon" style="width:16px;height:16px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                            </svg>
                         </div>
+                        <input type="text" id="fLocation" name="location" class="fi fi-with-icon" placeholder="https://meet.google.com/..." required />
+                    </div>
+                    <span class="field-hint" id="locationHint">Debe ser una URL válida (https://...)</span>
+                </div>
+
+                <div class="fg">
+                    <label>Visibilidad</label>
+                    <div class="vis-toggle">
+                        <label class="vis-opt">
+                            <input type="radio" name="visibility" value="publico" checked />
+                            <div class="vis-card">
+                                <strong>Público</strong>
+                                <small>Visible para todos</small>
+                            </div>
+                        </label>
+                        <label class="vis-opt">
+                            <input type="radio" name="visibility" value="privado" />
+                            <div class="vis-card">
+                                <strong>Privado</strong>
+                                <small>Solo comunidad</small>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
@@ -373,12 +373,10 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     .btn-action-ic:hover { background: #e2e8f0; color: #1e293b; }
     .btn-action-ic.edit:hover { background: #e0f2fe; color: #3b82f6; }
     .btn-action-ic.postpone:hover { background: #fef3c7; color: #d97706; }
-    .btn-action-ic.delete:hover { background: #fef2f2; color: #ef4444; }
-
-    /* Modal Styles */
+    .btn-action-ic.delete:hover { background: #fef2f    /* Modal Styles */
     .m-overlay {
         position: fixed; inset: 0;
-        background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(8px);
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
         display: none; align-items: center; justify-content: center;
         z-index: 3000; padding: 20px;
     }
@@ -386,55 +384,90 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     .m-card {
         background: #fff; border-radius: 22px;
         width: 100%; max-width: 600px; max-height: 94vh; overflow-y: auto;
-        box-shadow: 0 30px 60px rgba(0,0,0,.18);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+        text-align: left;
     }
     .m-header {
         display: flex; justify-content: space-between; align-items: center;
         padding: 22px 28px 18px; border-bottom: 1px solid #f1f5f9;
-        position: sticky; top: 0; background: #fff; z-index:10; border-radius: 22px 22px 0 0;
+        position: sticky; top: 0; background: #fff; z-index: 10; border-radius: 22px 22px 0 0;
     }
     .m-header h4 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
-    .m-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; }
+    .m-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .m-close:hover { background: #e2e8f0; color: #ef4444; }
-    
     .m-body { padding: 22px 28px; display: flex; flex-direction: column; gap: 18px; }
+
     .fg { display: flex; flex-direction: column; gap: 6px; }
     .fg label { font-size: .8rem; font-weight: 700; color: #475569; }
-    
     .fi {
         border: 1.5px solid #e2e8f0; border-radius: 10px;
         padding: 10px 13px; font-size: .88rem; color: #1e293b;
-        font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: all .2s;
+        font-family: inherit; outline: none; width: 100%; box-sizing: border-box; transition: border-color .2s;
     }
-    .fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
-    
+    .fi:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08); }
+    :global(.req) { color: #ef4444; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    
-    .fi-icon-wrap { position: relative; }
-    :global(.fi-icon) { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
-    .fi-with-icon { padding-left: 36px; }
 
-    .type-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
-    .type-btn { flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600; background: #fff; border: none; color: #64748b; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    /* Icon wrap for link field */
+    .fi-icon-wrap { position: relative; }
+    :global(.fi-icon) { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; width: 16px; height: 16px; pointer-events: none; }
+    .fi-with-icon { padding-left: 38px; }
+    .field-hint  { font-size: .72rem; color: #94a3b8; margin-top: 4px; display: block; }
+
+    /* Type toggle */
+    .type-toggle { display: flex; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: #f8fafc; }
+    .type-btn { flex: 1; padding: 9px 0; font-size: .82rem; font-weight: 600; background: transparent; border: none; color: #64748b; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .type-btn:not(:last-child) { border-right: 1.5px solid #e2e8f0; }
     .type-btn.active { background: #3b82f6; color: #fff; }
 
+    /* Visibility */
     .vis-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .vis-opt { cursor: pointer; }
-    .vis-opt input { display: none; }
-    .vis-card { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 10px; text-align: center; }
+    .vis-opt input[type="radio"] { display: none; }
+    .vis-card { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 2.2px solid #e2e8f0; border-radius: 14px; padding: 12px 10px; text-align: center; transition: all 0.2s; }
+    .vis-card strong { font-size: .85rem; color: #475569; font-weight: 700; }
+    .vis-card small  { font-size: .7rem; color: #94a3b8; }
     .vis-opt input:checked + .vis-card { border-color: #3b82f6; background: #f0f7ff; }
     .vis-opt input:checked + .vis-card strong { color: #3b82f6; }
 
+    /* Image upload */
     .img-upload-area {
         border: 2px dashed #e2e8f0; border-radius: 14px; overflow: hidden;
-        cursor: pointer; transition: all .2s; position: relative; min-height: 130px;
+        cursor: pointer; transition: border-color .2s; position: relative; min-height: 130px;
         display: flex; align-items: center; justify-content: center;
     }
     .img-upload-area:hover { border-color: #3b82f6; background: #f8fbff; }
-    
-    .m-footer { padding: 16px 28px 22px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 12px; }
-    .btn-ghost { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b; }
-    .btn-save  { background: #3b82f6; color: #fff; border: none; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; }
+    .img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px; color: #94a3b8; text-align: center; }
+    .img-placeholder span { font-size: .83rem; font-weight: 600; color: #64748b; }
+    .img-preview { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .img-actions { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 6px; }
+    .btn-img-change, .btn-img-remove {
+        background: rgba(255,255,255,.95); border: 1px solid #e2e8f0;
+        border-radius: 8px; padding: 6px 12px; font-size: .75rem; font-weight: 700;
+        color: #475569; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .btn-img-remove { color: #ef4444; border-color: #fca5a5; }
+
+    .m-footer {
+        display: flex; justify-content: flex-end; gap: 12px;
+        padding: 16px 28px 22px; border-top: 1px solid #f1f5f9;
+        position: sticky; bottom: 0; background: #fff; border-radius: 0 0 22px 22px;
+    }
+    .btn-ghost { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; color: #64748b; transition: all 0.2s; }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    .btn-save { 
+        background: #3b82f6; 
+        color: #fff; border: none; 
+        padding: 10px 22px; border-radius: 10px; 
+        font-weight: 700; font-size: .88rem; 
+        cursor: pointer; display: flex; 
+        align-items: center; gap: 7px;
+        transition: all 0.2s;
+    }
+    .btn-save:hover { background: #2563eb; transform: translateY(-1px); }
+    .btn-save:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
+em; cursor: pointer; }
 
     .spinner { width: 32px; height: 32px; border: 4px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
