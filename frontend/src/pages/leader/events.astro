@@ -3,7 +3,7 @@
 import LeaderLayout from '../../layouts/LeaderLayout.astro';
 ---
 
-<LeaderLayout title="Gestión de Eventos | CTech">
+<LeaderLayout title="Gestión de Eventos">
     <div class="events-section">
         <!-- Toolbar -->
         <div class="events-toolbar">
@@ -14,7 +14,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                             <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <input type="text" id="eventSearch" class="search-input" placeholder="Buscar por título, mes o tipo..." />
+                    <input type="text" id="eventSearch" class="search-input" placeholder="Buscar por título, mes, líder o tipo..." />
                 </div>
 
                 <div class="segmented-control" id="typeFilter">
@@ -246,8 +246,8 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     }
 
     .search-input-group:focus-within {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08);
+        border-color: var(--color-azure-radiant, #3b82f6);
+        box-shadow: 0 0 0 4px rgba(0, 115, 255, 0.08);
     }
 
     .search-icon-box {
