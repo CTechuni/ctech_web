@@ -545,7 +545,7 @@
                             <span>
                                 ${(() => {
                                     const commId = u.community_id;
-                                    if (!commId) return 'Global';
+                                    if (!commId) return 'Sin asignar';
                                     const found = communities.find(c => 
                                         Number(c.id_community || c.id) === Number(commId)
                                     );

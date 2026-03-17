@@ -21,13 +21,14 @@ def change_role(db: Session, user_id: int, new_role_id: int):
         return None
         
     old_role_id = user.rol_id
+    update_data = {"rol_id": new_role_id}
     
-    # Si deja de ser líder, limpiar la comunidad
+    # Si deja de ser líder, limpiar la comunidad en ambas tablas
     if old_role_id == 3 and new_role_id != 3:
         db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+        update_data["community_id"] = None
         db.commit()
     
-    update_data = {"rol_id": new_role_id}
     updated_user = repository.update(db, user_id, update_data)
     
     # Si pasa a ser líder y tiene comunidad, validar y sincronizar
@@ -68,19 +69,19 @@ def update_user(db: Session, user_id: int, user_data: dict):
             detail="Este usuario ya es líder de otra comunidad. Debe ser removido primero."
         )
 
-    # Si deja de ser líder o cambia de comunidad, limpiar referencia antigua
+    # Si deja de ser líder o cambia de comunidad, limpiar referencia antigua en Community
     if old_role_id == 3:
-        if new_rol != 3 or (new_comm != old_community_id and new_comm is not None):
+        if new_rol != 3 or new_comm != old_community_id:
             db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
             db.commit()
 
     user = repository.update(db, user_id, user_data)
 
-    # Si es/pasa a ser líder, sincronizar con la nueva comunidad
-    if user and user.rol_id == 3:
-        if "community_id" in user_data or "rol_id" in user_data:
-            if user.community_id:
-                sync_community_leader(db, user.community_id, user.id)
+    # Sincronización perfecta si hay cambios en rol o comunidad
+    if "community_id" in user_data or "rol_id" in user_data:
+        # Si es líder o era líder, sincronizar
+        if user.rol_id == 3 or old_role_id == 3:
+            sync_community_leader(db, user.community_id, user.id if user.rol_id == 3 else None)
     return user
 
 def validate_community_available(db: Session, community_id: int, exclude_leader_id: int = None):
@@ -106,8 +107,53 @@ def validate_community_available(db: Session, community_id: int, exclude_leader_
         )
 
 def sync_community_leader(db: Session, community_id: int, leader_id: int):
-    if community_id:
+    """
+    Ensures absolute exclusivity for community leadership:
+    1. A community has exactly ONE leader in the users table.
+    2. A user is leader of exactly ONE community in the communities table.
+    """
+    if community_id and leader_id:
+        # 1. CLEANUP COMMUNITY: Any OTHER user claiming to lead THIS community is demoted
+        db.query(models.User).filter(
+            models.User.community_id == community_id,
+            models.User.rol_id == 3, # Leader
+            models.User.id != leader_id
+        ).update({
+            "community_id": None
+        })
+
+        # 2. CLEANUP LEADER: Any OTHER community claiming to be led by THIS user is cleared
+        db.query(Community).filter(
+            Community.leader_id == leader_id,
+            Community.id_community != community_id
+        ).update({"leader_id": None})
+
+        # 3. LINK BOTH DIRECTIONS
         db.query(Community).filter(Community.id_community == community_id).update({"leader_id": leader_id})
+        db.query(models.User).filter(models.User.id == leader_id).update({
+            "community_id": community_id,
+            "rol_id": 3 # Leadership Role
+        })
+        
+        db.commit()
+        
+    elif community_id and not leader_id:
+        # Total cleanup for this community (no leader)
+        db.query(models.User).filter(
+            models.User.community_id == community_id,
+            models.User.rol_id == 3 # Leader
+        ).update({
+            "community_id": None
+        })
+        db.query(Community).filter(Community.id_community == community_id).update({"leader_id": None})
+        db.commit()
+    
+    elif not community_id and leader_id:
+        # Total cleanup for this user (not leading anything)
+        db.query(Community).filter(Community.leader_id == leader_id).update({"leader_id": None})
+        db.query(models.User).filter(models.User.id == leader_id).update({
+            "community_id": None
+        })
         db.commit()
 
 def delete_user(db: Session, user_id: int):

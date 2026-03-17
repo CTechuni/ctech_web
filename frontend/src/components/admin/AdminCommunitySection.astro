@@ -708,7 +708,7 @@
                 uploadPreview.style.display = '';
             }
             // Temporarily set leader option so it's visible while loading list
-            leaderSelect.innerHTML = `<option value="${data.leader_id || ''}" selected>${data.leader_name || 'Sin líder'}</option>`;
+            leaderSelect.innerHTML = `<option value="${data.leader_id || ''}" selected>${data.leader_name || 'Sin asignar'}</option>`;
             // Normalize status to 'Activo'/'Inactivo' for pre-loading
             let currentStatus = data.status_community || 'Activo';
             if (currentStatus.toLowerCase() === 'active') currentStatus = 'Activo';

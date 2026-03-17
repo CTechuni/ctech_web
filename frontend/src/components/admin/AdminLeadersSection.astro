@@ -1153,8 +1153,8 @@
                                 const found = communities.find(c => Number(c.id_community) === Number(commId));
                                 communeName = found?.name_community || found?.name || '';
                             }
-                            if (chipEl) chipEl.textContent = communeName || 'Sin comunidad';
-                            if (roleBadgeEl) roleBadgeEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:13px;height:13px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg> Líder de Comunidad &middot; ${communeName || 'Sin comunidad'}`;
+                            if (chipEl) chipEl.textContent = communeName || 'Sin asignar';
+                            if (roleBadgeEl) roleBadgeEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:13px;height:13px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg> Líder de Comunidad &middot; ${communeName || 'Sin asignar'}`;
                         }
 
                         // Update status dot
@@ -1351,7 +1351,7 @@
                         <!-- Rol -->
                         <div class="leader-role-badge">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:13px;height:13px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                            Líder de Comunidad &middot; ${communeName || 'Sin comunidad'}
+                            Líder de Comunidad &middot; ${communeName || 'Sin asignar'}
                         </div>
 
                         ${commCode ? `<div class="leader-footer-meta"><span class="leader-code-tag">${commCode}</span></div>` : ''}
