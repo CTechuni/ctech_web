@@ -689,6 +689,9 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     let editingId = null;
     let pendingImageFile = null;
 
+    const modal = document.getElementById('eventModal');
+    const form  = document.getElementById('eventForm');
+
     async function fetchData() {
         const grid = document.getElementById('eventsGrid');
         if (grid) {
@@ -946,9 +949,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         }
     }
 
-        }
-    }
-
     const infoModal = document.getElementById('infoModal');
 
     function closeInfoModal() {
@@ -1051,7 +1051,17 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         if (e.target === infoModal) closeInfoModal();
     });
 
-    // Subida de imagenes y lógica de modal...
+    // Modal Logic
+    function openModal(ev = null) {
+        editingId = ev ? ev.id : null;
+        const mTitle = document.getElementById('mTitle');
+        if (mTitle) mTitle.textContent = editingId ? 'Editar Evento' : 'Nuevo Evento';
+        form.reset();
+        
+        const preview = document.getElementById('imgPreview') as HTMLImageElement;
+        const placeholder = document.getElementById('imgPlaceholder');
+        const actions = document.getElementById('imgActions');
+        const imgUrlIn = document.getElementById('fImageUrl') as HTMLInputElement;
 
         if (ev) {
             (document.getElementById('fTitle') as HTMLInputElement).value = ev.title;
