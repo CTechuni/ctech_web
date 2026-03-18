@@ -52,7 +52,20 @@ def get_community_counts(db: Session, community_id: int):
 
     # Conteos filtrados por comunidad
     total_users = db.query(User).filter(User.community_id == community_id).count()
-    active_events = db.query(Event).filter(Event.community_id == community_id).count()
+
+    # Obtener el líder actual de la comunidad
+    community = db.query(Community).filter(Community.id_community == community_id).first()
+    leader_id = community.leader_id if community else None
+
+    # IDs de admins
+    admin_ids = [u.id for u in db.query(User).join(Role, User.rol_id == Role.id_rol).filter(Role.name_rol == 'admin').all()]
+
+    # Contar solo eventos creados por el líder actual o por un admin
+    allowed_creators = [lid for lid in ([leader_id] + admin_ids) if lid is not None]
+    active_events = db.query(Event).filter(
+        Event.community_id == community_id,
+        Event.creator_id.in_(allowed_creators)
+    ).count() if allowed_creators else 0
 
     # Crecimiento acumulado: total de miembros registrados hasta el fin de cada uno de los últimos 7 meses
     from datetime import date, timedelta

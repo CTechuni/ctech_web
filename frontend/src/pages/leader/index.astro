@@ -242,8 +242,16 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                         },
                         y: {
                             beginAtZero: true,
+                            min: 0,
+                            max: 20,
                             grid: { color: '#f1f5f9' },
-                            ticks: { color: '#94a3b8', font: { size: 11 }, padding: 10, stepSize: 20 },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                padding: 10,
+                                callback: v => [0, 2, 6, 8, 12, 15, 20].includes(v) ? v : null
+                            },
+                            afterBuildTicks: axis => { axis.ticks = [0, 2, 6, 8, 12, 15, 20].map(v => ({ value: v })); },
                             border: { display: false }
                         }
                     }

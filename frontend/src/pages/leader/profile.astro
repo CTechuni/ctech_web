@@ -51,10 +51,6 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 <span class="cs-lbl">Usuarios</span>
             </div>
             <div class="cs-item">
-                <span class="cs-num" id="csCourses">—</span>
-                <span class="cs-lbl">Cursos</span>
-            </div>
-            <div class="cs-item">
                 <span class="cs-num" id="csEvents">—</span>
                 <span class="cs-lbl">Eventos</span>
             </div>
@@ -148,7 +144,6 @@ async function init() {
             const metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
             if (metrics) {
                 document.getElementById('csUsers').textContent   = metrics.total_users ?? '—';
-                document.getElementById('csCourses').textContent = metrics.total_courses ?? '—';
                 document.getElementById('csEvents').textContent  = metrics.active_events ?? '—';
             }
         } catch(e) { console.warn('Error cargando métricas:', e); }
