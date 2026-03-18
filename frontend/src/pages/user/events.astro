@@ -467,6 +467,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
         (document.getElementById('infoDesc') as HTMLElement).textContent = ev.description || 'Sin descripción detallada.';
         (document.getElementById('infoTime') as HTMLElement).textContent = ev.event_time ? ev.event_time.substring(0, 5) : '--:--';
         (document.getElementById('infoDateFull') as HTMLElement).textContent = new Date(ev.event_date + 'T00:00:00').toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
+        (document.getElementById('infoOrganizer') as HTMLElement).textContent = ev.community_name || 'Comunidad CTech';
 
         const badge = document.getElementById('infoBadge');
         const isVirtual = ev.event_type === 'virtual';

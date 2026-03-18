@@ -89,6 +89,36 @@ class EmailService:
             logger.error(f"Error al renderizar plantilla de recuperación de contraseña: {str(e)}")
             return False
 
+    def send_password_change_email(self, recipient_email: str, name_user: str):
+        try:
+            from datetime import datetime
+            template = self.env.get_template("password_change.html")
+            html_content = template.render(
+                name_user=name_user,
+                email=recipient_email,
+                change_date=datetime.now().strftime("%d/%m/%Y %H:%M"),
+                platform_url=settings.PLATFORM_URL
+            )
+            return self._send_email(recipient_email, "Tu contraseña ha sido actualizada - CTech", html_content)
+        except Exception as e:
+            logger.error(f"Error al renderizar plantilla de cambio de contraseña: {str(e)}")
+            return False
+
+    def send_profile_update_email(self, recipient_email: str, name_user: str, name_changed: bool, email_changed: bool, new_email: str = None):
+        try:
+            template = self.env.get_template("profile_update.html")
+            html_content = template.render(
+                name_user=name_user,
+                name_changed=name_changed,
+                email_changed=email_changed,
+                new_email=new_email or recipient_email,
+                platform_url=settings.PLATFORM_URL
+            )
+            return self._send_email(recipient_email, "Tu información ha sido actualizada - CTech", html_content)
+        except Exception as e:
+            logger.error(f"Error al renderizar plantilla de actualización de perfil: {str(e)}")
+            return False
+
     def send_event_status_update_email(self, recipient_email: str, name_user: str, event_name: str, event_date: str, event_time: str, status_type: str, name_community: str):
         try:
             template = self.env.get_template("event_status_update.html")

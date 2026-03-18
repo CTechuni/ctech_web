@@ -337,6 +337,10 @@ const { title, subtitle = 'Plataforma de Aprendizaje' } = Astro.props;
         } catch (_) {}
     }
 
+    window.addEventListener('user-updated', (e: any) => {
+        if (e.detail) applyUser(e.detail);
+    });
+
     // ── Notificaciones ────────────────────────────────────────────────────────
     let notifications = [];
 

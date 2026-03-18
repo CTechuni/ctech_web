@@ -175,8 +175,11 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
         db.commit()
 
 def delete_user(db: Session, user_id: int):
-    # If user is a leader, clear the reference in the community first
+    from app.modules.events.models import Event
+    # Liberar referencia de comunidad si es líder
     db.query(Community).filter(Community.leader_id == user_id).update({"leader_id": None})
+    # Liberar creator_id en eventos (no tiene ON DELETE CASCADE en la BD)
+    db.query(Event).filter(Event.creator_id == user_id).update({"creator_id": None})
     db.commit()
     return repository.delete(db, user_id)
 
