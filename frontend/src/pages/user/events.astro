@@ -543,28 +543,39 @@ import UserLayout from '../../layouts/UserLayout.astro';
 
     async function handleRegister() {
         if (!currentEvent) return;
+
+        // Verificar sesión activa
+        const user = authManager.getUser();
+        if (!user) {
+            (window as any).Swal?.fire({
+                icon: 'info',
+                title: 'Inicia sesión',
+                text: 'Debes iniciar sesión para registrarte en un evento.',
+                confirmButtonText: 'Ir a iniciar sesión',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) window.location.href = '/?action=login';
+            });
+            return;
+        }
+
         const btn = document.getElementById('btnRegister') as HTMLButtonElement;
-        
         btn.disabled = true;
         try {
             if (currentEvent.is_registered) {
-                // Cancelar registro
                 await AuthManager.fetch(`/events/${currentEvent.id}/register`, { method: 'DELETE' });
                 currentEvent.is_registered = false;
-                // @ts-ignore
-                Swal.fire({ icon: 'success', title: 'Registro cancelado', text: 'Ya no estás inscrito en este evento.', timer: 2000, showConfirmButton: false });
+                (window as any).Swal?.fire({ icon: 'success', title: 'Registro cancelado', text: 'Ya no estás inscrito en este evento.', timer: 2000, showConfirmButton: false });
             } else {
-                // Registrarme
                 await AuthManager.fetch(`/events/${currentEvent.id}/register`, { method: 'POST' });
                 currentEvent.is_registered = true;
-                // @ts-ignore
-                Swal.fire({ icon: 'success', title: '¡Registrado!', text: 'Te has inscrito correctamente en el evento.', timer: 2000, showConfirmButton: false });
+                (window as any).Swal?.fire({ icon: 'success', title: '¡Registrado!', text: 'Te has inscrito correctamente en el evento.', timer: 2000, showConfirmButton: false });
             }
             updateRegisterButton();
-            applyFilters(); // Refrescar la lista de fondo
+            applyFilters();
         } catch (e) {
-            // @ts-ignore
-            Swal.fire({ icon: 'error', title: 'Error', text: e.detail || 'No se pudo procesar la solicitud.' });
+            (window as any).Swal?.fire({ icon: 'error', title: 'Error', text: (e as any).detail || 'No se pudo procesar la solicitud.' });
         } finally {
             btn.disabled = false;
         }

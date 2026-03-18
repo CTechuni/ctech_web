@@ -89,4 +89,22 @@ class EmailService:
             logger.error(f"Error al renderizar plantilla de recuperación de contraseña: {str(e)}")
             return False
 
+    def send_event_status_update_email(self, recipient_email: str, name_user: str, event_name: str, event_date: str, event_time: str, status_type: str, name_community: str):
+        try:
+            template = self.env.get_template("event_status_update.html")
+            html_content = template.render(
+                name_user=name_user,
+                event_name=event_name,
+                event_date=event_date,
+                event_time=event_time,
+                status_type=status_type,
+                name_community=name_community,
+                platform_url=settings.PLATFORM_URL
+            )
+            subject = f"Actualización: El evento '{event_name}' ha sido {status_type}"
+            return self._send_email(recipient_email, subject, html_content)
+        except Exception as e:
+            logger.error(f"Error al renderizar plantilla de actualización de evento: {str(e)}")
+            return False
+
 email_service = EmailService()

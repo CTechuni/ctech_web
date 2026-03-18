@@ -237,7 +237,7 @@ def reject_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
 
 # ── PATCH cancelar evento ──────────────────────────────────────────────────────
 @router.patch("/{event_id}/cancel", response_model=schemas.EventResponse)
-def cancel_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+def cancel_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para cancelar eventos")
 
@@ -252,11 +252,11 @@ def cancel_event(event_id: int, db: Session = Depends(get_db), current=Depends(g
     if current.rol_id != 1 and event.creator_id != current.id:
         raise HTTPException(status_code=403, detail="Solo el creador del evento puede cancelarlo")
 
-    return service.cancel_event(db, event_id)
+    return service.cancel_event(db, event_id, background_tasks=background_tasks)
 
 # ── PATCH aplazar evento ───────────────────────────────────────────────────────
 @router.patch("/{event_id}/postpone", response_model=schemas.EventResponse)
-def postpone_event(event_id: int, db: Session = Depends(get_db), current=Depends(get_current_user)):
+def postpone_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para aplazar eventos")
 
@@ -271,7 +271,7 @@ def postpone_event(event_id: int, db: Session = Depends(get_db), current=Depends
     if current.rol_id != 1 and event.creator_id != current.id:
         raise HTTPException(status_code=403, detail="Solo el creador del evento puede aplazarlo")
 
-    return service.postpone_event(db, event_id)
+    return service.postpone_event(db, event_id, background_tasks=background_tasks)
 
 # ── POST registrarse a un evento ──────────────────────────────────────────────
 @router.post("/{event_id}/register")

@@ -122,10 +122,10 @@ def reject_event(db: Session, event_id: int):
             )
     return event
 
-def cancel_event(db: Session, event_id: int):
+def cancel_event(db: Session, event_id: int, background_tasks = None):
     event = repository.cancel(db, event_id)
     if event:
-        # Notificar al creador si no es él quien cancela (opcional, por ahora simple)
+        # Notificar al creador
         if event.creator_id:
             notification_service.add_notification(
                 db,
@@ -134,9 +134,12 @@ def cancel_event(db: Session, event_id: int):
                 "event",
                 recipient_id=event.creator_id
             )
+        # Notificar a los asistentes por correo
+        if background_tasks:
+            notify_attendees_of_status_change(db, event, "cancelado", background_tasks)
     return event
 
-def postpone_event(db: Session, event_id: int):
+def postpone_event(db: Session, event_id: int, background_tasks = None):
     event = repository.postpone(db, event_id)
     if event:
         if event.creator_id:
@@ -147,7 +150,37 @@ def postpone_event(db: Session, event_id: int):
                 "event",
                 recipient_id=event.creator_id
             )
+        # Notificar a los asistentes por correo
+        if background_tasks:
+            notify_attendees_of_status_change(db, event, "aplazado", background_tasks)
     return event
+
+def notify_attendees_of_status_change(db: Session, event, status_type: str, background_tasks):
+    """
+    Obtiene todos los asistentes registrados y les envía un correo informativo.
+    """
+    from app.core.email_service import email_service
+    
+    # Obtener asistentes (objeto User)
+    attendees = repository.get_registrations_by_event(db, event.id)
+    if not attendees:
+        return
+
+    # Info de comunidad
+    comm = db.query(Community).filter(Community.id_community == event.community_id).first()
+    comm_name = comm.name_community if comm else "CTech"
+
+    for user in attendees:
+        background_tasks.add_task(
+            email_service.send_event_status_update_email,
+            recipient_email=user.email,
+            name_user=user.name_user,
+            event_name=event.title,
+            event_date=str(event.event_date),
+            event_time=str(event.event_time) if event.event_time else "Por definir",
+            status_type=status_type,
+            name_community=comm_name
+        )
 
 def notify_event_published(db: Session, event):
     """

@@ -43,7 +43,6 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
                     <span id="modalCapacity"></span>
                 </div>
                 <p class="event-modal-desc" id="modalDesc"></p>
-                <a href="#" class="event-modal-link" id="modalLink" style="display:none" target="_blank" rel="noopener">Ver enlace del evento →</a>
             </div>
         </div>
     </div>
@@ -310,8 +309,6 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 .event-modal-meta { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1rem; font-size:.875rem; color:rgba(255,255,255,.75); }
 .event-modal-meta span { display:flex; align-items:center; gap:.5rem; }
 .event-modal-desc { font-size:.875rem; color:rgba(255,255,255,.65); margin-bottom:1rem; line-height:1.55; }
-.event-modal-link { display:inline-block; padding:.6rem 1.25rem; background:#2563eb; color:#fff; border-radius:9999px; font-size:.875rem; font-weight:600; text-decoration:none; transition:background .15s; }
-.event-modal-link:hover { background:#1d4ed8; }
 /* Cursor pointer on event cards */
 .event-card { cursor:pointer; transition:transform .2s,box-shadow .2s; }
 .event-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.4); }
@@ -544,13 +541,6 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 
         document.getElementById('modalDesc').textContent = e.description || 'Sin descripción disponible.';
 
-        const linkEl = document.getElementById('modalLink');
-        if (e.location && e.location.startsWith('http')) {
-            linkEl.href = e.location;
-            linkEl.style.display = 'inline-block';
-        } else {
-            linkEl.style.display = 'none';
-        }
 
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
