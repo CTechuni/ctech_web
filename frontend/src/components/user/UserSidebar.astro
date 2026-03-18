@@ -330,6 +330,15 @@ const menuItems = [
         } catch (e) { /* silencioso */ }
     }
 
+    window.addEventListener('user-updated', (e: any) => {
+        const u = e.detail;
+        if (!u) return;
+        const avatar = document.getElementById('sidebarAvatar');
+        const name = document.getElementById('sidebarName');
+        if (avatar) avatar.textContent = (u.name_user || '--').substring(0, 2).toUpperCase();
+        if (name) name.textContent = u.name_user || 'Usuario';
+    });
+
     // 2. Logout
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
         authManager.logout();

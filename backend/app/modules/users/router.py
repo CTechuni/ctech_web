@@ -39,17 +39,42 @@ def get_me(current=Depends(get_current_user), db: Session = Depends(get_db)):
     return service.get_user(db, current.id)
 
 @router.patch("/me", response_model=schemas.UserResponse)
-def update_me(data: schemas.UserUpdate, db: Session = Depends(get_db), current=Depends(get_current_user)):
-    # exclude_unset=True ensures only the fields sent in the request are included
-    return service.update_user(db, current.id, data.model_dump(exclude_unset=True))
+def update_me(data: schemas.UserUpdate, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
+    old_email = current.email
+    old_name  = current.name_user
+    update_data = data.model_dump(exclude_unset=True)
+    updated = service.update_user(db, current.id, update_data)
+
+    name_changed  = "name_user" in update_data and update_data["name_user"] != old_name
+    email_changed = "email" in update_data and update_data["email"] != old_email
+
+    if name_changed or email_changed:
+        from app.core.email_service import email_service
+        recipient = updated.email  # nuevo email si cambió, mismo si solo nombre
+        background_tasks.add_task(
+            email_service.send_profile_update_email,
+            recipient_email=recipient,
+            name_user=updated.name_user or old_name,
+            name_changed=name_changed,
+            email_changed=email_changed,
+            new_email=updated.email if email_changed else None
+        )
+
+    return updated
 
 @router.patch("/me/password")
-def change_my_password(data: schemas.ChangePasswordRequest, db: Session = Depends(get_db), current=Depends(get_current_user)):
+def change_my_password(data: schemas.ChangePasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
     from app.modules.auth.service import verify_password, get_password_hash
     if not verify_password(data.current_password, current.password_hash):
         raise HTTPException(status_code=400, detail="La contraseña actual es incorrecta")
     from . import repository
     repository.update(db, current.id, {"password_hash": get_password_hash(data.new_password)})
+    from app.core.email_service import email_service
+    background_tasks.add_task(
+        email_service.send_password_change_email,
+        recipient_email=current.email,
+        name_user=current.name_user or current.email
+    )
     return {"message": "Contraseña actualizada correctamente"}
 
 @router.delete("/me")

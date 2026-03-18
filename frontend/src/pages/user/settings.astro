@@ -322,7 +322,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
     // Toggles de visibilidad de contraseña
     document.querySelectorAll('.eye-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const input = document.getElementById((btn as HTMLElement).dataset.target) as HTMLInputElement;
+            const input = document.getElementById((btn as HTMLElement).dataset.target ?? '') as HTMLInputElement;
             const isHidden = input.type === 'password';
             input.type = isHidden ? 'text' : 'password';
             
@@ -372,7 +372,43 @@ import UserLayout from '../../layouts/UserLayout.astro';
         e.preventDefault();
         const btn = document.getElementById('btnSaveProfile') as HTMLButtonElement;
         const formData = new FormData(infoForm);
-        const data = Object.fromEntries(formData.entries());
+        const data = Object.fromEntries(formData.entries()) as Record<string, string>;
+
+        // Validar email
+        const emailVal = (data.email || '').trim();
+        if (emailVal.includes(' ')) {
+            (window as any).Swal?.fire('Correo inválido', 'El correo no puede contener espacios.', 'warning');
+            return;
+        }
+        const atIdx = emailVal.indexOf('@');
+        if (atIdx < 1) {
+            (window as any).Swal?.fire('Correo inválido', 'El correo debe contener una @.', 'warning');
+            return;
+        }
+        const afterAt = emailVal.slice(atIdx + 1);
+        if (!afterAt.includes('.') || afterAt.endsWith('.')) {
+            (window as any).Swal?.fire('Correo inválido', 'El correo debe contener un punto después de la @.', 'warning');
+            return;
+        }
+
+        // Detectar qué cambió
+        const currentUser = auth.getUser();
+        const emailChanged = emailVal !== (currentUser?.email || '');
+
+        // Si el email cambió, pedir confirmación
+        if (emailChanged) {
+            const result = await (window as any).Swal?.fire({
+                title: '¿Cambiar correo de acceso?',
+                html: `Tu nuevo correo será <strong>${emailVal}</strong>.<br>Necesitarás usarlo para iniciar sesión.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#0073ff',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar'
+            });
+            if (!result?.isConfirmed) return;
+        }
 
         btn.disabled = true;
         const originalText = btn.innerHTML;
@@ -386,18 +422,18 @@ import UserLayout from '../../layouts/UserLayout.astro';
 
             const currentToken = auth.getToken();
             auth.setAuthData(currentToken, updatedUser);
+            window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
 
             (window as any).Swal?.fire({
                 title: '¡Información Actualizada!',
-                text: 'Tus cambios han sido guardados con éxito.',
+                text: 'Tus cambios han sido guardados. Recibirás un correo de confirmación.',
                 icon: 'success',
                 confirmButtonColor: '#0073ff'
             });
-
-            window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }));
         } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Error desconocido';
             console.error('Error updating profile:', err);
-            (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + err.message, 'error');
+            (window as any).Swal?.fire('Error', 'No se pudieron guardar los cambios: ' + msg, 'error');
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalText;
@@ -414,7 +450,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
         const confirm = (document.getElementById('confirmPwd') as HTMLInputElement).value;
 
         if (newPwd !== confirm) {
-            (window as any).Swal?.fire('Aviso', 'Las contraseñas nuevas no coinciden.', 'warning');
+            (window as any).Swal?.fire('Las contraseñas no coinciden', 'La nueva contraseña y la confirmación deben ser iguales.', 'warning');
             return;
         }
         if (newPwd.length < 8) {
@@ -445,8 +481,9 @@ import UserLayout from '../../layouts/UserLayout.astro';
             if (fill) fill.style.width = '0';
             if (label) label.textContent = '';
         } catch (err) {
+            const msg = err instanceof Error ? err.message : 'Error al actualizar la contraseña.';
             console.error('Error updating password:', err);
-            (window as any).Swal?.fire('Error', err.message || 'Error al actualizar la contraseña.', 'error');
+            (window as any).Swal?.fire('Error', msg, 'error');
         } finally {
             btn.disabled = false;
             btn.innerHTML = originalText;
@@ -472,7 +509,8 @@ import UserLayout from '../../layouts/UserLayout.astro';
             auth.clearAuthData();
             window.location.href = '/';
         } catch (err) {
-            (window as any).Swal?.fire('Error', 'No se pudo eliminar la cuenta: ' + err.message, 'error');
+            const msg = err instanceof Error ? err.message : 'Error desconocido';
+            (window as any).Swal?.fire('Error', 'No se pudo eliminar la cuenta: ' + msg, 'error');
             confirmBtn.disabled = false;
             confirmBtn.textContent = 'Eliminar permanentemente';
         }
