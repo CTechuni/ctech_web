@@ -196,7 +196,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
                             </div>
@@ -208,7 +208,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
                         <div class="info-item">
                             <div class="info-icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                 </svg>
                             </div>
@@ -433,7 +433,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         margin-top: auto; 
     }
     :global(.footer-detail-item) { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: #64748b; font-weight: 600; }
-    :global(.footer-detail-item svg) { width: 14px; height: 14px; color: #94a3b8; }
+    :global(.footer-detail-item svg) { width: 18px; height: 18px; color: #94a3b8; }
 
     /* Card Actions (Premium Unification) */
     :global(.card-actions-row) {
@@ -513,6 +513,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         width: 100%; max-width: 600px; max-height: 94vh; overflow-y: auto;
         box-shadow: 0 30px 60px rgba(0,0,0,0.18);
         text-align: left;
+        position: relative;
     }
     .m-header {
         display: flex; justify-content: space-between; align-items: center;
@@ -699,17 +700,13 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         }
 
         try {
-            // Cargar eventos del líder
-            const myEvents = await AuthManager.fetch('/events/my').catch(() => []);
+            // /events/my devuelve TODOS los eventos creados por el líder (cualquier status)
+            const myEvents = await AuthManager.fetch('/events/my');
+            const eventsArr = Array.isArray(myEvents) ? myEvents : [];
             
-            // Si /events/my-events falla o no existe, intentar /events/
-            let eventsRes = Array.isArray(myEvents) ? myEvents : (await AuthManager.fetch('/events/'));
-            // Guardamos todos los eventos que no sean 'pending' (esos van en su propia pestaña)
-            allEvents = (Array.isArray(eventsRes) ? eventsRes : []).filter(ev => ev.status !== 'pending');
-            
-            // Cargar pendientes
-            const pending = await AuthManager.fetch('/events/pending').catch(() => []);
-            pendingEvents = Array.isArray(pending) ? pending : [];
+            // Separar: pendientes van a su propia pestaña, los demás a allEvents
+            allEvents = eventsArr.filter(ev => ev.status !== 'pending');
+            pendingEvents = eventsArr.filter(ev => ev.status === 'pending');
             
             updatePendingBadge();
             applyFilters();
@@ -760,11 +757,10 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                 return isMine && matchesSearch && (ev.status === 'approved' || ev.status === 'postponed');
             }
 
-            // Para 'all', 'virtual', 'presencial', solo mostrar aprobados/aplazados Y que sean de hoy en adelante
+            // Para 'all', 'virtual', 'presencial': mostrar todos los aprobados/aplazados (sin filtro de fecha)
             const isValidStatus = ev.status === 'approved' || ev.status === 'postponed';
-            const isFutureOrToday = evDate >= today;
 
-            if (!isValidStatus || !isFutureOrToday) return false;
+            if (!isValidStatus) return false;
 
             let typeRaw = `${ev.event_type || ''} ${ev.location || ''}`.toLowerCase();
             let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
@@ -830,27 +826,27 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                     </div>
                     <div class="card-footer-details">
                         <div class="footer-detail-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             <span>${e.event_time ? e.event_time.substring(0,5) : '18:30'}h</span>
                         </div>
                         <div class="footer-detail-item">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
                             <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.location || 'Local'}</span>
                         </div>
                     </div>
                     <div class="card-actions-row">
                         ${!isArchived ? `
                             <button class="btn-action-ic edit-action" data-id="${e.id}" title="Editar evento">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                                 Editar
                             </button>
                             <button class="btn-action-ic postpone-action" data-id="${e.id}" title="Cambiar fecha">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                 Aplazar
                             </button>
                         ` : ''}
                         <button class="btn-action-ic delete-action" data-id="${e.id}" title="Cancelar evento">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                             Cancelar
                         </button>
                     </div>
@@ -1011,8 +1007,8 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
         if (locIconBox) {
             locIconBox.innerHTML = isVirtual ? 
-                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>` :
-                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>`;
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>` :
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>`;
         }
 
         infoModal?.classList.add('open');

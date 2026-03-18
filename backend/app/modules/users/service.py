@@ -111,8 +111,19 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
     Ensures absolute exclusivity for community leadership:
     1. A community has exactly ONE leader in the users table.
     2. A user is leader of exactly ONE community in the communities table.
+    3. Events from the community are re-assigned to the new leader.
     """
+    from app.modules.events.models import Event
+
     if community_id and leader_id:
+        # 0. FIND OLD LEADER (before making changes)
+        old_leader = db.query(models.User).filter(
+            models.User.community_id == community_id,
+            models.User.rol_id == 3,
+            models.User.id != leader_id
+        ).first()
+        old_leader_id = old_leader.id if old_leader else None
+
         # 1. CLEANUP COMMUNITY: Any OTHER user claiming to lead THIS community is demoted
         db.query(models.User).filter(
             models.User.community_id == community_id,
@@ -134,6 +145,13 @@ def sync_community_leader(db: Session, community_id: int, leader_id: int):
             "community_id": community_id,
             "rol_id": 3 # Leadership Role
         })
+
+        # 4. RE-ASSIGN EVENTS: Transfer ownership of events from old leader to new leader
+        if old_leader_id:
+            db.query(Event).filter(
+                Event.community_id == community_id,
+                Event.creator_id == old_leader_id
+            ).update({"creator_id": leader_id})
         
         db.commit()
         
