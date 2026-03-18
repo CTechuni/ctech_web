@@ -31,16 +31,59 @@ import UserLayout from '../../layouts/UserLayout.astro';
         </div>
     </div>
 
-    <div class="user-sections">
-        <!-- Sidebar Section: Upcoming Events -->
-        <div class="section-card sidebar-area">
-            <div class="section-header">
-                <h2>Próximos Eventos</h2>
+    <div class="user-dashboard-content">
+        <!-- Featured Events Section -->
+        <div class="main-content-area">
+            <div class="section-container">
+                <div class="section-header">
+                    <div>
+                        <h2>Eventos Recomendados</h2>
+                        <p class="section-subtitle">No te pierdas estas oportunidades de conectar y aprender.</p>
+                    </div>
+                </div>
+                
+                <div class="events-featured-grid" id="eventsGrid">
+                    <!-- Skeleton / Loading state -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
             </div>
-            <div class="mini-events-list">
-                <div class="stat-label" style="padding: 10px; text-align: center;">Buscando eventos...</div>
+        </div>
+
+        <!-- Right Side: Stats & Activity -->
+        <div class="side-content-area">
+            <div class="mini-card-stat">
+                <h3>Mi Actividad</h3>
+                <div class="activity-stats">
+                    <div class="act-item">
+                        <span class="act-val" id="registeredStat">0</span>
+                        <span class="act-lbl">Inscrito</span>
+                    </div>
+                    <div class="act-divider"></div>
+                    <div class="act-item">
+                        <span class="act-val" id="totalUpcomingStat">0</span>
+                        <span class="act-lbl">Próximos</span>
+                    </div>
+                </div>
             </div>
-            <a href="/user/calendar" class="full-calendar-btn">Ver Calendario Completo</a>
+
+            <div class="calendar-shortcut-card">
+                <div class="cal-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                    </svg>
+                </div>
+                <div class="cal-info">
+                    <h4>Calendario de Eventos</h4>
+                    <p>Explora todas las fechas programadas.</p>
+                </div>
+                <a href="/user/calendar" class="btn-goto-cal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -90,162 +133,258 @@ import UserLayout from '../../layouts/UserLayout.astro';
         .stat-value { font-size: 1.75rem; font-weight: 800; color: #0f172a; line-height: 1; }
         .stat-label { font-size: 0.88rem; color: #64748b; font-weight: 500; margin-top: 4px; }
 
-        .user-sections {
-            display: grid;
-            grid-template-columns: 1.8fr 1fr;
-            gap: 24px;
-            align-items: start;
-        }
+    .user-dashboard-content {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 32px;
+        align-items: start;
+    }
 
-        .section-card {
-            background: white;
-            padding: 24px;
-            border-radius: 20px;
-            border: 1px solid #eef2f6;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+    .main-content-area { display: flex; flex-direction: column; gap: 32px; }
+    
+    .section-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
+    .section-header h2 { font-size: 1.5rem; font-weight: 850; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.02em; }
+    .section-subtitle { font-size: 0.92rem; color: #64748b; margin: 0; font-weight: 500; }
 
-        .section-header h2 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0; }
-        .see-all-btn { color: #007bff; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+    /* Features Grid */
+    .events-featured-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 24px;
+    }
 
-        /* Courses List */
-        .courses-vertical-list { display: flex; flex-direction: column; gap: 16px; }
-        
-        .course-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 1px solid #f1f5f9;
-            transition: all 0.2s;
-        }
+    /* Event Card Premium */
+    :global(.event-card-v2) {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+    }
 
-        .course-item:hover { border-color: #007bff; background: #fff; transform: scale(1.01); }
+    :global(.event-card-v2:hover) {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+        border-color: #e2e8f0;
+    }
 
-        .course-img img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
+    :global(.card-image-wrap) {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
 
-        .course-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .course-meta { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: #94a3b8; }
-        .course-info h3 { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0; }
+    :global(.card-img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
 
-        .progress-container { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
-        .progress-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #007bff; border-radius: 10px; }
-        .progress-text { font-size: 0.72rem; font-weight: 600; color: #64748b; min-width: 85px; }
+    :global(.event-card-v2:hover .card-img) { transform: scale(1.05); }
 
-        .continue-btn {
-            background: white;
-            border: 1.5px solid #007bff;
-            color: #007bff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .continue-btn:hover { background: #007bff; color: white; }
+    :global(.card-badge-top) {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        padding: 5px 12px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 2;
+    }
+    :global(.badge-virtual) { background: rgba(59, 130, 246, 0.9); color: white; }
+    :global(.badge-presencial) { background: rgba(219, 39, 119, 0.9); color: white; }
+    :global(.badge-full) { background: rgba(15, 23, 42, 0.9); color: white; }
 
-        /* Events Sidebar */
-        .mini-events-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-        
-        .mini-event-card {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #f8fafc;
-        }
+    :global(.card-info) {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex-grow: 1;
+    }
 
-        .date-badge {
-            width: 50px;
-            height: 50px;
-            background: #eef7ff;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .date-badge .day { font-size: 1.15rem; font-weight: 800; color: #007bff; line-height: 1; }
-        .date-badge .month { font-size: 0.65rem; font-weight: 700; color: #94a3b8; }
+    :global(.card-date-line) {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #3b82f6;
+        text-transform: uppercase;
+    }
 
-        .event-details h4 { font-size: 0.9rem; font-weight: 700; color: #0f172a; margin: 0; }
-        .event-details p { font-size: 0.78rem; color: #64748b; margin: 2px 0 0; }
+    :global(.card-info h3) {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        line-height:1.3;
+    }
 
-        .full-calendar-btn {
-            display: block;
-            text-align: center;
-            background: #f1f5f9;
-            color: #475569;
-            text-decoration: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .full-calendar-btn:hover { background: #e2e8f0; color: #007bff; }
+    :global(.card-desc) {
+        font-size: 0.85rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 
-        .mini-event-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
-        }
+    /* Capacity Tracker */
+    :global(.capacity-tracker) {
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-        .btn-mini-reg {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-        }
+    :global(.capacity-info) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
 
-        .btn-mini-reg:hover { background: #0062cc; }
-        .btn-mini-reg:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+    :global(.cap-label) { color: #94a3b8; text-transform: uppercase; }
+    :global(.cap-value) { color: #1e293b; }
 
-        .btn-mini-cancel {
-            background: white;
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-        }
+    :global(.cap-bar-bg) {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+    :global(.cap-bar-fill) {
+        height: 100%;
+        background: #3b82f6;
+        border-radius: 10px;
+        transition: width 0.4s ease;
+    }
+    :global(.cap-bar-fill.warning) { background: #f59e0b; }
+    :global(.cap-bar-fill.full) { background: #ef4444; }
 
-        .btn-mini-cancel:hover { background: #fff5f5; border-color: #ef4444; }
+    :global(.card-actions) {
+        padding: 0 20px 20px;
+    }
 
-        .status-badge-mini {
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 2px 8px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-top: 4px;
-        }
-        .status-registered { background: #f0fdf4; color: #10b981; }
-        .status-full { background: #fef2f2; color: #ef4444; }
+    :global(.btn-register-premium) {
+        width: 100%;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    :global(.btn-register-premium:hover) { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+    :global(.btn-register-premium:disabled) { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    :global(.btn-cancel-premium) {
+        width: 100%;
+        background: #fff;
+        color: #ef4444;
+        border: 1.5px solid #fee2e2;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    :global(.btn-cancel-premium:hover) { background: #fef2f2; border-color: #ef4444; }
+
+    /* Side area */
+    .mini-card-stat {
+        background: white;
+        padding: 24px;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 24px;
+    }
+    .mini-card-stat h3 { font-size: 0.9rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin: 0 0 20px; letter-spacing: 0.05em; }
+    
+    .activity-stats { display: flex; align-items: center; gap: 20px; }
+    .act-item { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .act-val { font-size: 1.5rem; font-weight: 850; color: #0f172a; }
+    .act-lbl { font-size: 0.75rem; font-weight: 600; color: #64748b; }
+    .act-divider { width: 1px; height: 30px; background: #f1f5f9; }
+
+    .calendar-shortcut-card {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        padding: 24px;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    .cal-icon { width: 44px; height: 44px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .cal-icon svg { width: 24px; height: 24px; }
+    .cal-info h4 { font-size: 1rem; font-weight: 800; margin: 0; }
+    .cal-info p { font-size: 0.8rem; margin: 4px 0 0; opacity: 0.8; }
+    .btn-goto-cal {
+        margin-left: auto;
+        width: 36px;
+        height: 36px;
+        background: white;
+        color: #3b82f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    .btn-goto-cal:hover { transform: translateX(4px); }
+
+    /* Skeleton */
+    .skeleton-card {
+        height: 380px;
+        background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 20px;
+    }
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 1024px) {
+        .user-dashboard-content { grid-template-columns: 1fr; }
+    }
 
         @media (max-width: 1200px) {
             .user-sections { grid-template-columns: 1fr; }
@@ -259,23 +398,40 @@ import UserLayout from '../../layouts/UserLayout.astro';
     // 1. Proteger la vista
     if (requireRole('usuario')) {
         console.info('[Dashboard Usuario] Sesión verificada.');
+
+        // Inicializar
+        loadUpcomingEvents();
+        loadCommunityData();
+    }
+
+    function optimizeImageUrl(url, width = 600) {
+        if (!url || typeof url !== 'string' || !url.includes('cloudinary.com')) return url || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80';
+        const parts = url.split('/upload/');
+        if (parts.length !== 2) return url;
+        return `${parts[0]}/upload/f_auto,q_auto,w_${width},c_fill/${parts[1]}`;
     }
 
     // 2. Cargar Eventos Próximos
     async function loadUpcomingEvents() {
-        const container = document.querySelector('.mini-events-list');
+        const container = document.getElementById('eventsGrid');
         if (!container) return;
 
         try {
-            // Usamos el endpoint principal con filtros para obtener is_registered
-            const events = await AuthManager.fetch('/events/?upcoming_only=true&limit=5');
+            const events = await AuthManager.fetch('/events/?upcoming_only=true&limit=6');
             
-            // Actualizar contador en la card de stats
-            const statText = document.getElementById('upcomingEventsStat');
-            if (statText) statText.textContent = events ? events.length.toString() : '0';
+            // Actualizar stats
+            const upcomingStat = document.getElementById('upcomingEventsStat');
+            const totalUpcoming = document.getElementById('totalUpcomingStat');
+            const registeredCountEl = document.getElementById('registeredStat');
+            
+            if (upcomingStat) upcomingStat.textContent = String(events?.length || 0);
+            if (totalUpcoming) totalUpcoming.textContent = String(events?.length || 0);
+            
+            const registeredItems = events?.filter(e => e.is_registered) || [];
+            if (registeredCountEl) registeredCountEl.textContent = String(registeredItems.length);
 
             if (!events || events.length === 0) {
-                container.innerHTML = '<div class="stat-label" style="padding: 10px; text-align: center;">No hay eventos próximos</div>';
+                container.innerHTML = '<div class="stat-label" style="grid-column: 1/-1; padding: 40px; text-align: center;">No hay eventos recomendados para ti en este momento.</div>';
                 return;
             }
 
@@ -286,8 +442,7 @@ import UserLayout from '../../layouts/UserLayout.astro';
                 const day = eventDate.getDate();
                 const month = monthNames[eventDate.getMonth()];
                 
-                // Formatear hora si existe
-                let timeStr = 'Hora por definir';
+                let timeStr = '18:30 PM';
                 if (event.event_time) {
                     const [h, m] = event.event_time.split(':');
                     const hour = parseInt(h);
@@ -297,49 +452,75 @@ import UserLayout from '../../layouts/UserLayout.astro';
                 }
 
                 const isRegistered = event.is_registered;
-                const isFull = event.capacity && event.registered_count >= event.capacity;
+                const capacity = event.capacity || 0;
+                const registered = event.registered_count || 0;
+                const isFull = capacity > 0 && registered >= capacity;
                 
-                let actionButton = '';
-                if (isRegistered) {
-                    actionButton = `<button class="btn-mini-cancel" data-id="${event.id}">Cancelar</button>`;
-                } else if (isFull) {
-                    actionButton = `<button class="btn-mini-reg" disabled>Lleno</button>`;
-                } else {
-                    actionButton = `<button class="btn-mini-reg" data-id="${event.id}">Registrarme</button>`;
-                }
+                const percent = capacity > 0 ? Math.min((registered / capacity) * 100, 100) : 0;
+                const barClass = percent > 90 ? 'full' : (percent > 70 ? 'warning' : '');
 
-                const statusBadge = isRegistered ? `<span class="status-badge-mini status-registered">Registrado</span>` : '';
+                const typeLabel = (event.event_type || 'virtual').toLowerCase() === 'virtual' ? 'Virtual' : 'Presencial';
+                const badgeType = (event.event_type || 'virtual').toLowerCase() === 'virtual' ? 'badge-virtual' : 'badge-presencial';
+
+                const optimizedImg = optimizeImageUrl(event.image_url, 400);
 
                 return `
-                    <div class="mini-event-card">
-                        <div class="date-badge">
-                            <span class="day">${day}</span>
-                            <span class="month">${month}</span>
+                    <div class="event-card-v2">
+                        <div class="card-image-wrap">
+                            <img src="${optimizedImg}" class="card-img" alt="${event.title}" loading="lazy">
+                            <span class="card-badge-top ${isFull ? 'badge-full' : badgeType}">
+                                ${isFull ? 'Agotado' : typeLabel}
+                            </span>
                         </div>
-                        <div class="event-details" style="flex: 1;">
-                            <h4>${event.title}</h4>
-                            <p>${timeStr} • ${event.location || 'Virtual'}</p>
-                            ${statusBadge}
-                            <div class="mini-event-actions">
-                                ${actionButton}
+                        
+                        <div class="card-info">
+                            <div class="card-date-line">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                                </svg>
+                                <span>${day} ${month} • ${timeStr}</span>
                             </div>
+                            <h3>${event.title}</h3>
+                            <p class="card-desc">${event.description || 'Únete a este increíble evento de nuestra comunidad tecnológica.'}</p>
+                            
+                            <div class="capacity-tracker">
+                                <div class="capacity-info">
+                                    <span class="cap-label">Asistentes</span>
+                                    <span class="cap-value">${registered}${capacity > 0 ? '/' + capacity : ''}</span>
+                                </div>
+                                <div class="cap-bar-bg">
+                                    <div class="cap-bar-fill ${barClass}" style="width: ${percent}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            ${isRegistered ? `
+                                <button class="btn-cancel-premium" data-id="${event.id}">
+                                    Cancelar Asistencia
+                                </button>
+                            ` : `
+                                <button class="btn-register-premium" data-id="${event.id}" ${isFull ? 'disabled' : ''}>
+                                    ${isFull ? 'Sin Cupos' : 'Registrarme ahora'}
+                                </button>
+                            `}
                         </div>
                     </div>
                 `;
             }).join('');
 
-            // Agregar listeners
-            container.querySelectorAll('.btn-mini-reg, .btn-mini-cancel').forEach(btn => {
+            // Listeners
+            container.querySelectorAll('button[data-id]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = (e.currentTarget as HTMLElement).dataset.id;
-                    const isCancel = (e.currentTarget as HTMLElement).classList.contains('btn-mini-cancel');
+                    const isCancel = (e.currentTarget as HTMLElement).classList.contains('btn-cancel-premium');
                     if (id) toggleRegistration(parseInt(id), isCancel);
                 });
             });
 
         } catch (error) {
             console.error('[UpcomingEvents] Error:', error);
-            container.innerHTML = '<div class="stat-label" style="color: #ef4444; padding: 10px;">Error al cargar eventos</div>';
+            container.innerHTML = '<div class="stat-label" style="color: #ef4444; padding: 40px; text-align: center;">Error al cargar eventos</div>';
         }
     }
 
@@ -380,9 +561,5 @@ import UserLayout from '../../layouts/UserLayout.astro';
             }
         }
     }
-
-    // Inicializar
-    loadUpcomingEvents();
-    loadCommunityData();
 </script>
 
