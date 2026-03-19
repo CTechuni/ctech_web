@@ -781,7 +781,7 @@
                             <h3>${e.title}</h3>
                             <p class="card-desc">${e.description || 'Revisión pendiente...'}</p>
                             <div style="margin-top: 0.5rem;">
-                                <span class="modal-badge" style="background: rgba(0, 115, 255, 0.05); color: var(--color-azure-radiant); display: inline-block;">${e.leader_name || e.community_name || 'Sin asignar'}</span>
+                                <span class="modal-badge" style="background: rgba(0, 115, 255, 0.05); color: var(--color-azure-radiant); display: inline-block;">${e.leader_name || e.community_name || 'CTech'}</span>
                             </div>
                         </div>
                         <div class="card-footer-details">
@@ -991,7 +991,7 @@
                             <h3>${e.title}</h3>
                             <p class="card-desc">${e.description || 'Evento organizado por CTech.'}</p>
                             <div style="margin-top: 0.5rem;">
-                                <span class="modal-badge" style="background: rgba(0, 115, 255, 0.05); color: var(--color-azure-radiant); display: inline-block;">${e.leader_name || e.community_name || 'Sin asignar'}</span>
+                                <span class="modal-badge" style="background: rgba(0, 115, 255, 0.05); color: var(--color-azure-radiant); display: inline-block;">${e.leader_name || e.community_name || 'CTech'}</span>
                             </div>
                         </div>
                         <div class="card-footer-details">
@@ -1375,7 +1375,7 @@
         if (dateEl) dateEl.textContent = `${dateObj.getDate()} de ${monthNames[dateObj.getMonth()]} de ${dateObj.getFullYear()}`;
         
         if (timeEl) timeEl.textContent = eventObj.event_time || '--:--';
-        if (organizerEl) organizerEl.textContent = eventObj.leader_name || eventObj.community_name || 'Sin asignar';
+        if (organizerEl) organizerEl.textContent = eventObj.leader_name || eventObj.community_name || 'CTech';
 
         // Ubicación / Link
         if (locationLabel) locationLabel.textContent = isVirtual ? 'Link de la reunión' : 'Ubicación / Punto de encuentro';
