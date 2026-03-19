@@ -604,7 +604,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
     @media(max-width: 768px)  { .events-grid { grid-template-columns: 1fr; } .events-toolbar { flex-direction: column; } .search-input-group { max-width: 100%; } }
 
     /* ══ Info Modal Styles ══ */
-    .info-card { max-width: 550px; border-radius: 24px; overflow: hidden; position: relative; }
+    .info-card { max-width: 550px; border-radius: 24px; overflow-y: auto; position: relative; }
     .info-header-img { 
         width: 100%; 
         height: 280px; 
@@ -700,10 +700,10 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
         }
 
         try {
-            // /events/my devuelve TODOS los eventos creados por el líder (cualquier status)
-            const myEvents = await AuthManager.fetch('/events/my');
-            const eventsArr = Array.isArray(myEvents) ? myEvents : [];
-            
+            // /events/ con upcoming_only=false retorna eventos de la comunidad + eventos globales del admin (aprobados)
+            const eventsRes = await AuthManager.fetch('/events/?upcoming_only=false');
+            const eventsArr = Array.isArray(eventsRes) ? eventsRes : [];
+
             // Separar: pendientes van a su propia pestaña, los demás a allEvents
             allEvents = eventsArr.filter(ev => ev.status !== 'pending');
             pendingEvents = eventsArr.filter(ev => ev.status === 'pending');
@@ -809,6 +809,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
             const isCancelled = e.status === 'cancelled';
             const isArchived = isCancelled || e.status === 'rejected';
+            const isLeaderEvent = Number(e.creator_id) === Number(authManager.getUser()?.id);
 
             return `
                 <div class="event-card-modern ${isArchived ? 'archived' : ''}" data-id="${e.id}">
@@ -834,6 +835,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                             <span style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.location || 'Local'}</span>
                         </div>
                     </div>
+                    ${isLeaderEvent ? `
                     <div class="card-actions-row">
                         ${!isArchived ? `
                             <button class="btn-action-ic edit-action" data-id="${e.id}" title="Editar evento">
@@ -846,6 +848,7 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                             Cancelar
                         </button>
                     </div>
+                    ` : ''}
                 </div>
             `;
         }).join('');

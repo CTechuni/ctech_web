@@ -102,6 +102,17 @@ def get_by_community(db: Session, community_id: int, skip: int = 0, limit: int =
     q = _with_community(_base_query(db)).filter(models.Event.community_id == community_id)
     return _paginate(_apply_filters(q, upcoming_only, None, event_type), skip, limit)
 
+def get_by_community_and_global(db: Session, community_id: int, skip: int = 0, limit: int = 20,
+                                upcoming_only: bool = False, event_type: str | None = None):
+    """Eventos de una comunidad + eventos globales del admin (sin comunidad asignada, aprobados)."""
+    q = _with_community(_base_query(db)).filter(
+        or_(
+            models.Event.community_id == community_id,
+            (models.Event.community_id == None) & (models.Event.status == "approved")
+        )
+    )
+    return _paginate(_apply_filters(q, upcoming_only, None, event_type), skip, limit)
+
 def get_by_creator(db: Session, creator_id: int, skip: int = 0, limit: int = 20):
     """Eventos creados por un usuario específico."""
     q = _with_community(_base_query(db)).filter(models.Event.creator_id == creator_id)

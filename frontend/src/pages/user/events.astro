@@ -349,15 +349,9 @@ import UserLayout from '../../layouts/UserLayout.astro';
 
             const events = await AuthManager.fetch(`/events/?upcoming_only=true`);
             const rawEvents = Array.isArray(events) ? events : [];
-            
-            // 2. Filtrar por comunidad del usuario o Admin (community_id null)
-            const userCommId = user.community_id;
-            allEvents = rawEvents.filter(ev => {
-                // Si el evento no tiene community_id, es global/admin y lo ven todos
-                if (ev.community_id === null) return true;
-                // Si el evento tiene community_id, solo lo ve si coincide con la suya
-                return ev.community_id === userCommId;
-            });
+
+            // El backend ya filtra correctamente: públicos aprobados + privados de la propia comunidad
+            allEvents = rawEvents;
 
             applyFilters();
         } catch (error) {

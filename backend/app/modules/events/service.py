@@ -55,6 +55,10 @@ def list_by_community(db: Session, community_id: int, skip: int = 0, limit: int 
                       upcoming_only: bool = False, event_type: str | None = None):
     return _attach_names(repository.get_by_community(db, community_id, skip, limit, upcoming_only, event_type))
 
+def list_by_community_and_global(db: Session, community_id: int, skip: int = 0, limit: int = 20,
+                                  upcoming_only: bool = False, event_type: str | None = None):
+    return _attach_names(repository.get_by_community_and_global(db, community_id, skip, limit, upcoming_only, event_type))
+
 def list_pending_by_community(db: Session, community_id: int):
     return _attach_names(repository.get_pending_by_community(db, community_id))
 
