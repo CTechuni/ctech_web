@@ -1,0 +1,322 @@
+---
+import LeaderLayout from '../../layouts/LeaderLayout.astro';
+---
+
+<LeaderLayout title="Mi Comunidad" subtitle="Resumen y miembros de tu comunidad">
+<div class="page-wrap">
+
+    <!-- Stats bar -->
+    <div class="stats-row">
+        <div class="stat-chip">
+            <i class="fa-solid fa-users"></i>
+            <div>
+                <span class="chip-val" id="totalMembersNum">—</span>
+                <span class="chip-lbl">Miembros</span>
+            </div>
+        </div>
+        <div class="stat-chip">
+            <i class="fa-solid fa-calendar-check"></i>
+            <div>
+                <span class="chip-val" id="totalEventsNum">—</span>
+                <span class="chip-lbl">Eventos del mes</span>
+            </div>
+        </div>
+        <div class="stat-chip">
+            <i class="fa-solid fa-chart-line"></i>
+            <div>
+                <span class="chip-val" id="engagementNum">—%</span>
+                <span class="chip-lbl">Participación</span>
+            </div>
+        </div>
+        <div class="stat-chip">
+            <i class="fa-solid fa-building-columns"></i>
+            <div>
+                <span class="chip-val" id="communityNameVal">—</span>
+                <span class="chip-lbl">Comunidad</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Members section -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fa-solid fa-id-card-clip"></i>
+                Miembros de la comunidad
+                <span class="count-badge" id="memberBadge">0</span>
+            </h2>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="memberSearch" placeholder="Buscar miembro...">
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>MIEMBRO</th>
+                        <th class="tc">ROL</th>
+                        <th class="tc">REGISTRO</th>
+                        <th class="tc">ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody id="membersBody">
+                    <tr><td colspan="4" class="loading-cell">
+                        <div class="spinner"></div> Cargando miembros...
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Events section -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fa-solid fa-calendar-days"></i>
+                Próximos eventos
+                <span class="count-badge count-badge--blue" id="eventBadge">0</span>
+            </h2>
+        </div>
+
+        <div id="eventsGrid" class="events-grid">
+            <div class="loading-state"><div class="spinner"></div> Cargando eventos...</div>
+        </div>
+    </div>
+
+</div>
+</LeaderLayout>
+
+<style>
+.page-wrap { max-width: 1100px; display: flex; flex-direction: column; gap: 32px; }
+
+/* ─── Stats Row ─── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+.stat-chip {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.03);
+}
+.stat-chip i { font-size: 1.2rem; color: #3b82f6; width: 36px; height: 36px; background: #eff6ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chip-val { font-size: 1.4rem; font-weight: 800; color: #0f172a; display: block; line-height: 1; }
+.chip-lbl { font-size: .75rem; color: #64748b; font-weight: 500; display: block; margin-top: 3px; }
+
+/* ─── Section ─── */
+.section { display: flex; flex-direction: column; gap: 16px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.section-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 10px; }
+.section-title i { color: #3b82f6; }
+.count-badge { background: #fef3c7; color: #d97706; font-size: .7rem; font-weight: 800; padding: 2px 9px; border-radius: 20px; }
+.count-badge--blue { background: #eff6ff; color: #3b82f6; }
+
+/* ─── Search bar ─── */
+.search-bar { position: relative; }
+.search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .85rem; }
+.search-bar input {
+    padding: 9px 14px 9px 38px;
+    border: 1.5px solid #e2e8f0; border-radius: 50px; font-size: .85rem; outline: none; background: #fff;
+    width: 220px; box-sizing: border-box;
+}
+.search-bar input:focus { border-color: #3b82f6; }
+
+/* ─── Table ─── */
+.table-card { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead { background: #f8fafc; }
+.data-table th { padding: 13px 20px; font-size: .72rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: .04em; border-bottom: 1px solid #e2e8f0; text-align: left; }
+.tc { text-align: center !important; }
+.data-table td { padding: 15px 20px; border-bottom: 1px solid #f8fafc; font-size: .87rem; color: #334155; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background: #fafbfc; }
+.loading-cell { text-align: center; padding: 3rem !important; color: #94a3b8; }
+.spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #f1f5f9; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 6px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── User cell ─── */
+.user-cell { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: .8rem; flex-shrink: 0; }
+.user-name  { font-weight: 600; color: #0f172a; }
+.user-email { font-size: .76rem; color: #94a3b8; }
+.role-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 3px 10px; font-size: .72rem; font-weight: 700; }
+.role-leader { background: #fef3c7; color: #d97706; }
+.role-user   { background: #f1f5f9; color: #475569; }
+.badge-active { background: #dcfce7; color: #15803d; border-radius: 20px; padding: 3px 10px; font-size: .72rem; font-weight: 600; }
+
+/* ─── Events grid ─── */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+.event-mini-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.event-mini-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,.05); transform: translateY(-2px); }
+.ev-date-chip { display: flex; align-items: center; gap: 6px; font-size: .75rem; font-weight: 700; color: #3b82f6; text-transform: uppercase; }
+.ev-date-chip i { font-size: .7rem; }
+.ev-title { font-size: .95rem; font-weight: 700; color: #0f172a; margin: 0; }
+.ev-desc  { font-size: .8rem; color: #64748b; line-height: 1.4; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ev-footer { margin-top: auto; padding-top: 10px; border-top: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+.ev-type { font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.ev-virtual   { background: #eff6ff; color: #3b82f6; }
+.ev-presencial { background: #fdf2f8; color: #db2777; }
+.ev-attendees { font-size: .75rem; color: #94a3b8; display: flex; align-items: center; gap: 5px; }
+.loading-state { grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.empty-state { grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8; }
+
+@media(max-width: 1024px) {
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .events-grid { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width: 640px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .events-grid { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; align-items: flex-start; }
+    .search-bar input { width: 100%; }
+}
+</style>
+
+<script>
+import { AuthManager, authManager } from '../../utils/auth.js';
+
+const AVATAR_COLORS = ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4'];
+
+let allMembers = [];
+
+async function init() {
+    const user = authManager.getUser();
+    if (!user?.community_id) { setTimeout(init, 400); return; }
+
+    const communityId = user.community_id;
+
+    // Cargar datos en paralelo
+    const [members, metrics, events] = await Promise.all([
+        AuthManager.fetch(`/users/community/${communityId}`).catch(() => []),
+        AuthManager.fetch(`/metrics/community/${communityId}`).catch(() => null),
+        AuthManager.fetch('/events/?upcoming_only=true&limit=9').catch(() => []),
+    ]);
+
+    allMembers = Array.isArray(members) ? members : [];
+
+    // Stats
+    const totalEl = document.getElementById('totalMembersNum');
+    const evCountEl = document.getElementById('totalEventsNum');
+    const engEl = document.getElementById('engagementNum');
+    const commNameEl = document.getElementById('communityNameVal');
+
+    if (totalEl) totalEl.textContent = allMembers.length;
+    if (evCountEl && metrics) evCountEl.textContent = metrics.events_this_month ?? '—';
+    if (engEl && metrics) engEl.textContent = metrics.engagement_rate != null ? `${Math.round(metrics.engagement_rate)}%` : '—%';
+    if (commNameEl && metrics) commNameEl.textContent = metrics.community_name || '—';
+
+    // Renderizar
+    renderMembers(allMembers);
+    renderEvents(Array.isArray(events) ? events : []);
+
+    // Contador badge
+    const badge = document.getElementById('memberBadge');
+    if (badge) badge.textContent = allMembers.length;
+}
+
+function renderMembers(list) {
+    const tbody = document.getElementById('membersBody');
+    if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2.5rem;color:#94a3b8;">No hay miembros en tu comunidad.</td></tr>';
+        return;
+    }
+    const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    tbody.innerHTML = list.map(m => {
+        const initials = (m.name_user || '?').substring(0, 2).toUpperCase();
+        const color = AVATAR_COLORS[m.id % AVATAR_COLORS.length];
+        const isLeader = m.rol_id === 3;
+        const regDate = m.created_at
+            ? (() => { const d = new Date(m.created_at); return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
+            : '—';
+        return `
+        <tr>
+            <td>
+                <div class="user-cell">
+                    <div class="avatar" style="background:${color}">${initials}</div>
+                    <div>
+                        <div class="user-name">${m.name_user || '—'}</div>
+                        <div class="user-email">${m.email || ''}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="tc">
+                <span class="role-badge ${isLeader ? 'role-leader' : 'role-user'}">
+                    <i class="fa-solid ${isLeader ? 'fa-crown' : 'fa-user'}" style="font-size:.65rem"></i>
+                    ${isLeader ? 'Líder' : 'Usuario'}
+                </span>
+            </td>
+            <td class="tc">${regDate}</td>
+            <td class="tc"><span class="badge-active">Activo</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderEvents(events) {
+    const grid = document.getElementById('eventsGrid');
+    const badge = document.getElementById('eventBadge');
+    if (badge) badge.textContent = events.length;
+
+    if (!events.length) {
+        grid.innerHTML = '<div class="empty-state">No hay eventos próximos programados.</div>';
+        return;
+    }
+
+    const MONTHS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+    grid.innerHTML = events.map(ev => {
+        const d = new Date(ev.event_date + 'T00:00:00');
+        const dateStr = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+        const isVirtual = (ev.event_type || 'virtual').toLowerCase() === 'virtual';
+        const attendees = ev.registered_count ?? 0;
+        const capacity  = ev.capacity ?? 0;
+        return `
+        <div class="event-mini-card">
+            <div class="ev-date-chip">
+                <i class="fa-regular fa-calendar"></i>
+                ${dateStr}${ev.event_time ? ' · ' + ev.event_time.substring(0,5) : ''}
+            </div>
+            <h4 class="ev-title">${ev.title}</h4>
+            <p class="ev-desc">${ev.description || 'Evento de la comunidad tecnológica.'}</p>
+            <div class="ev-footer">
+                <span class="ev-type ${isVirtual ? 'ev-virtual' : 'ev-presencial'}">${isVirtual ? 'Virtual' : 'Presencial'}</span>
+                <span class="ev-attendees">
+                    <i class="fa-solid fa-user-group" style="font-size:.7rem"></i>
+                    ${attendees}${capacity > 0 ? ' / ' + capacity : ''}
+                </span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// Búsqueda de miembros
+document.getElementById('memberSearch').addEventListener('input', function() {
+    const term = this.value.toLowerCase();
+    renderMembers(allMembers.filter(m =>
+        (m.name_user || '').toLowerCase().includes(term) ||
+        (m.email || '').toLowerCase().includes(term)
+    ));
+});
+
+init();
+</script>

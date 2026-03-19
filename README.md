@@ -238,7 +238,7 @@ CTech/
 │   │   ├── modules/       → auth, users, communities, events, metrics, notifications, admin
 │   │   └── main.py        → entry point FastAPI
 │   ├── migrations/        → scripts SQL
-│   ├── requirements.txt
+│   ├── rements.txt
 │   ├── .env               → variables de entorno (no commitear)
 │   └── run_backend.bat    → inicio rápido (Windows)
 │
