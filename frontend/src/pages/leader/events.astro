@@ -808,7 +808,8 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 
             const isCancelled = e.status === 'cancelled';
             const isArchived = isCancelled || e.status === 'rejected';
-            const isLeaderEvent = Number(e.creator_id) === Number(authManager.getUser()?.id);
+            // El líder puede editar/eliminar eventos de su comunidad, pero no los globales del admin (community_id null)
+            const isLeaderEvent = e.community_id !== null && e.community_id !== undefined;
 
             return `
                 <div class="event-card-modern ${isArchived ? 'archived' : ''}" data-id="${e.id}">
