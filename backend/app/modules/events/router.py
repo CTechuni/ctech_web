@@ -133,7 +133,7 @@ async def upload_event_image(file: UploadFile = File(...), current=Depends(get_c
     if current.rol_id not in [1, 3]:
         raise HTTPException(status_code=403, detail="No tienes permisos para subir imágenes")
 
-    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
     MAX_SIZE_MB = 5
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail="Tipo de archivo no permitido. Usa JPG, PNG, WEBP o GIF")

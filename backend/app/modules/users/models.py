@@ -32,7 +32,7 @@ class User(Base):
 
     # Relaciones
     role = relationship("Role", back_populates="users")
-    profile = relationship("Profile", back_populates="user", uselist=False)
+    profile = relationship("Profile", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
 class Profile(Base):
     __tablename__ = "profiles"
