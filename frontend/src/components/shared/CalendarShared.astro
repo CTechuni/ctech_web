@@ -593,9 +593,15 @@
         const btnText = document.getElementById('btnRegisterTextCalendar');
         const user = authManager.getUser();
 
-        // 1. Verificar si el usuario puede ver el botón (Admin o propia comunidad)
+        // 1. Solo usuarios regulares (rol_id=4) pueden registrarse
+        if (!user || user.rol_id !== 4) {
+            btn.style.display = 'none';
+            return;
+        }
+
+        // 2. Verificar si el evento es de su comunidad o global del admin
         const isFromAdmin = currentEvent.community_id === null;
-        const isFromMyCommunity = user && currentEvent.community_id === user.community_id;
+        const isFromMyCommunity = currentEvent.community_id === user.community_id;
 
         if (!isFromAdmin && !isFromMyCommunity) {
             btn.style.display = 'none';

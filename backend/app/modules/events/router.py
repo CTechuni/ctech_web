@@ -277,6 +277,9 @@ def postpone_event(event_id: int, background_tasks: BackgroundTasks, db: Session
 @router.post("/{event_id}/register")
 def register_to_event(event_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current=Depends(get_current_user)):
 
+    if current.rol_id != 4:
+        raise HTTPException(status_code=403, detail="Solo los usuarios pueden registrarse a eventos")
+
     # Valida duplicado, capacidad y status — lanza HTTPException si falla
     service.register_user_to_event(db, event_id, current.id)
 
