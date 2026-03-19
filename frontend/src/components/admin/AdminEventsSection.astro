@@ -15,7 +15,6 @@
                 <button class="seg-btn active" data-filter="all">Todos</button>
                 <button class="seg-btn" data-filter="virtual">Virtual</button>
                 <button class="seg-btn" data-filter="presencial">Presencial</button>
-                <button class="seg-btn" data-filter="mine">Míos</button>
                 <button class="seg-btn" data-filter="pending" id="pendingFilterBtn" style="display:none">
                     Pendientes
                     <span class="pending-badge-mini" id="pendingBadge">0</span>
@@ -891,9 +890,7 @@
                     (ev.community_name || '').toLowerCase().includes(searchTerm) ||
                     monthName.includes(searchTerm);
 
-                const matchesType = currentFilter !== 'mine' || Number(ev.creator_id) === Number(currentUser.id);
-
-                return matchesSearch && matchesType;
+                return matchesSearch;
             });
             renderPendingList(filteredPending);
             return;
@@ -915,14 +912,10 @@
             
             let typeRaw = `${ev.event_type || ''} ${ev.type_event || ''} ${ev.location || ''}`.toLowerCase();
             let normalizedType = typeRaw.includes('presencial') ? 'presencial' : 'virtual';
-            
-            const currentUser = authManager.getUser() || {};
-            const isMine = Number(ev.creator_id) === Number(currentUser.id);
 
-            const matchesType = 
-                currentFilter === 'all' || 
-                (currentFilter === 'mine' && isMine) ||
-                (currentFilter !== 'mine' && normalizedType === currentFilter);
+            const matchesType =
+                currentFilter === 'all' ||
+                normalizedType === currentFilter;
 
             return matchesSearch && matchesType;
         });
