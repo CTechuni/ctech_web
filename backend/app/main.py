@@ -35,17 +35,23 @@ app = FastAPI(
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https?://.*",
+    allow_origins=[
+        "http://localhost:4321", 
+        "https://*.ngrok-free.app", 
+        "http://127.0.0.1:4321"
+    ],
+    allow_origin_regex="https?://.*\.ngrok-free\.app", # Específico para subdominios de ngrok
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"] # Útil para ver headers de depuración
 )
 
 api_prefix = "/api/v1"
 
 # Registro de Rutas
 app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Auth"])
-app.include_router(users_router, prefix=api_prefix)
+app.include_router(users_router, prefix=api_prefix, tags=["Users"])
 app.include_router(communities_router, prefix=api_prefix)
 app.include_router(events_router, prefix=api_prefix)
 app.include_router(metrics_router, prefix=api_prefix)
@@ -55,4 +61,4 @@ app.include_router(notifications_router, prefix=api_prefix)
 
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": "Bienvenido a CTech API - Proyecto SENA Ficha 2995403"}
+    return {"message": "Bienvenido a CTech API - Proyecto SENA Ficha 2995403","docs": "/docs"}

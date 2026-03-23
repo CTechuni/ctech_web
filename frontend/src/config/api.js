@@ -1,7 +1,11 @@
 // Configuración central de la API — CTech Backend (FastAPI)
 
 export const API_CONFIG = {
-    BASE_URL: 'http://localhost:8000',
+    // CORRECCIÓN: Detectar automáticamente si estamos en producción (ngrok/nube) o local
+    BASE_URL: typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+        ? `${window.location.protocol}//${window.location.host}` 
+        : 'http://localhost:8000',
+    
     API_VERSION: '/api/v1',
 
     AUTH: {
@@ -68,37 +72,79 @@ export const API_CONFIG = {
 
 // Construye la URL completa: BASE_URL + /api/v1 + endpoint
 export function buildApiUrl(endpoint) {
+    // Limpiamos el endpoint para que no tenga slash al inicio si la versión ya lo tiene
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    return `${API_CONFIG.BASE_URL}${API_CONFIG.API_VERSION}/${cleanEndpoint}`;
+    const version = API_CONFIG.API_VERSION.endsWith('/') 
+        ? API_CONFIG.API_VERSION 
+        : `${API_CONFIG.API_VERSION}/`;
+    
+    return `${API_CONFIG.BASE_URL}${version}${cleanEndpoint}`;
 }
 
-// Petición autenticada genérica
-export async function authenticatedRequest(url, options = {}) {
-    const token = sessionStorage.getItem('authToken');
+/**
+ * Petición autenticada con manejo de estados y errores
+ */
+export async function authenticatedRequest(endpoint, options = {}) {
+    const url = buildApiUrl(endpoint);
+    const token = localStorage.getItem('authToken');
 
+    // Seteamos headers por defecto
     const headers = {
-        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': '69420',
+        'Accept': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
     };
 
-    const response = await fetch(url, { ...options, headers });
-
-    if (response.status === 401) {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('user');
-        window.location.href = '/';
-        return null;
+    // Si enviamos FormData (para logos/archivos), el navegador pone el Content-Type solo
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
     }
 
-    return response;
+    try {
+        const response = await fetch(url, { ...options, headers });
+
+        // MANEJO DE EXPIRACIÓN DE TOKEN (401)
+        if (response.status === 401) {
+            console.warn("Sesión expirada o no autorizada. Redirigiendo...");
+            localStorage.clear(); // Limpiamos todo
+            if (typeof window !== 'undefined') {
+                // Evitamos loop de redirección si ya estamos en el login
+                if (window.location.pathname !== '/') {
+                    window.location.href = '/?expired=true';
+                }
+            }
+            return null;
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error de red/túnel:', error);
+        throw new Error('Error de conexión: El servidor no responde (¿Ngrok activo?)');
+    }
 }
 
-// Parsea la respuesta y lanza error si no es ok
+/**
+ * Procesa la respuesta de FastAPI y extrae los mensajes de error
+ */
 export async function handleApiResponse(response) {
+    if (!response) return null;
+    
+    const data = await response.json().catch(() => ({ detail: 'Error en formato de respuesta' }));
+
     if (!response.ok) {
-        const error = await response.json().catch(() => ({ detail: 'Error desconocido' }));
-        throw new Error(error.detail || `Error ${response.status}: ${response.statusText}`);
+        // FastAPI suele enviar errores en 'detail'
+        // Si es validación de Pydantic, 'detail' es una lista
+        let message = 'Error en la operación';
+        
+        if (typeof data.detail === 'string') {
+            message = data.detail;
+        } else if (Array.isArray(data.detail)) {
+            message = data.detail.map(err => `${err.loc[1]}: ${err.msg}`).join(' | ');
+        }
+        
+        throw new Error(message);
     }
-    return response.json();
+    
+    return data;
 }
