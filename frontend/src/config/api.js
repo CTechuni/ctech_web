@@ -2,9 +2,7 @@
 
 export const API_CONFIG = {
     // CORRECCIÓN: Detectar automáticamente si estamos en producción (ngrok/nube) o local
-    BASE_URL: typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
-        ? `${window.location.protocol}//${window.location.host}` 
-        : 'http://localhost:8000',
+    BASE_URL:"",
     
     API_VERSION: '/api/v1',
 
@@ -72,13 +70,14 @@ export const API_CONFIG = {
 
 // Construye la URL completa: BASE_URL + /api/v1 + endpoint
 export function buildApiUrl(endpoint) {
-    // Limpiamos el endpoint para que no tenga slash al inicio si la versión ya lo tiene
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-    const version = API_CONFIG.API_VERSION.endsWith('/') 
-        ? API_CONFIG.API_VERSION 
-        : `${API_CONFIG.API_VERSION}/`;
+    // Si el endpoint ya es una URL completa, no hagas nada
+    if (endpoint.startsWith('http')) return endpoint;
     
-    return `${API_CONFIG.BASE_URL}${version}${cleanEndpoint}`;
+    // Si no, construye una ruta relativa
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    
+    // Esto devolverá algo como "/api/v1/users"
+    return `${API_CONFIG.BASE_URL}${API_CONFIG.API_VERSION}${cleanEndpoint}`;
 }
 
 /**

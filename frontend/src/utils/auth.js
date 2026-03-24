@@ -141,7 +141,10 @@ export class AuthManager {
     // ── Peticiones autenticadas (CORREGIDO PARA SOPORTAR FORM-DATA Y NGORK) ──────────────────
 static async fetch(endpoint, options = {}) {
     const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+    
     const url = buildApiUrl(endpoint);
+
+    console.log("🚀 Disparando a:", url);
 
     // 1. Manejo inteligente de Headers
     const headers = { ...options.headers };
