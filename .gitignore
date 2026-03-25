@@ -25,6 +25,7 @@ pnpm-debug.log*
 
 package-lock.json
 package.json
+Ctech.json
 
 BACKEND_INTEGRATION.md
 .gitignore
@@ -36,4 +37,4 @@ __pycache__/
 *.pytest_cache/
 .pytest_cache/
 check_user_roles.py
-reset_admin.py
+reset_admin.pyCtech.json
