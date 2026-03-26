@@ -35,15 +35,11 @@ app = FastAPI(
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    # Permitimos TODO durante la fase de túnel para evitar bloqueos
-    allow_origins=["*"], 
-    # O si quieres ser específico, añade ambos dominios de ngrok:
-    # allow_origins=[
-    #    "http://localhost:4321",
-    #    "https://yaretzi-asbestous-jerrell.ngrok-free.dev", # Dominio API
-    #    "https://tu-dominio-de-web.ngrok-free.app" # <--- FALTA ESTE
-    # ],
-    allow_origin_regex=r"https?://(.*\.ngrok-free\.(app|dev)|.*\.onrender\.com)", # Cubre ngrok y Render
+    allow_origins=[
+        "https://ctech-front.onrender.com",
+        "http://localhost:4321",
+    ],
+    allow_origin_regex=r"https?://.*\.ngrok-free\.(app|dev)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
