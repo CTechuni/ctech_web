@@ -18,12 +18,12 @@ from app.modules.notifications.router import router as notifications_router
 # 1. Crear las tablas en PostgreSQL (basado en base_api.py)
 Base.metadata.create_all(bind=engine)
 
-# 2. Ejecutar el sembrado de datos iniciales (Comentado para evitar bloqueos en el arranque)
-# db = SessionLocal()
-# try:
-#     seed_data(db)
-# finally:
-#     db.close()
+# 2. Ejecutar el sembrado de datos iniciales
+db = SessionLocal()
+try:
+    seed_data(db)
+finally:
+    db.close()
 
 app = FastAPI(
     title="CTech API",
