@@ -385,7 +385,7 @@
                 const role = String(result.user?.role || '').toLowerCase().trim();
 
                 let redirectPath = '/user';
-                if (role === 'admin')        redirectPath = '/admin/dashboard';
+                if (role === 'admin')        redirectPath = '/admin';
                 else if (role === 'leader')  redirectPath = '/leader/';
 
                 window.location.href = redirectPath;
