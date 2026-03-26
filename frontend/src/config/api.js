@@ -2,7 +2,7 @@
 
 export const API_CONFIG = {
     // CORRECCIÓN: Detectar automáticamente si estamos en producción (ngrok/nube) o local
-    BASE_URL:"",
+    BASE_URL: import.meta.env.PUBLIC_API_URL || "",
     
     API_VERSION: '/api/v1',
 

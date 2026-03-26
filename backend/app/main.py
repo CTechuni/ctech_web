@@ -43,7 +43,7 @@ app.add_middleware(
     #    "https://yaretzi-asbestous-jerrell.ngrok-free.dev", # Dominio API
     #    "https://tu-dominio-de-web.ngrok-free.app" # <--- FALTA ESTE
     # ],
-    allow_origin_regex=r"https?://.*\.ngrok-free\.(app|dev)", # Cubre .app y .dev
+    allow_origin_regex=r"https?://(.*\.ngrok-free\.(app|dev)|.*\.onrender\.com)", # Cubre ngrok y Render
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
