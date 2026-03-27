@@ -891,8 +891,9 @@
         }
 
         const statusVal = statusSelect.value;
-        if (statusVal && statusVal !== (originalLeaderData.status || 'Activo')) {
-            payload.status = statusVal;
+        const statusApiVal = statusVal === 'Activo' ? 'active' : 'inactive';
+        if (statusApiVal !== (originalLeaderData.status || 'active')) {
+            payload.status = statusApiVal;
         }
 
         return payload;
