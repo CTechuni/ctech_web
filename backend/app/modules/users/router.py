@@ -4,7 +4,7 @@ from app.core.database import get_db
 from app.modules.auth.router import get_current_user
 from . import schemas, service
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users",tags=["Users"])
 
 # Público
 # Protegido

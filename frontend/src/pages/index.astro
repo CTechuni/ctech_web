@@ -449,14 +449,6 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
 <script>
     import { buildApiUrl } from '../config/api.js';
 
-    const BASE = 'http://localhost:8000/api/v1';
-
-    async function apiFetch(path) {
-        const res = await fetch(`${BASE}${path}`);
-        if (!res.ok) throw new Error(`${res.status}`);
-        return res.json();
-    }
-
     // ── Utilidades ────────────────────────────────────────────────────────────
     function fmtDate(dateStr) {
         if (!dateStr) return '';
@@ -555,7 +547,9 @@ const title = "CTech - Plataforma para impulsar comunidades tecnológicas";
         const grid = document.getElementById('eventsGrid');
         if (!grid) return;
         try {
-            const events = await apiFetch('/events/upcoming');
+            const res = await fetch(buildApiUrl('/events/upcoming'));
+            if (!res.ok) throw new Error(`${res.status}`);
+            const events = await res.json();
             const list = Array.isArray(events) ? events.slice(0, 3) : [];
             _eventsCache = list;
 

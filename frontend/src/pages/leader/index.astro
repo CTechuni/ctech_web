@@ -143,47 +143,64 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
 </LeaderLayout>
 
 <script>
+    import { AuthManager } from "../../utils/auth.js";
+
     async function initLeaderDashboard() {
-        // ── 1. Obtener community_id siempre desde el servidor ──────────────────
+        // ── 1. Obtener datos del usuario (me) ──────────────────
         let communityId = null;
         try {
-            // Leer token de la clave unificada
-            const token = sessionStorage.getItem('authToken') || '';
-            if (!token) { console.warn('[Leader] Sin token'); return; }
-
-            const meRes = await fetch('http://localhost:8000/api/v1/users/me', {
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
-            });
-            if (!meRes.ok) { console.warn('[Leader] /users/me error', meRes.status); return; }
-            const me = await meRes.json();
+            // Usamos AuthManager para que use la ruta relativa y el proxy
+            const me = await AuthManager.fetch('/users/me');
+            
+            if (!me || !me.community_id) {
+                console.warn('[Leader] Líder sin comunidad asignada o error en perfil');
+                return;
+            }
             communityId = me.community_id;
-        } catch (e) { console.error('[Leader] Error /users/me:', e); return; }
+        } catch (e) {
+            console.error('[Leader] Error /users/me:', e);
+            return;
+        }
 
-        if (!communityId) { console.warn('[Leader] Líder sin communidad asignada'); return; }
-
-        // ── 2. Cargar métricas ─────────────────────────────────────────────────
+        // ── 2. Cargar métricas de la comunidad ─────────────────
         let metrics = null;
         try {
-            const token = sessionStorage.getItem('authToken') || '';
-            const mRes = await fetch(`http://localhost:8000/api/v1/metrics/community/${communityId}`, {
-                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
-            });
-            if (!mRes.ok) { console.warn('[Leader] /metrics error', mRes.status); return; }
-            metrics = await mRes.json();
-        } catch (e) { console.error('[Leader] Error métricas:', e); return; }
+            // IMPORTANTE: Usamos la ruta relativa. AuthManager pondrá /api/v1 delante.
+            metrics = await AuthManager.fetch(`/metrics/community/${communityId}`);
+            
+            if (!metrics) {
+                console.warn('[Leader] No se recibieron métricas del servidor');
+                return;
+            }
+        } catch (e) {
+            console.error('[Leader] Error cargando métricas:', e);
+            return;
+        }
 
-        // ── 3. Contadores ──────────────────────────────────────────────────────
-        document.getElementById('leaderMembersCount').textContent = String(metrics.total_users   ?? 0);
-        document.getElementById('leaderEventsCount').textContent  = String(metrics.active_events ?? 0);
+        // ── 3. Actualizar Contadores en el DOM ──────────────────
+        const membersEl = document.getElementById('leaderMembersCount');
+        const eventsEl = document.getElementById('leaderEventsCount');
+        
+        if (membersEl) membersEl.textContent = String(metrics.total_users ?? 0);
+        if (eventsEl) eventsEl.textContent = String(metrics.active_events ?? 0);
 
-        // ── 4. Gráfica ─────────────────────────────────────────────────────────
+        // ── 4. Configuración de la Gráfica ─────────────────────
         const labels = metrics.growth_labels || [];
-        const data   = metrics.growth_data   || [];
+        const data = metrics.growth_data || [];
 
         function renderChart() {
-            if (!window.Chart) { setTimeout(renderChart, 100); return; }
-            const canvas = document.getElementById('chart-crecimiento');
+            // Verificamos si Chart.js está cargado (CDN)
+            if (!window.Chart) {
+                setTimeout(renderChart, 100);
+                return;
+            }
+            
+            const canvas = document.getElementById('chart-crecimiento') as HTMLCanvasElement;
             if (!canvas) return;
+
+            // Destruir instancia previa si existe para evitar bugs visuales
+            const existingChart = window.Chart.getChart(canvas);
+            if (existingChart) existingChart.destroy();
 
             new window.Chart(canvas, {
                 type: 'line',
@@ -202,14 +219,11 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointHoverRadius: 6,
-                        clip: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    layout: { padding: { left: 15, right: 25, top: 15, bottom: 10 } },
-                    interaction: { intersect: false, mode: 'index' },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -221,12 +235,12 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                             padding: 12,
                             displayColors: false,
                             callbacks: {
-                                label: c => ` ${c.parsed.y} miembro${c.parsed.y !== 1 ? 's' : ''} en total`,
-                                afterLabel: c => {
-                                    const d = c.dataset.data;
+                                label: (c) => ` ${c.parsed.y} miembros en total`,
+                                afterLabel: (c) => {
+                                    const dataset = c.dataset.data;
                                     const i = c.dataIndex;
                                     if (i > 0) {
-                                        const diff = d[i] - d[i - 1];
+                                        const diff = (dataset[i] as number) - (dataset[i - 1] as number);
                                         return diff === 0 ? ' Sin cambios' : ` ${diff > 0 ? '+' : ''}${diff} vs mes anterior`;
                                     }
                                     return '';
@@ -235,54 +249,42 @@ import LeaderLayout from '../../layouts/LeaderLayout.astro';
                         }
                     },
                     scales: {
-                        x: {
-                            grid: { display: true, color: '#f1f5f9' },
-                            ticks: { color: '#94a3b8', font: { size: 11 }, padding: 5 },
-                            border: { display: false }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            min: 0,
-                            max: 20,
-                            grid: { color: '#f1f5f9' },
-                            ticks: {
-                                color: '#94a3b8',
-                                font: { size: 11 },
-                                padding: 10,
-                                callback: v => [0, 2, 6, 8, 12, 15, 20].includes(v) ? v : null
-                            },
-                            afterBuildTicks: axis => { axis.ticks = [0, 2, 6, 8, 12, 15, 20].map(v => ({ value: v })); },
-                            border: { display: false }
-                        }
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8' } }
                     }
                 }
             });
 
-            // Badge de tendencia
+            // Actualizar Badge de tendencia
+            updateTrendBadge(data);
+        }
+
+        function updateTrendBadge(data) {
             const trendEl = document.getElementById('growthTrend');
             const trendTx = document.getElementById('growthTrendText');
-            if (trendEl && trendTx) {
-                const last = data[data.length - 1] ?? 0;
-                const prev = data[data.length - 2] ?? 0;
-                const diff = last - prev;
-                if (last === 0 && prev === 0) {
-                    trendEl.className   = 'ch-trend neutral';
-                    trendTx.textContent = 'Sin datos';
-                } else if (prev === 0) {
-                    trendEl.className   = 'ch-trend positive';
-                    trendTx.textContent = `+${last} miembro${last !== 1 ? 's' : ''} este mes`;
-                } else {
-                    const pct = ((diff / prev) * 100).toFixed(1);
-                    trendEl.className   = diff >= 0 ? 'ch-trend positive' : 'ch-trend negative';
-                    trendTx.textContent = diff >= 0 ? `▲ +${pct}%` : `▼ ${pct}%`;
-                }
+            if (!trendEl || !trendTx) return;
+
+            const last = data[data.length - 1] ?? 0;
+            const prev = data[data.length - 2] ?? 0;
+            const diff = last - prev;
+
+            if (last === 0 && prev === 0) {
+                trendEl.className = 'ch-trend neutral';
+                trendTx.textContent = 'Sin datos';
+            } else if (prev === 0) {
+                trendEl.className = 'ch-trend positive';
+                trendTx.textContent = `+${last} miembros este mes`;
+            } else {
+                const pct = ((diff / prev) * 100).toFixed(1);
+                trendEl.className = diff >= 0 ? 'ch-trend positive' : 'ch-trend negative';
+                trendTx.textContent = diff >= 0 ? `▲ +${pct}%` : `▼ ${pct}%`;
             }
         }
 
         renderChart();
     }
 
-    // Run immediately if DOM is ready, otherwise wait
+    // Ejecución inicial
     if (document.readyState !== 'loading') {
         initLeaderDashboard();
     } else {

@@ -1,0 +1,15 @@
+version: "2"
+authtoken: 39lY8AKFbInUqNXbkL2a4djvpO6_4eZEy2izkBpqtxGydFAca
+tunnels:
+  ctech-web:
+    proto: http
+    addr: 4321
+
+    inspect: true
+  
+  ctech-api:
+    proto: http
+    addr: 8000
+    host_header: localhost:8000 # 'rewrite' es más seguro que forzar localhost en túneles con dominio
+    domain: yaretzi-asbestous-jerrell.ngrok-free.dev
+    inspect: true

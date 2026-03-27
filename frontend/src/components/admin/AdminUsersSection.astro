@@ -464,6 +464,8 @@
 
 <script>
     import { AuthManager, authManager } from "../../utils/auth.js";
+  
+    
     const auth = authManager;
 
     let currentPage = 1;
@@ -474,36 +476,73 @@
 
 
 
-    async function fetchData(page = 1) {
-        try {
-            // Reset showing message while loading
-            const tbody = document.getElementById('usersBody');
-            if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="loading-state"><div class="spinner-sm"></div><span>Cargando...</span></td></tr>';
+  async function fetchData(page = 1) {
+    try {
+        // 1. Estado de carga visual
+        const tbody = document.getElementById('usersBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading-state">
+                        <div class="spinner-sm"></div>
+                        <span>Cargando directorio de CTech...</span>
+                    </td>
+                </tr>`;
+        }
 
-            const roleVal = (document.getElementById('roleFilter') as HTMLSelectElement)?.value || 'all';
-            const searchVal = (document.getElementById('userSearch') as HTMLInputElement)?.value || '';
-            
-            const [resp, communitiesData] = await Promise.all([
-                AuthManager.fetch(`/users?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
-                AuthManager.fetch('/communities').catch(() => [])
-            ]);
-            
-            // ASIGNAR RESULTADOS AL ESTADO
-            if (resp) {
-                currentUsersList = resp.users || [];
-                totalUsers = resp.total || 0;
-                currentPage = page;
-            }
-            communities = Array.isArray(communitiesData) ? communitiesData : [];
-            
-            renderUsers(currentUsersList);
-            updatePaginationUI();
-        } catch (error) {
-            console.error('Error:', error);
-            const tbody = document.getElementById('usersBody');
-            if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem; color: #ef4444;">Error al cargar datos</td></tr>';
+        // 2. Captura de filtros con seguridad (null checks)
+        const roleFilter = document.getElementById('roleFilter');
+        const userSearch = document.getElementById('userSearch');
+        
+        const roleVal = roleFilter ? (roleFilter as HTMLSelectElement).value : 'all';
+        const searchVal = userSearch ? (userSearch as HTMLInputElement).value : '';
+
+        // 3. Petición en paralelo
+        // IMPORTANTE: El "/" al inicio asegura que buildApiUrl lo trate como ruta relativa
+        const [resp, communitiesData] = await Promise.all([
+            AuthManager.fetch(`/users/?page=${page}&limit=${limit}&role=${roleVal}&search=${encodeURIComponent(searchVal)}`),
+            AuthManager.fetch('/communities/').catch(err => {
+                console.warn('No se pudieron cargar las comunidades:', err);
+                return []; // Fallback para que no rompa el Promise.all
+            })
+        ]);
+
+        // 4. Validación y Asignación de datos
+        if (resp && typeof resp === 'object') {
+            // Ajusta estas llaves según lo que devuelva exactamente tu FastAPI
+            currentUsersList = resp.users || [];
+            totalUsers = resp.total || 0;
+            currentPage = page;
+        } else {
+            console.error("Respuesta del servidor inesperada:", resp);
+            currentUsersList = [];
+            totalUsers = 0;
+        }
+
+        communities = Array.isArray(communitiesData) ? communitiesData : [];
+
+        // 5. Renderizado de interfaz
+        renderUsers(currentUsersList);
+        updatePaginationUI();
+
+    } catch (error) {
+        console.error('❌ Error fatal en fetchData:', error);
+        const tbody = document.getElementById('usersBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 3rem; color: #ef4444;">
+                        <div class="mb-2">⚠️ Error de conexión</div>
+                        <small>${error.message}</small>
+                        <br>
+                        <button onclick="location.reload()" class="btn-import mt-2" style="margin: 0 auto; font-size: 0.7rem;">
+                            Reintentar conexión
+                        </button>
+                    </td>
+                </tr>`;
         }
     }
+}
 
 
     const ROLE_MAP = {

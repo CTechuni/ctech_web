@@ -18,12 +18,12 @@ from app.modules.notifications.router import router as notifications_router
 # 1. Crear las tablas en PostgreSQL (basado en base_api.py)
 Base.metadata.create_all(bind=engine)
 
-# 2. Ejecutar el sembrado de datos iniciales (Comentado para evitar bloqueos en el arranque)
-# db = SessionLocal()
-# try:
-#     seed_data(db)
-# finally:
-#     db.close()
+# 2. Ejecutar el sembrado de datos iniciales
+db = SessionLocal()
+try:
+    seed_data(db)
+finally:
+    db.close()
 
 app = FastAPI(
     title="CTech API",
@@ -35,24 +35,29 @@ app = FastAPI(
 # Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https?://.*",
+    allow_origins=[
+        "https://ctech-front.onrender.com",
+        "http://localhost:4321",
+    ],
+    allow_origin_regex=r"https?://.*\.ngrok-free\.(app|dev)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 api_prefix = "/api/v1"
 
 # Registro de Rutas
 app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Auth"])
-app.include_router(users_router, prefix=api_prefix)
-app.include_router(communities_router, prefix=api_prefix)
+app.include_router(users_router, prefix="/api/v1")
+app.include_router(communities_router, prefix="/api/v1")
 app.include_router(events_router, prefix=api_prefix)
 app.include_router(metrics_router, prefix=api_prefix)
-app.include_router(admin_router, prefix=api_prefix)
+app.include_router(admin_router, prefix="/api/v1")
 app.include_router(notifications_router, prefix=api_prefix)
 # app.include_router(specialties_router, prefix=api_prefix)
 
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": "Bienvenido a CTech API - Proyecto SENA Ficha 2995403"}
+    return {"message": "Bienvenido a CTech API - Proyecto SENA Ficha 2995403","docs": "/docs"}
