@@ -104,6 +104,9 @@ def login(data: schemas.LoginRequest, db: Session = Depends(get_db)):
     
     if not service.verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="La contraseña es incorrecta")
+
+    if user.status != "active":
+        raise HTTPException(status_code=403, detail="Tu cuenta está inactiva. Contacta al administrador.")
     
     # Mapeo de roles para el frontend
     role_map = {1: "admin", 3: "leader", 4: "user"}
