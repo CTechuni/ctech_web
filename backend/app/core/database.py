@@ -6,7 +6,9 @@ settings = get_settings()
 
 engine = create_engine(
     settings.DATABASE_URL,
-    connect_args={"client_encoding": "utf8"} 
+    connect_args={"client_encoding": "utf8"},
+    pool_pre_ping=True,
+    pool_recycle=1800,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
